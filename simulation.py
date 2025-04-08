@@ -1,8 +1,8 @@
 import numpy as np
 
-from gdop import geometry
-from gdop.station import Anchor, Tag
-from gdop.measurements import Measurements
+import geometry
+from station import Anchor, Tag
+from measurements import Measurements
 
 
 class Simulation:

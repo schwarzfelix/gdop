@@ -1,7 +1,7 @@
 import matplotlib as mpl
 
 from plot import Plot
-from gdop.simulation import Simulation
+from simulation import Simulation
 
 mpl.use('macosx')
 
