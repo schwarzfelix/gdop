@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
 
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setMinimum(0)
-        self.slider.setMaximum(5)
+        self.slider.setMaximum(50)
         self.slider.setValue(0)
         self.slider.setTickPosition(QSlider.TicksBelow)
         self.slider.setTickInterval(1)
@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.angle_text)
 
     def slider_changed(self):
-        self.scenario.sigma = 0.0 + self.slider.value()
+        self.scenario.sigma = 0.0 + self.slider.value() * 0.1
         self.update_all()
 
     def update_angles(self):
@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
         self.angle_text.setText(angles_text)
 
     def update_slider(self):
-        self.slider.setValue(int(self.scenario.sigma))
+        self.slider.setValue(int(self.scenario.sigma * 10))
 
     def update_all(self):
         self.plot.update_plot()
