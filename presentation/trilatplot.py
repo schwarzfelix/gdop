@@ -35,7 +35,7 @@ class TrilatPlot:
         ax_settings = plt.subplot(gs[2])
 
         self.slider = Slider(ax_settings, 'σ', 0, 5, valinit=self.scenario.sigma, orientation='vertical')
-        self.slider.on_changed(self.update_plot)
+        self.slider.on_changed(self.slider_value_changed)
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
@@ -47,6 +47,10 @@ class TrilatPlot:
 
         if show:
             plt.show()
+
+    def slider_value_changed(self, val):
+        self.scenario.sigma = val
+        self.update_plot()
 
     def update_anchors(self):
         for plot in self.anchor_plots:
@@ -60,9 +64,7 @@ class TrilatPlot:
         self.circle_plots = [self.ax_main.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')) for x, y in self.scenario.anchor_positions()]
         self.circle_plots2 = [self.ax_main.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')) for x, y in self.scenario.anchor_positions()]
 
-    def update_plot(self, val=None):
-        if val is not None:
-            self.scenario.sigma = val
+    def update_plot(self):
 
         distances = self.scenario.euclidean_distances()
         estimate_position = self.scenario.tag_estimate.position()
