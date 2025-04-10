@@ -8,8 +8,9 @@ from simulation import station
 
 
 class TrilatPlot:
-    def __init__(self, gdop_scenario, show=True):
-        self.scenario = gdop_scenario
+    def __init__(self, scenario, window, show=True):
+        self.scenario = scenario
+        self.window = window
         self.dragging_point = None
         self.fire_shots = False
 
@@ -41,7 +42,7 @@ class TrilatPlot:
         self.fig.canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
         self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
 
-        self.fig.canvas.manager.set_window_title('Trilateration')
+        self.fig.canvas.manager.set_window_title('Trilateration & GDOP')
         self.update_plot()
 
         if show:
@@ -65,7 +66,7 @@ class TrilatPlot:
 
         distances = self.scenario.euclidean_distances()
         estimate_position = self.scenario.tag_estimate.position()
-        dop = self.scenario.dilution_of_precision()
+        gdop = self.scenario.dilution_of_precision()
 
 
         self.tag_estimate_plot.set_xdata([estimate_position[0]])
@@ -132,12 +133,12 @@ class TrilatPlot:
             self.lines_plot.append(name)
 
         self.ax_bar.clear()
-        self.ax_bar.bar(["DOP"], [dop], color="orange")
+        self.ax_bar.bar(["GDOP"], [gdop], color="orange")
         self.ax_bar.set_ylim(0, 12)
         self.ax_bar.set_xticks([0])
-        self.ax_bar.set_xticklabels(["DOP"])
-        self.ax_bar.set_title("DOP")
-        self.ax_bar.text(0, dop, f"{dop:.2f}", ha="center")
+        self.ax_bar.set_xticklabels(["GDOP"])
+        self.ax_bar.set_title("GDOP")
+        self.ax_bar.text(0, gdop, f"{gdop:.2f}", ha="center")
 
         self.fig.canvas.draw_idle()
 
@@ -176,7 +177,7 @@ class TrilatPlot:
 
     def on_mouse_release(self, event):
         if self.dragging_point is not None:
-            self.window.update_angles()
+            self.window.update_all()
         self.dragging_point = None
 
     def on_mouse_move(self, event):

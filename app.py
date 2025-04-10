@@ -8,11 +8,8 @@ import simulation
 mpl.use('macosx')
 
 if __name__ == "__main__":
-    gdop_sim = simulation.Scenario()
-    gdop_plt = presentation.TrilatPlot(gdop_sim, show=False)
-
+    scenario = simulation.Scenario()
     app = QApplication(sys.argv)
-    window = presentation.MainWindow(gdop_sim, gdop_plt)
-    gdop_plt.window = window
+    window = presentation.MainWindow(scenario)
     window.show()
     sys.exit(app.exec_())

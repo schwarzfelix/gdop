@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit
 from PyQt5.QtWidgets import QSlider
 from PyQt5.QtCore import Qt
-from matplotlib.figure import Figure
 
+import presentation
 from simulation import Scenario, geometry
 
 from matplotlib.backends.backend_qt5agg import (
@@ -11,13 +11,13 @@ from matplotlib.backends.backend_qt5agg import (
 )
 
 class MainWindow(QMainWindow):
-    def __init__(self, gdop_scenario, gdop_plt):
+    def __init__(self, gdop_scenario):
         super().__init__()
 
-        self.simulation = gdop_scenario
-        self.plot = gdop_plt
+        self.scenario = gdop_scenario
+        self.plot = presentation.TrilatPlot(self.scenario, self, show=False)
 
-        self.setWindowTitle("PyQt with Matplotlib and Slider")
+        self.setWindowTitle("Trilateration & GDOP")
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -48,16 +48,20 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.angle_text)
 
     def update_plot(self):
-        self.simulation.sigma = self.slider.value()
+        self.scenario.sigma = self.slider.value()
         self.plot.update_plot()
 
     def update_angles(self):
         angles_text = ""
-        for i in range(len(self.simulation.anchor_positions())):
-            for j in range(i + 1, len(self.simulation.anchor_positions())):
+        for i in range(len(self.scenario.anchor_positions())):
+            for j in range(i + 1, len(self.scenario.anchor_positions())):
                 angle = geometry.angle_vectors(
-                    self.simulation.anchor_positions()[i] - self.simulation.tag_truth.position(),
-                    self.simulation.anchor_positions()[j] - self.simulation.tag_truth.position())
-                angles_text += f"Angle between {self.simulation.anchors[i].name()} and {self.simulation.anchors[j].name()}: {angle:.2f}°\n"
+                    self.scenario.anchor_positions()[i] - self.scenario.tag_truth.position(),
+                    self.scenario.anchor_positions()[j] - self.scenario.tag_truth.position())
+                angles_text += f"Angle between {self.scenario.anchors[i].name()} and {self.scenario.anchors[j].name()}: {angle:.2f}°\n"
 
         self.angle_text.setText(angles_text)
+
+    def update_all(self):
+        self.update_plot()
+        self.update_angles()
