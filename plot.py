@@ -10,7 +10,7 @@ import simulation
 
 
 class Plot:
-    def __init__(self, localization: simulation.Simulation):
+    def __init__(self, localization: simulation.Simulation, show=True):
         self.localization = localization
         self.dragging_point = None
         self.fire_shots = False
@@ -45,7 +45,9 @@ class Plot:
 
         self.fig.canvas.manager.set_window_title('Trilateration')
         self.update_plot()
-        plt.show()
+
+        if show:
+            plt.show()
 
     def update_anchors(self):
         for plot in self.anchor_plots:

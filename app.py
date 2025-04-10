@@ -7,4 +7,4 @@ mpl.use('macosx')
 
 if __name__ == "__main__":
     simulation = Simulation()
-    Plot(simulation)
+    p = Plot(simulation)
