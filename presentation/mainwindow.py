@@ -30,8 +30,8 @@ class MainWindow(QMainWindow):
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
 
-        layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
+        layout.addWidget(self.toolbar)
 
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setMinimum(0)
