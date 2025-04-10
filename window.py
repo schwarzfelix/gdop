@@ -35,9 +35,9 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.canvas)
 
         self.slider = QSlider(Qt.Horizontal)
-        self.slider.setMinimum(1)
-        self.slider.setMaximum(20)
-        self.slider.setValue(1)
+        self.slider.setMinimum(0)
+        self.slider.setMaximum(5)
+        self.slider.setValue(0)
         self.slider.setTickPosition(QSlider.TicksBelow)
         self.slider.setTickInterval(1)
         self.slider.valueChanged.connect(self.update_plot)
@@ -45,4 +45,5 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.slider)
 
     def update_plot(self):
+        self.simulation.sigma = self.slider.value()
         self.plot.update_plot()
