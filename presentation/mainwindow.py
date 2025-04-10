@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox
 from PyQt5.QtWidgets import QSlider
 from PyQt5.QtCore import Qt
 
@@ -42,6 +42,13 @@ class MainWindow(QMainWindow):
         self.slider.valueChanged.connect(self.slider_changed)
         layout.addWidget(self.slider)
 
+        self.sigma_input = QDoubleSpinBox()
+        self.sigma_input.setRange(0.0, 5.0)
+        self.sigma_input.setSingleStep(0.1)
+        self.sigma_input.setValue(0.0)
+        self.sigma_input.valueChanged.connect(self.sigma_input_changed)
+        layout.addWidget(self.sigma_input)
+
         self.angle_text = QTextEdit()
         self.angle_text.setReadOnly(True)
         self.angle_text.setText("Angles will be displayed here.")
@@ -49,6 +56,10 @@ class MainWindow(QMainWindow):
 
     def slider_changed(self):
         self.scenario.sigma = 0.0 + self.slider.value() * 0.1
+        self.update_all()
+
+    def sigma_input_changed(self):
+        self.scenario.sigma = self.sigma_input.value()
         self.update_all()
 
     def update_angles(self):
@@ -62,10 +73,11 @@ class MainWindow(QMainWindow):
 
         self.angle_text.setText(angles_text)
 
-    def update_slider(self):
+    def update_sigma(self):
         self.slider.setValue(int(self.scenario.sigma * 10))
+        self.sigma_input.setValue(self.scenario.sigma)
 
     def update_all(self):
         self.plot.update_plot()
         self.update_angles()
-        self.update_slider()
+        self.update_sigma()
