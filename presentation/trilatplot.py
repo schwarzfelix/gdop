@@ -8,9 +8,9 @@ from simulation import station
 
 
 class TrilatPlot:
-    def __init__(self, scenario, window, show=True):
-        self.scenario = scenario
+    def __init__(self, window, show=True):
         self.window = window
+        self.scenario = self.window.scenario
         self.dragging_point = None
         self.fire_shots = False
 

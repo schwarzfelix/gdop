@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.scenario = gdop_scenario
-        self.plot = presentation.TrilatPlot(self.scenario, self, show=False)
+        self.plot = presentation.TrilatPlot(self, show=False)
 
         self.setWindowTitle("Trilateration & GDOP")
 
