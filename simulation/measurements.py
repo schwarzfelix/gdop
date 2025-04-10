@@ -1,4 +1,3 @@
-import station as st
 
 class Measurements:
     def __init__(self) -> None:
@@ -22,7 +21,7 @@ class Measurements:
 
         self.relation.add((pair, distance))
 
-    def remove_station(self, station: st.Station):
+    def remove_station(self, station):
         for pair, distance in self.relation:
             if station in pair:
                 self.relation.remove((pair, distance))

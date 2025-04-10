@@ -2,21 +2,18 @@ from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit
 from PyQt5.QtWidgets import QSlider
 from PyQt5.QtCore import Qt
 
+from simulation import Scenario, geometry
+
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar,
 )
 
-from plot import GdopPlot
-from simulation.scenario import Scenario
-from simulation import geometry
-
-
 class MainWindow(QMainWindow):
-    def __init__(self, gdop_sim: Scenario, gdop_plt: GdopPlot):
+    def __init__(self, gdop_scenario, gdop_plt):
         super().__init__()
 
-        self.simulation = gdop_sim
+        self.simulation = gdop_scenario
         self.plot = gdop_plt
 
         self.setWindowTitle("PyQt with Matplotlib and Slider")

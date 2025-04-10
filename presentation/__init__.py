@@ -1,2 +1,2 @@
-from plot import *
-from window import *
+from .mainwindow import MainWindow
+from .trilatplot import TrilatPlot

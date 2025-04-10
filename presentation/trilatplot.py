@@ -4,12 +4,12 @@ from matplotlib.patches import Circle
 import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Slider
 
-from simulation import station, scenario
+from simulation import station
 
 
-class GdopPlot:
-    def __init__(self, localization: simulation.Scenario, show=True):
-        self.localization = localization
+class TrilatPlot:
+    def __init__(self, gdop_scenario, show=True):
+        self.scenario = gdop_scenario
         self.dragging_point = None
         self.fire_shots = False
 
@@ -26,14 +26,14 @@ class GdopPlot:
         self.lines_plot = []
         self.update_anchors()
 
-        self.tag_truth_plot = self.ax_main.scatter(self.localization.tag_truth.position()[0], self.localization.tag_truth.position()[1], c='green', s=100, picker=True)
+        self.tag_truth_plot = self.ax_main.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=100, picker=True)
         self.tag_estimate_plot, = self.ax_main.plot([], [], 'rx', markersize=10)
         self.shots_plot = self.ax_main.scatter([], [], c='red', s=5, alpha=0.5)
 
         self.ax_bar = plt.subplot(gs[1])
         ax_settings = plt.subplot(gs[2])
 
-        self.slider = Slider(ax_settings, 'σ', 0, 5, valinit=self.localization.sigma, orientation='vertical')
+        self.slider = Slider(ax_settings, 'σ', 0, 5, valinit=self.scenario.sigma, orientation='vertical')
         self.slider.on_changed(self.update_plot)
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
@@ -55,39 +55,39 @@ class GdopPlot:
         for line in self.lines_plot:
             line.remove()
         
-        self.anchor_plots = [self.ax_main.scatter(x, y, c='blue', s=100, picker=True) for x, y in self.localization.anchor_positions()]
-        self.circle_plots = [self.ax_main.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')) for x, y in self.localization.anchor_positions()]
-        self.circle_plots2 = [self.ax_main.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')) for x, y in self.localization.anchor_positions()]
+        self.anchor_plots = [self.ax_main.scatter(x, y, c='blue', s=100, picker=True) for x, y in self.scenario.anchor_positions()]
+        self.circle_plots = [self.ax_main.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')) for x, y in self.scenario.anchor_positions()]
+        self.circle_plots2 = [self.ax_main.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')) for x, y in self.scenario.anchor_positions()]
 
     def update_plot(self, val=None):
         if val is not None:
-            self.localization.sigma = val
+            self.scenario.sigma = val
 
-        distances = self.localization.euclidean_distances()
-        estimate_position = self.localization.tag_estimate.position()
-        dop = self.localization.dilution_of_precision()
+        distances = self.scenario.euclidean_distances()
+        estimate_position = self.scenario.tag_estimate.position()
+        dop = self.scenario.dilution_of_precision()
 
 
         self.tag_estimate_plot.set_xdata([estimate_position[0]])
         self.tag_estimate_plot.set_ydata([estimate_position[1]])
 
         if self.fire_shots:
-            shot_positions = [self.localization.tag_estimate.position() + np.random.normal(0, self.localization.sigma, 2) for _ in range(100)]
+            shot_positions = [self.scenario.tag_estimate.position() + np.random.normal(0, self.scenario.sigma, 2) for _ in range(100)]
             self.shots_plot.set_offsets(shot_positions)
         else:
             self.shots_plot.set_offsets(estimate_position)
 
         for i, plot in enumerate(self.anchor_plots):
-            plot.set_offsets([self.localization.anchor_positions()[i]])
-        self.tag_truth_plot.set_offsets([self.localization.tag_truth.position()])
+            plot.set_offsets([self.scenario.anchor_positions()[i]])
+        self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
 
         for i, circle in enumerate(self.circle_plots):
-            circle.set_center(self.localization.anchor_positions()[i])
-            circle.set_radius(distances[i] + self.localization.sigma)
+            circle.set_center(self.scenario.anchor_positions()[i])
+            circle.set_radius(distances[i] + self.scenario.sigma)
 
         for i, circle in enumerate(self.circle_plots2):
-            circle.set_center(self.localization.anchor_positions()[i])
-            circle.set_radius(distances[i] - self.localization.sigma)
+            circle.set_center(self.scenario.anchor_positions()[i])
+            circle.set_radius(distances[i] - self.scenario.sigma)
 
         # Entferne vorherige Linien
         for line in self.lines_plot:
@@ -97,23 +97,23 @@ class GdopPlot:
                 pass
         self.lines_plot = []
 
-        for i in range(len(self.localization.anchor_positions())):
-            for j in range(i + 1, len(self.localization.anchor_positions())):
+        for i in range(len(self.scenario.anchor_positions())):
+            for j in range(i + 1, len(self.scenario.anchor_positions())):
                 line, = self.ax_main.plot(
-                    [self.localization.anchor_positions()[i][0], self.localization.anchor_positions()[j][0]],
-                    [self.localization.anchor_positions()[i][1], self.localization.anchor_positions()[j][1]],
+                    [self.scenario.anchor_positions()[i][0], self.scenario.anchor_positions()[j][0]],
+                    [self.scenario.anchor_positions()[i][1], self.scenario.anchor_positions()[j][1]],
                     'b--', alpha=0.5
                 )
                 self.lines_plot.append(line)
 
 
-                xm = (self.localization.anchor_positions()[i][0] + self.localization.anchor_positions()[j][0]) / 2
-                ym = (self.localization.anchor_positions()[i][1] + self.localization.anchor_positions()[j][1]) / 2
-                distance = np.linalg.norm(self.localization.anchor_positions()[i] - self.localization.anchor_positions()[j])
+                xm = (self.scenario.anchor_positions()[i][0] + self.scenario.anchor_positions()[j][0]) / 2
+                ym = (self.scenario.anchor_positions()[i][1] + self.scenario.anchor_positions()[j][1]) / 2
+                distance = np.linalg.norm(self.scenario.anchor_positions()[i] - self.scenario.anchor_positions()[j])
                 t = self.ax_main.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
                 self.lines_plot.append(t)
 
-        for anchor_position in self.localization.anchor_positions():
+        for anchor_position in self.scenario.anchor_positions():
             line, = self.ax_main.plot(
                 [anchor_position[0], estimate_position[0]],
                 [anchor_position[1], estimate_position[1]],
@@ -127,8 +127,8 @@ class GdopPlot:
             t = self.ax_main.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
             self.lines_plot.append(t)
 
-        for i in range(len(self.localization.anchors)):
-            name = self.ax_main.text(self.localization.anchor_positions()[i][0], self.localization.anchor_positions()[i][1], self.localization.anchors[i].name(), ha='center', va='center')
+        for i in range(len(self.scenario.anchors)):
+            name = self.ax_main.text(self.scenario.anchor_positions()[i][0], self.scenario.anchor_positions()[i][1], self.scenario.anchors[i].name(), ha='center', va='center')
             self.lines_plot.append(name)
 
         self.ax_bar.clear()
@@ -142,13 +142,13 @@ class GdopPlot:
         self.fig.canvas.draw_idle()
 
     def add_anchor(self, x, y):
-        anchor_name = f"Anchor {len(self.localization.anchors) + 1}"
-        self.localization.anchors.append(station.Anchor([x, y], anchor_name))
+        anchor_name = f"Anchor {len(self.scenario.anchors) + 1}"
+        self.scenario.anchors.append(station.Anchor([x, y], anchor_name))
         self.update_anchors()
         self.update_plot()
 
     def remove_anchor(self, index):
-        self.localization.anchors.pop(index)
+        self.scenario.anchors.pop(index)
         self.update_anchors()
         self.update_plot()
 
@@ -183,13 +183,13 @@ class GdopPlot:
         if self.dragging_point is None or event.inaxes is None:
             return
         x, y = event.xdata, event.ydata
-        if self.dragging_point[0] == 'anchor' and (self.localization.anchor_positions()[self.dragging_point[1]][0] != x or self.localization.anchor_positions()[self.dragging_point[1]][1] != y):
-            self.localization.anchors[self.dragging_point[1]].position()[:] = [x, y]
-        elif self.dragging_point[0] == 'tag_truth' and (self.localization.tag_truth.position()[0] != x or self.localization.tag_truth.position()[1] != y):
-            self.localization.tag_truth.position()[:] = [x, y]
+        if self.dragging_point[0] == 'anchor' and (self.scenario.anchor_positions()[self.dragging_point[1]][0] != x or self.scenario.anchor_positions()[self.dragging_point[1]][1] != y):
+            self.scenario.anchors[self.dragging_point[1]].position()[:] = [x, y]
+        elif self.dragging_point[0] == 'tag_truth' and (self.scenario.tag_truth.position()[0] != x or self.scenario.tag_truth.position()[1] != y):
+            self.scenario.tag_truth.position()[:] = [x, y]
         else:
             return
-        self.localization.update_measurements()
+        self.scenario.update_measurements()
         self.update_plot()
 
     def on_key_press(self, event):

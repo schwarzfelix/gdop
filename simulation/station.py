@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
-import geometry
+
+from simulation import geometry
 
 def distance_between(station1, station2, measurements=None):
     if measurements is None and isinstance(station1, Tag):

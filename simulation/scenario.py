@@ -1,20 +1,17 @@
 import numpy as np
 
-import geometry
-from station import Anchor, Tag
-from measurements import Measurements
-
+from simulation import measurements, station, geometry
 
 class Scenario:
     def __init__(self):
-        self.measurements = Measurements()
+        self.measurements = measurements.Measurements()
         self.anchors = [
-            Anchor([0.0, 0.0], 'Anchor A'),
-            Anchor([10.0, 0.0], 'Anchor B'),
-            Anchor([5.0, 8.66], 'Anchor C'),
+            station.Anchor([0.0, 0.0], 'Anchor A'),
+            station.Anchor([10.0, 0.0], 'Anchor B'),
+            station.Anchor([5.0, 8.66], 'Anchor C'),
         ]
-        self.tag_truth = Anchor([5.0, 4.0])
-        self.tag_estimate = Tag(self.measurements, 'Tag')
+        self.tag_truth = station.Anchor([5.0, 4.0])
+        self.tag_estimate = station.Tag(self.measurements, 'Tag')
         self.sigma = 0.0
 
         self.update_measurements()
