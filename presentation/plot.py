@@ -4,13 +4,11 @@ from matplotlib.patches import Circle
 import matplotlib.gridspec as gridspec
 from matplotlib.widgets import Slider
 
-import geometry
-import station
-import simulation
+from simulation import station, scenario
 
 
 class GdopPlot:
-    def __init__(self, localization: simulation.Simulation, show=True):
+    def __init__(self, localization: simulation.Scenario, show=True):
         self.localization = localization
         self.dragging_point = None
         self.fire_shots = False

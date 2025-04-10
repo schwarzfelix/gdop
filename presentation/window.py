@@ -1,5 +1,4 @@
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit
-import numpy as np
 from PyQt5.QtWidgets import QSlider
 from PyQt5.QtCore import Qt
 
@@ -9,12 +8,12 @@ from matplotlib.backends.backend_qt5agg import (
 )
 
 from plot import GdopPlot
-from simulation import Simulation
-import geometry
+from simulation.scenario import Scenario
+from simulation import geometry
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, gdop_sim: Simulation, gdop_plt: GdopPlot):
+    def __init__(self, gdop_sim: Scenario, gdop_plt: GdopPlot):
         super().__init__()
 
         self.simulation = gdop_sim

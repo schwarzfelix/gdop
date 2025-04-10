@@ -5,7 +5,7 @@ from station import Anchor, Tag
 from measurements import Measurements
 
 
-class Simulation:
+class Scenario:
     def __init__(self):
         self.measurements = Measurements()
         self.anchors = [
