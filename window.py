@@ -10,6 +10,7 @@ from matplotlib.backends.backend_qt5agg import (
 
 from plot import GdopPlot
 from simulation import Simulation
+import geometry
 
 
 class MainWindow(QMainWindow):
@@ -51,3 +52,14 @@ class MainWindow(QMainWindow):
     def update_plot(self):
         self.simulation.sigma = self.slider.value()
         self.plot.update_plot()
+
+    def update_angles(self):
+        angles_text = ""
+        for i in range(len(self.simulation.anchor_positions())):
+            for j in range(i + 1, len(self.simulation.anchor_positions())):
+                angle = geometry.angle_vectors(
+                    self.simulation.anchor_positions()[i] - self.simulation.tag_truth.position(),
+                    self.simulation.anchor_positions()[j] - self.simulation.tag_truth.position())
+                angles_text += f"Angle between {self.simulation.anchors[i].name()} and {self.simulation.anchors[j].name()}: {angle:.2f}°\n"
+
+        self.angle_text.setText(angles_text)

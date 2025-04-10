@@ -178,7 +178,7 @@ class GdopPlot:
 
     def on_mouse_release(self, event):
         if self.dragging_point is not None:
-            self.print_angles()
+            self.window.update_angles()
         self.dragging_point = None
 
     def on_mouse_move(self, event):
@@ -199,18 +199,3 @@ class GdopPlot:
             self.fire_shots = not self.fire_shots
             print(f"Shots: {'On' if self.fire_shots else 'Off'}")
         self.update_plot()
-
-    def print_angles(self):
-        #print("---------------------------------")
-        #for i in range(len(self.localization.anchor_positions())):
-        #    for j in range(i + 1, len(self.localization.anchor_positions())):
-        #        angle = geometry.angle_vectors(self.localization.anchor_positions()[i] - self.localization.tag_truth.position(), self.localization.anchor_positions()[j] - self.localization.tag_truth.position())
-        #        print(f"Angle between {self.localization.anchors[i].name()} and {self.localization.anchors[j].name()}: {angle:.2f}°")
-
-        angles_text = ""
-        for i in range(len(self.localization.anchor_positions())):
-            for j in range(i + 1, len(self.localization.anchor_positions())):
-                angle = geometry.angle_vectors(self.localization.anchor_positions()[i] - self.localization.tag_truth.position(), self.localization.anchor_positions()[j] - self.localization.tag_truth.position())
-                angles_text += f"Angle between {self.localization.anchors[i].name()} and {self.localization.anchors[j].name()}: {angle:.2f}°\n"
-
-        self.window.angle_text.setText(angles_text)
