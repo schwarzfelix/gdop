@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QSlider
 from PyQt5.QtCore import Qt
 
 import presentation
-from simulation import Scenario, geometry
+from simulation import geometry
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
