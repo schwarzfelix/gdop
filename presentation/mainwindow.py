@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
         self.slider.setValue(0)
         self.slider.setTickPosition(QSlider.TicksBelow)
         self.slider.setTickInterval(1)
-        self.slider.valueChanged.connect(self.update_plot)
+        self.slider.valueChanged.connect(self.slider_changed)
         layout.addWidget(self.slider)
 
         self.angle_text = QTextEdit()
@@ -47,9 +47,9 @@ class MainWindow(QMainWindow):
         self.angle_text.setText("Angles will be displayed here.")
         layout.addWidget(self.angle_text)
 
-    def update_plot(self):
-        self.scenario.sigma = self.slider.value()
-        self.plot.update_plot()
+    def slider_changed(self):
+        self.scenario.sigma = 0.0 + self.slider.value()
+        self.update_all()
 
     def update_angles(self):
         angles_text = ""
@@ -62,6 +62,10 @@ class MainWindow(QMainWindow):
 
         self.angle_text.setText(angles_text)
 
+    def update_slider(self):
+        self.slider.setValue(int(self.scenario.sigma))
+
     def update_all(self):
-        self.update_plot()
+        self.plot.update_plot()
         self.update_angles()
+        self.update_slider()

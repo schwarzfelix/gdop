@@ -50,7 +50,7 @@ class TrilatPlot:
 
     def slider_value_changed(self, val):
         self.scenario.sigma = val
-        self.update_plot()
+        self.window.update_all()
 
     def update_anchors(self):
         for plot in self.anchor_plots:
