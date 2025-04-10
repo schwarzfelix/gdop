@@ -1,5 +1,4 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget
 import numpy as np
 from PyQt5.QtWidgets import QSlider
 from PyQt5.QtCore import Qt
