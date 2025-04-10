@@ -7,11 +7,17 @@ from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar,
 )
-import matplotlib.pyplot as plt
+
+from plot import Plot
+from simulation import Simulation
+
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, gdop_sim: Simulation, gdop_plt: Plot):
         super().__init__()
+
+        self.simulation = gdop_sim
+        self.plot = gdop_plt
 
         self.setWindowTitle("PyQt with Matplotlib and Slider")
 
@@ -21,7 +27,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         central_widget.setLayout(layout)
 
-        self.figure, self.ax = plt.subplots()
+        self.figure = self.plot.fig
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
 
@@ -38,16 +44,5 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.slider)
 
-        self.plot_data()
-
-    def plot_data(self, frequency=1):
-        x = np.linspace(0, 2 * np.pi, 100)
-        y = np.sin(frequency * x)
-        self.ax.clear()
-        self.ax.plot(x, y, label=f"Sine Wave (Freq: {frequency})")
-        self.ax.legend()
-        self.canvas.draw()
-
     def update_plot(self):
-        frequency = self.slider.value()
-        self.plot_data(frequency)
+        self.plot.update_plot()
