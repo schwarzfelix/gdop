@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit
 from PyQt5.QtWidgets import QSlider
 from PyQt5.QtCore import Qt
+from matplotlib.figure import Figure
 
 from simulation import Scenario, geometry
 
@@ -25,6 +26,7 @@ class MainWindow(QMainWindow):
         central_widget.setLayout(layout)
 
         self.figure = self.plot.fig
+        self.figure.set_dpi(100)  # Set the desired DPI value
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
 
