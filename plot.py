@@ -9,7 +9,7 @@ import station
 import simulation
 
 
-class Plot:
+class GdopPlot:
     def __init__(self, localization: simulation.Simulation, show=True):
         self.localization = localization
         self.dragging_point = None
@@ -201,8 +201,16 @@ class Plot:
         self.update_plot()
 
     def print_angles(self):
-        print("---------------------------------")
+        #print("---------------------------------")
+        #for i in range(len(self.localization.anchor_positions())):
+        #    for j in range(i + 1, len(self.localization.anchor_positions())):
+        #        angle = geometry.angle_vectors(self.localization.anchor_positions()[i] - self.localization.tag_truth.position(), self.localization.anchor_positions()[j] - self.localization.tag_truth.position())
+        #        print(f"Angle between {self.localization.anchors[i].name()} and {self.localization.anchors[j].name()}: {angle:.2f}°")
+
+        angles_text = ""
         for i in range(len(self.localization.anchor_positions())):
             for j in range(i + 1, len(self.localization.anchor_positions())):
                 angle = geometry.angle_vectors(self.localization.anchor_positions()[i] - self.localization.tag_truth.position(), self.localization.anchor_positions()[j] - self.localization.tag_truth.position())
-                print(f"Angle between {self.localization.anchors[i].name()} and {self.localization.anchors[j].name()}: {angle:.2f}°")
+                angles_text += f"Angle between {self.localization.anchors[i].name()} and {self.localization.anchors[j].name()}: {angle:.2f}°\n"
+
+        self.window.angle_text.setText(angles_text)
