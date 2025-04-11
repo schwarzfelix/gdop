@@ -31,6 +31,10 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.canvas)
 
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.slider = QSlider(Qt.Horizontal)
+        self.sigma_input = QDoubleSpinBox()
+
         self.tab_widget = QTabWidget()
         self.create_plot_tab()
         self.create_sigma_tab()
@@ -38,7 +42,6 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.tab_widget)
 
     def create_plot_tab(self):
-        self.toolbar = NavigationToolbar(self.canvas, self)
         self.tab_widget.addTab(self.toolbar, "Plot")
 
     def create_sigma_tab(self):
@@ -47,7 +50,6 @@ class MainWindow(QMainWindow):
         inside_tab_layout = QVBoxLayout()
         inside_tab_widget.setLayout(inside_tab_layout)
 
-        self.slider = QSlider(Qt.Horizontal)
         self.slider.setMinimum(0)
         self.slider.setMaximum(50)
         self.slider.setValue(0)
@@ -56,7 +58,6 @@ class MainWindow(QMainWindow):
         self.slider.valueChanged.connect(self.slider_changed)
         inside_tab_layout.addWidget(self.slider)
 
-        self.sigma_input = QDoubleSpinBox()
         self.sigma_input.setMinimum(0.0)
         self.sigma_input.setSingleStep(0.1)
         self.sigma_input.setValue(0.0)
