@@ -7,7 +7,7 @@ from simulation import station
 
 
 class TrilatPlot:
-    def __init__(self, window, show=True):
+    def __init__(self, window):
         self.window = window
         self.scenario = self.window.scenario
         self.dragging_point = None
@@ -19,6 +19,8 @@ class TrilatPlot:
         self.ax_main.set_xlim(-5, 15)
         self.ax_main.set_ylim(-5, 15)
 
+        self.ax_bar = plt.subplot(gs[1])
+
         self.anchor_plots = []
         self.circle_plots = []
         self.circle_plots2 = []
@@ -28,8 +30,6 @@ class TrilatPlot:
         self.tag_truth_plot = self.ax_main.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=100, picker=True)
         self.tag_estimate_plot, = self.ax_main.plot([], [], 'rx', markersize=10)
 
-        self.ax_bar = plt.subplot(gs[1])
-
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
         self.fig.canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
@@ -37,8 +37,6 @@ class TrilatPlot:
         self.fig.canvas.manager.set_window_title('Trilateration & GDOP')
         self.update_plot()
 
-        if show:
-            plt.show()
 
     def update_anchors(self):
         for plot in self.anchor_plots:
