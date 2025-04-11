@@ -28,15 +28,18 @@ class MainWindow(QMainWindow):
         self.figure = self.plot.fig
         self.figure.set_dpi(100)
         self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)
 
         layout.addWidget(self.canvas)
-        layout.addWidget(self.toolbar)
 
         self.tab_widget = QTabWidget()
+        self.create_plot_tab()
         self.create_sigma_tab()
         self.create_angles_tab()
         layout.addWidget(self.tab_widget)
+
+    def create_plot_tab(self):
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.tab_widget.addTab(self.toolbar, "Plot")
 
     def create_sigma_tab(self):
 
