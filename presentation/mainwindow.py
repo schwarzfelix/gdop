@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
         inside_tab_layout.addWidget(self.slider)
 
         self.sigma_input = QDoubleSpinBox()
-        self.sigma_input.setRange(0.0, 5.0)
+        self.sigma_input.setMinimum(0.0)
         self.sigma_input.setSingleStep(0.1)
         self.sigma_input.setValue(0.0)
         self.sigma_input.valueChanged.connect(self.sigma_input_changed)
