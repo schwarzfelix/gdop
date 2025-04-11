@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 import matplotlib.gridspec as gridspec
-from matplotlib.widgets import Slider
 
 from simulation import station
 
@@ -14,7 +13,7 @@ class TrilatPlot:
         self.dragging_point = None
 
         self.fig = plt.figure(figsize=(6, 4))
-        gs = gridspec.GridSpec(1, 3, width_ratios=[4, 1, 1])
+        gs = gridspec.GridSpec(1, 2, width_ratios=[4, 1])
 
         self.ax_main = plt.subplot(gs[0])
         self.ax_main.set_xlim(-5, 15)
@@ -30,10 +29,6 @@ class TrilatPlot:
         self.tag_estimate_plot, = self.ax_main.plot([], [], 'rx', markersize=10)
 
         self.ax_bar = plt.subplot(gs[1])
-        ax_settings = plt.subplot(gs[2])
-
-        self.slider = Slider(ax_settings, 'σ', 0, 5, valinit=self.scenario.sigma, orientation='vertical')
-        self.slider.on_changed(self.slider_value_changed)
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
@@ -44,10 +39,6 @@ class TrilatPlot:
 
         if show:
             plt.show()
-
-    def slider_value_changed(self, val):
-        self.scenario.sigma = val
-        self.window.update_all()
 
     def update_anchors(self):
         for plot in self.anchor_plots:
