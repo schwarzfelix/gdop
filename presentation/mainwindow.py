@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox, QTabWidget
 from PyQt5.QtWidgets import QSlider
 from PyQt5.QtCore import Qt
 
@@ -33,6 +33,17 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.canvas)
         layout.addWidget(self.toolbar)
 
+        self.tab_widget = QTabWidget()
+        self.create_sigma_tab()
+        self.create_angles_tab()
+        layout.addWidget(self.tab_widget)
+
+    def create_sigma_tab(self):
+
+        inside_tab_widget = QWidget()
+        inside_tab_layout = QVBoxLayout()
+        inside_tab_widget.setLayout(inside_tab_layout)
+
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setMinimum(0)
         self.slider.setMaximum(50)
@@ -40,19 +51,22 @@ class MainWindow(QMainWindow):
         self.slider.setTickPosition(QSlider.TicksBelow)
         self.slider.setTickInterval(1)
         self.slider.valueChanged.connect(self.slider_changed)
-        layout.addWidget(self.slider)
+        inside_tab_layout.addWidget(self.slider)
 
         self.sigma_input = QDoubleSpinBox()
         self.sigma_input.setRange(0.0, 5.0)
         self.sigma_input.setSingleStep(0.1)
         self.sigma_input.setValue(0.0)
         self.sigma_input.valueChanged.connect(self.sigma_input_changed)
-        layout.addWidget(self.sigma_input)
+        inside_tab_layout.addWidget(self.sigma_input)
 
+        self.tab_widget.addTab(inside_tab_widget, "Sigma")
+
+    def create_angles_tab(self):
         self.angle_text = QTextEdit()
         self.angle_text.setReadOnly(True)
         self.angle_text.setText("Angles will be displayed here.")
-        layout.addWidget(self.angle_text)
+        self.tab_widget.addTab(self.angle_text, "Angles")
 
     def slider_changed(self):
         self.scenario.sigma = 0.0 + self.slider.value() * 0.1
