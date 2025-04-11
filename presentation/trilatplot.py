@@ -12,7 +12,6 @@ class TrilatPlot:
         self.window = window
         self.scenario = self.window.scenario
         self.dragging_point = None
-        self.fire_shots = False
 
         self.fig = plt.figure(figsize=(6, 4))
         gs = gridspec.GridSpec(1, 3, width_ratios=[4, 1, 1])
@@ -29,7 +28,6 @@ class TrilatPlot:
 
         self.tag_truth_plot = self.ax_main.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=100, picker=True)
         self.tag_estimate_plot, = self.ax_main.plot([], [], 'rx', markersize=10)
-        self.shots_plot = self.ax_main.scatter([], [], c='red', s=5, alpha=0.5)
 
         self.ax_bar = plt.subplot(gs[1])
         ax_settings = plt.subplot(gs[2])
@@ -40,7 +38,6 @@ class TrilatPlot:
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
         self.fig.canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
-        self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
 
         self.fig.canvas.manager.set_window_title('Trilateration & GDOP')
         self.update_plot()
@@ -74,11 +71,6 @@ class TrilatPlot:
         self.tag_estimate_plot.set_xdata([estimate_position[0]])
         self.tag_estimate_plot.set_ydata([estimate_position[1]])
 
-        if self.fire_shots:
-            shot_positions = [self.scenario.tag_estimate.position() + np.random.normal(0, self.scenario.sigma, 2) for _ in range(100)]
-            self.shots_plot.set_offsets(shot_positions)
-        else:
-            self.shots_plot.set_offsets(estimate_position)
 
         for i, plot in enumerate(self.anchor_plots):
             plot.set_offsets([self.scenario.anchor_positions()[i]])
@@ -193,10 +185,4 @@ class TrilatPlot:
         else:
             return
         self.scenario.update_measurements()
-        self.update_plot()
-
-    def on_key_press(self, event):
-        if event.key == 'm':
-            self.fire_shots = not self.fire_shots
-            print(f"Shots: {'On' if self.fire_shots else 'Off'}")
         self.update_plot()
