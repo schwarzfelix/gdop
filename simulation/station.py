@@ -51,8 +51,9 @@ class Anchor(Station):
 
 class Tag(Station):
 
-    def __init__(self, measurements, name='LocalizedDevice'):
-        self.measurements = measurements
+    def __init__(self, scenario, name='LocalizedDevice'):
+        self.scenario = scenario
+        self.measurements = self.scenario.measurements
         self._name = name
 
     def position(self, exclude=None):
@@ -77,6 +78,9 @@ class Tag(Station):
 
     def distance_to(self, other: Station):
         return distance_between(self.measurements, self, other)
+
+    def distances(self):
+        return geometry.euclidean_distances(self.scenario.anchor_positions(), self.position())
 
     def name(self):
         return self._name

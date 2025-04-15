@@ -47,7 +47,7 @@ class TrilatPlot:
 
     def update_plot(self):
 
-        distances = self.scenario.euclidean_distances()
+        distances = self.scenario.tag_estimate.distances()
         estimate_position = self.scenario.tag_estimate.position()
         gdop = self.scenario.dilution_of_precision()
 

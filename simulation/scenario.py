@@ -1,4 +1,5 @@
 import numpy as np
+from typing import cast
 
 from simulation import measurements, station, geometry
 
@@ -11,7 +12,7 @@ class Scenario:
             station.Anchor([5.0, 8.66], 'Anchor C'),
         ]
         self.tag_truth = station.Anchor([5.0, 4.0])
-        self.tag_estimate = station.Tag(self.measurements, 'Tag')
+        self.tag_estimate = station.Tag(self, 'Tag')
         self.sigma = 0.0
 
         self.update_measurements()
@@ -19,11 +20,8 @@ class Scenario:
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.anchors])
 
-    def euclidean_distances(self):
-        return geometry.euclidean_distances(self.anchor_positions(), self.tag_truth.position())
-
     def dilution_of_precision(self):
-        return geometry.dilution_of_precision(self.anchor_positions(), self.tag_estimate.position(), self.euclidean_distances())
+        return geometry.dilution_of_precision(self.anchor_positions(), self.tag_estimate.position(), self.tag_estimate.distances())
 
     def update_measurements(self):
         for anchor in self.anchors:
