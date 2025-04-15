@@ -1,5 +1,4 @@
 import numpy as np
-from typing import cast
 
 from simulation import measurements, station, geometry
 
