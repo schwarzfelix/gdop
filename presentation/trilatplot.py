@@ -7,6 +7,11 @@ from simulation import station
 
 
 class TrilatPlot:
+
+    STATION_DOT_SIZE = 100
+    STATION_COLOR = 'blue'
+    CIRCLE_LINESTYLE = 'dotted'
+
     def __init__(self, window):
         self.window = window
         self.scenario = self.window.scenario
@@ -25,7 +30,7 @@ class TrilatPlot:
         self.circle_pairs = []
         self.lines_plot = []
 
-        self.tag_truth_plot = self.ax_trilat.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=100, picker=True)
+        self.tag_truth_plot = self.ax_trilat.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
         self.tag_estimate_plot, = self.ax_trilat.plot([], [], 'rx', markersize=10)
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
@@ -43,12 +48,12 @@ class TrilatPlot:
         for plot in self.anchor_plots + self.lines_plot:
             plot.remove()
         
-        self.anchor_plots = [self.ax_trilat.scatter(x, y, c='blue', s=100, picker=True) for x, y in anchor_positions]
+        self.anchor_plots = [self.ax_trilat.scatter(x, y, c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True) for x, y in anchor_positions]
 
         self.circle_pairs = [
             (
-                self.ax_trilat.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')),
-                self.ax_trilat.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted'))
+                self.ax_trilat.add_patch(Circle((x, y), 0, color=self.STATION_COLOR, fill=False, linestyle=self.CIRCLE_LINESTYLE)),
+                self.ax_trilat.add_patch(Circle((x, y), 0, color=self.STATION_COLOR, fill=False, linestyle=self.CIRCLE_LINESTYLE)),
             )
             for x, y in anchor_positions
         ]

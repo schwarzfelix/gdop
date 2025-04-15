@@ -13,6 +13,12 @@ from matplotlib.backends.backend_qt5agg import (
 )
 
 class MainWindow(QMainWindow):
+
+    FIGURE_DPI = 100
+    SIGMA_SLIDER_MAX = 5
+    SIGMA_SLIDER_RESOLUTION = 100
+    SIGMA_INPUT_STEP = 0.1
+
     def __init__(self, gdop_scenario):
         super().__init__()
 
@@ -28,7 +34,7 @@ class MainWindow(QMainWindow):
         central_widget.setLayout(layout)
 
         self.figure = self.plot.fig
-        self.figure.set_dpi(100)
+        self.figure.set_dpi(self.FIGURE_DPI)
         self.canvas = FigureCanvas(self.figure)
 
         layout.addWidget(self.canvas)
@@ -53,7 +59,7 @@ class MainWindow(QMainWindow):
         inside_tab_widget.setLayout(inside_tab_layout)
 
         self.slider.setMinimum(0)
-        self.slider.setMaximum(500)
+        self.slider.setMaximum(self.SIGMA_SLIDER_MAX * self.SIGMA_SLIDER_RESOLUTION)
         self.slider.setValue(0)
         self.slider.valueChanged.connect(self.slider_changed)
         inside_tab_layout.addWidget(self.slider)
@@ -73,7 +79,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(self.angle_text, "Angles")
 
     def slider_changed(self):
-        self.scenario.sigma = 0.0 + self.slider.value() * 0.01
+        self.scenario.sigma = self.slider.value() / self.SIGMA_SLIDER_RESOLUTION
         self.update_all()
 
     def sigma_input_changed(self):
@@ -92,7 +98,7 @@ class MainWindow(QMainWindow):
         self.angle_text.setText(angles_text)
 
     def update_sigma(self):
-        self.slider.setValue(int(self.scenario.sigma * 100))
+        self.slider.setValue(int(self.scenario.sigma * self.SIGMA_SLIDER_RESOLUTION))
         self.sigma_input.setValue(self.scenario.sigma)
 
     def update_all(self):
