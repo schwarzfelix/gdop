@@ -79,12 +79,14 @@ class MainWindow(QMainWindow):
         self.update_all()
 
     def update_angles(self):
+        anchor_positions = self.scenario.anchor_positions()
+        tag_truth_position = self.scenario.tag_truth.position()
         angles_text = ""
-        for i in range(len(self.scenario.anchor_positions())):
-            for j in range(i + 1, len(self.scenario.anchor_positions())):
+        for i in range(len(anchor_positions)):
+            for j in range(i + 1, len(anchor_positions)):
                 angle = geometry.angle_vectors(
-                    self.scenario.anchor_positions()[i] - self.scenario.tag_truth.position(),
-                    self.scenario.anchor_positions()[j] - self.scenario.tag_truth.position())
+                    anchor_positions[i] - tag_truth_position,
+                    anchor_positions[j] - tag_truth_position)
                 angles_text += f"Angle between {self.scenario.anchors[i].name()} and {self.scenario.anchors[j].name()}: {angle:.2f}°\n"
 
         self.angle_text.setText(angles_text)
