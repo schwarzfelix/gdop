@@ -37,21 +37,25 @@ class TrilatPlot:
 
 
     def update_anchors(self):
+
+        anchor_positions = self.scenario.anchor_positions()
+
         for plot in self.anchor_plots + self.lines_plot:
             plot.remove()
         
-        self.anchor_plots = [self.ax_trilat.scatter(x, y, c='blue', s=100, picker=True) for x, y in self.scenario.anchor_positions()]
+        self.anchor_plots = [self.ax_trilat.scatter(x, y, c='blue', s=100, picker=True) for x, y in anchor_positions]
 
         self.circle_pairs = [
             (
                 self.ax_trilat.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')),
                 self.ax_trilat.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted'))
             )
-            for x, y in self.scenario.anchor_positions()
+            for x, y in anchor_positions
         ]
 
     def update_plot(self):
 
+        anchor_positions = self.scenario.anchor_positions()
         distances = self.scenario.tag_estimate.distances()
         estimate_position = self.scenario.tag_estimate.position()
         gdop = self.scenario.tag_estimate.dilution_of_precision()
@@ -60,14 +64,14 @@ class TrilatPlot:
         self.tag_estimate_plot.set_ydata([estimate_position[1]])
 
         for i, plot in enumerate(self.anchor_plots):
-            plot.set_offsets([self.scenario.anchor_positions()[i]])
+            plot.set_offsets([anchor_positions[i]])
         self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
 
         for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
-            bigger_circle.set_center(self.scenario.anchor_positions()[i])
+            bigger_circle.set_center(anchor_positions[i])
             bigger_circle.set_radius(distances[i] + self.scenario.sigma)
 
-            smaller_circle.set_center(self.scenario.anchor_positions()[i])
+            smaller_circle.set_center(anchor_positions[i])
             smaller_circle.set_radius(distances[i] - self.scenario.sigma)
 
         for line in self.lines_plot:
@@ -77,23 +81,23 @@ class TrilatPlot:
                 pass
         self.lines_plot = []
 
-        for i in range(len(self.scenario.anchor_positions())):
-            for j in range(i + 1, len(self.scenario.anchor_positions())):
+        for i in range(len(anchor_positions)):
+            for j in range(i + 1, len(anchor_positions)):
                 line, = self.ax_trilat.plot(
-                    [self.scenario.anchor_positions()[i][0], self.scenario.anchor_positions()[j][0]],
-                    [self.scenario.anchor_positions()[i][1], self.scenario.anchor_positions()[j][1]],
+                    [anchor_positions[i][0], anchor_positions[j][0]],
+                    [anchor_positions[i][1], anchor_positions[j][1]],
                     'b--', alpha=0.5
                 )
                 self.lines_plot.append(line)
 
 
-                xm = (self.scenario.anchor_positions()[i][0] + self.scenario.anchor_positions()[j][0]) / 2
-                ym = (self.scenario.anchor_positions()[i][1] + self.scenario.anchor_positions()[j][1]) / 2
-                distance = np.linalg.norm(self.scenario.anchor_positions()[i] - self.scenario.anchor_positions()[j])
+                xm = (anchor_positions[i][0] + anchor_positions[j][0]) / 2
+                ym = (anchor_positions[i][1] + anchor_positions[j][1]) / 2
+                distance = np.linalg.norm(anchor_positions[i] - anchor_positions[j])
                 t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
                 self.lines_plot.append(t)
 
-        for anchor_position in self.scenario.anchor_positions():
+        for anchor_position in anchor_positions:
             line, = self.ax_trilat.plot(
                 [anchor_position[0], estimate_position[0]],
                 [anchor_position[1], estimate_position[1]],
@@ -108,7 +112,7 @@ class TrilatPlot:
             self.lines_plot.append(t)
 
         for i in range(len(self.scenario.anchors)):
-            name = self.ax_trilat.text(self.scenario.anchor_positions()[i][0], self.scenario.anchor_positions()[i][1], self.scenario.anchors[i].name(), ha='center', va='center')
+            name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.anchors[i].name(), ha='center', va='center')
             self.lines_plot.append(name)
 
         self.ax_gdop.clear()
