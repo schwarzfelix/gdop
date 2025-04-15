@@ -19,8 +19,8 @@ class Scenario:
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.anchors])
 
-    def euclidean_distances(self, error=False):
-        return geometry.euclidean_distances(self.anchor_positions(), self.tag_truth.position(), self.sigma if error else 0.0)
+    def euclidean_distances(self):
+        return geometry.euclidean_distances(self.anchor_positions(), self.tag_truth.position())
 
     def dilution_of_precision(self):
         return geometry.dilution_of_precision(self.anchor_positions(), self.tag_estimate.position(), self.euclidean_distances())
