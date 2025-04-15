@@ -20,9 +20,6 @@ class Scenario:
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.anchors])
 
-    def dilution_of_precision(self):
-        return geometry.dilution_of_precision(self.anchor_positions(), self.tag_estimate.position(), self.tag_estimate.distances())
-
     def update_measurements(self):
         for anchor in self.anchors:
             self.measurements.update_relation(frozenset([anchor, self.tag_estimate]), anchor.distance_to(self.tag_truth))

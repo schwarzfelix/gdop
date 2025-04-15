@@ -49,7 +49,7 @@ class TrilatPlot:
 
         distances = self.scenario.tag_estimate.distances()
         estimate_position = self.scenario.tag_estimate.position()
-        gdop = self.scenario.dilution_of_precision()
+        gdop = self.scenario.tag_estimate.dilution_of_precision()
 
         self.tag_estimate_plot.set_xdata([estimate_position[0]])
         self.tag_estimate_plot.set_ydata([estimate_position[1]])

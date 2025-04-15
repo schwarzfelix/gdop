@@ -82,5 +82,8 @@ class Tag(Station):
     def distances(self):
         return geometry.euclidean_distances(self.scenario.anchor_positions(), self.position())
 
+    def dilution_of_precision(self):
+        return geometry.dilution_of_precision(self.scenario.anchor_positions(), self.position(), self.distances())
+
     def name(self):
         return self._name
