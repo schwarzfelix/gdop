@@ -51,10 +51,8 @@ class MainWindow(QMainWindow):
         inside_tab_widget.setLayout(inside_tab_layout)
 
         self.slider.setMinimum(0)
-        self.slider.setMaximum(50)
+        self.slider.setMaximum(500)
         self.slider.setValue(0)
-        self.slider.setTickPosition(QSlider.TicksBelow)
-        self.slider.setTickInterval(1)
         self.slider.valueChanged.connect(self.slider_changed)
         inside_tab_layout.addWidget(self.slider)
 
@@ -73,7 +71,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(self.angle_text, "Angles")
 
     def slider_changed(self):
-        self.scenario.sigma = 0.0 + self.slider.value() * 0.1
+        self.scenario.sigma = 0.0 + self.slider.value() * 0.01
         self.update_all()
 
     def sigma_input_changed(self):
@@ -92,7 +90,7 @@ class MainWindow(QMainWindow):
         self.angle_text.setText(angles_text)
 
     def update_sigma(self):
-        self.slider.setValue(int(self.scenario.sigma * 10))
+        self.slider.setValue(int(self.scenario.sigma * 100))
         self.sigma_input.setValue(self.scenario.sigma)
 
     def update_all(self):
