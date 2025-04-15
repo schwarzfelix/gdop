@@ -22,8 +22,7 @@ class TrilatPlot:
         self.ax_trilat.set_ylim(-5, 15)
 
         self.anchor_plots = []
-        self.circle_plots = []
-        self.circle_plots2 = []
+        self.circle_pairs = []
         self.lines_plot = []
 
         self.tag_truth_plot = self.ax_trilat.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=100, picker=True)
@@ -38,12 +37,18 @@ class TrilatPlot:
 
 
     def update_anchors(self):
-        for plot in self.anchor_plots + self.circle_plots + self.circle_plots2 + self.lines_plot:
+        for plot in self.anchor_plots + self.lines_plot:
             plot.remove()
         
         self.anchor_plots = [self.ax_trilat.scatter(x, y, c='blue', s=100, picker=True) for x, y in self.scenario.anchor_positions()]
-        self.circle_plots = [self.ax_trilat.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')) for x, y in self.scenario.anchor_positions()]
-        self.circle_plots2 = [self.ax_trilat.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')) for x, y in self.scenario.anchor_positions()]
+
+        self.circle_pairs = [
+            (
+                self.ax_trilat.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted')),
+                self.ax_trilat.add_patch(Circle((x, y), 0, color='blue', fill=False, linestyle='dotted'))
+            )
+            for x, y in self.scenario.anchor_positions()
+        ]
 
     def update_plot(self):
 
@@ -58,13 +63,12 @@ class TrilatPlot:
             plot.set_offsets([self.scenario.anchor_positions()[i]])
         self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
 
-        for i, circle in enumerate(self.circle_plots):
-            circle.set_center(self.scenario.anchor_positions()[i])
-            circle.set_radius(distances[i] + self.scenario.sigma)
+        for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
+            bigger_circle.set_center(self.scenario.anchor_positions()[i])
+            bigger_circle.set_radius(distances[i] + self.scenario.sigma)
 
-        for i, circle in enumerate(self.circle_plots2):
-            circle.set_center(self.scenario.anchor_positions()[i])
-            circle.set_radius(distances[i] - self.scenario.sigma)
+            smaller_circle.set_center(self.scenario.anchor_positions()[i])
+            smaller_circle.set_radius(distances[i] - self.scenario.sigma)
 
         for line in self.lines_plot:
             try:
