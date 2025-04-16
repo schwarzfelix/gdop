@@ -1,27 +1,18 @@
 
 class Measurements:
     def __init__(self) -> None:
-        self.relation = set()
+        self.relation = {}
 
     def find_relation(self, single_or_pair):
-        return [(pair_in_rel, distance) for pair_in_rel, distance in self.relation if single_or_pair in pair_in_rel]
+        return [(pair, distance) for pair, distance in self.relation.items() if single_or_pair in pair]
 
     def update_relation(self, pair, distance: float):
-
         if not isinstance(pair, frozenset):
-            raise ValueError("Pair must be a frozen set")
+            raise ValueError("Pair must be a frozenset")
         if len(pair) != 2:
             raise ValueError("Pair must have two elements")
 
-        for pair_in_rel, distance_in_rel in self.relation:
-            if pair == pair_in_rel:
-                self.relation.remove((pair, distance_in_rel))
-                self.relation.add((pair, distance))
-                return
-
-        self.relation.add((pair, distance))
+        self.relation[pair] = distance
 
     def remove_station(self, station):
-        for pair, distance in self.relation:
-            if station in pair:
-                self.relation.remove((pair, distance))
+        self.relation = {pair: distance for pair, distance in self.relation.items() if station not in pair}
