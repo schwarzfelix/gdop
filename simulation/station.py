@@ -43,6 +43,9 @@ class Anchor(Station):
     def position(self, exclude=None):
         return self._position
 
+    def update_position(self, position):
+        self._position = np.array(position)
+
     def distance_to(self, other: Station):
         return distance_between(self, other)
 

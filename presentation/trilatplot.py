@@ -158,11 +158,11 @@ class TrilatPlot:
         for i, plot in enumerate(self.anchor_plots):
             contains, _ = plot.contains(event)
             if contains:
-                self.dragging_point = ('anchor', i)
+                self.dragging_point = self.scenario.anchors[i]
                 return
         contains, _ = self.tag_truth_plot.contains(event)
         if contains:
-            self.dragging_point = ('tag_truth', None)
+            self.dragging_point = self.scenario.tag_truth
 
     def on_mouse_release(self, event):
         if self.dragging_point is not None:
@@ -172,12 +172,11 @@ class TrilatPlot:
     def on_mouse_move(self, event):
         if self.dragging_point is None or event.inaxes is None:
             return
-        x, y = event.xdata, event.ydata
-        if self.dragging_point[0] == 'anchor' and (self.scenario.anchor_positions()[self.dragging_point[1]][0] != x or self.scenario.anchor_positions()[self.dragging_point[1]][1] != y):
-            self.scenario.anchors[self.dragging_point[1]].position()[:] = [x, y]
-        elif self.dragging_point[0] == 'tag_truth' and (self.scenario.tag_truth.position()[0] != x or self.scenario.tag_truth.position()[1] != y):
-            self.scenario.tag_truth.position()[:] = [x, y]
-        else:
+
+        if not isinstance(self.dragging_point, station.Anchor):
             return
+
+        x, y = event.xdata, event.ydata
+        self.dragging_point.update_position([x, y])
         self.scenario.update_measurements()
         self.update_plot()
