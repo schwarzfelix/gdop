@@ -47,6 +47,10 @@ class TrilatPlot:
 
         for plot in self.anchor_plots + self.lines_plot:
             plot.remove()
+
+        for circle_pair in self.circle_pairs:
+            circle_pair[0].remove()
+            circle_pair[1].remove()
         
         self.anchor_plots = [self.ax_trilat.scatter(x, y, c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True) for x, y in anchor_positions]
 
