@@ -178,5 +178,5 @@ class TrilatPlot:
 
         x, y = event.xdata, event.ydata
         self.dragging_point.update_position([x, y])
-        self.scenario.update_measurements()
+        self.scenario.generate_measurements(self.scenario.tag_estimate, self.scenario.tag_truth)
         self.update_plot()

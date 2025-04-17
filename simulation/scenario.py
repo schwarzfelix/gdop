@@ -14,11 +14,11 @@ class Scenario:
         self.tag_estimate = station.Tag(self, 'Tag')
         self.sigma = 0.0
 
-        self.update_measurements()
+        self.generate_measurements(self.tag_estimate, self.tag_truth)
 
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.anchors])
 
-    def update_measurements(self):
+    def generate_measurements(self, tag, model_anchor):
         for anchor in self.anchors:
-            self.measurements.update_relation(frozenset([anchor, self.tag_estimate]), anchor.distance_to(self.tag_truth))
+            self.measurements.update_relation(frozenset([anchor, tag]), anchor.distance_to(model_anchor))
