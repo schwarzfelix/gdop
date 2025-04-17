@@ -19,7 +19,7 @@ class Scenario:
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.anchors])
 
-    def generate_measurements(self, tag, model_anchor):
+    def generate_measurements(self, tag_estimate, tag_truth):
         for anchor in self.anchors:
-            distance = np.random.normal(anchor.distance_to(model_anchor) + self.sigma, self.sigma)
-            self.measurements.update_relation(frozenset([anchor, tag]), distance)
+            distance = np.random.normal(anchor.distance_to(tag_truth) + self.sigma, self.sigma)
+            self.measurements.update_relation(frozenset([anchor, tag_estimate]), distance)
