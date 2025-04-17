@@ -28,6 +28,10 @@ class Station(ABC):
         pass
 
     @abstractmethod
+    def distances(self):
+        pass
+
+    @abstractmethod
     def name(self):
         pass
 
@@ -36,9 +40,10 @@ class Station(ABC):
 
 class Anchor(Station):
 
-    def __init__(self, position, name='FixedDevice'):
+    def __init__(self, position, name='FixedDevice', scenario=None):
         self._position = np.array(position)
         self._name = name
+        self.scenario = scenario
 
     def position(self, exclude=None):
         return self._position
@@ -48,6 +53,14 @@ class Anchor(Station):
 
     def distance_to(self, other: Station):
         return distance_between(self, other)
+
+    def distances(self, scenario=None):
+        if scenario is None:
+            scenario = self.scenario
+        if scenario is None:
+            raise ValueError("Scenario must be provided to calculate distances.")
+
+        return geometry.euclidean_distances(scenario.anchor_positions(), self.position())
 
     def name(self):
         return self._name

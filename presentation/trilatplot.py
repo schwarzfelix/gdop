@@ -61,7 +61,8 @@ class TrilatPlot:
     def update_plot(self):
 
         anchor_positions = self.scenario.anchor_positions()
-        distances = self.scenario.tag_estimate.distances()
+        distances_estimate = self.scenario.tag_estimate.distances()
+        distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
         estimate_position = self.scenario.tag_estimate.position()
         gdop = self.scenario.tag_estimate.dilution_of_precision()
 
@@ -74,10 +75,10 @@ class TrilatPlot:
 
         for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
             bigger_circle.set_center(anchor_positions[i])
-            bigger_circle.set_radius(distances[i] + self.scenario.sigma)
+            bigger_circle.set_radius(distances_truth[i] + self.scenario.sigma)
 
             smaller_circle.set_center(anchor_positions[i])
-            smaller_circle.set_radius(distances[i] - self.scenario.sigma)
+            smaller_circle.set_radius(distances_truth[i] - self.scenario.sigma)
 
         for line in self.lines_plot:
             try:
