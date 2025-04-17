@@ -21,4 +21,5 @@ class Scenario:
 
     def generate_measurements(self, tag, model_anchor):
         for anchor in self.anchors:
-            self.measurements.update_relation(frozenset([anchor, tag]), anchor.distance_to(model_anchor))
+            distance = np.random.normal(anchor.distance_to(model_anchor) + self.sigma, self.sigma)
+            self.measurements.update_relation(frozenset([anchor, tag]), distance)
