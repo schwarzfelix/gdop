@@ -22,4 +22,5 @@ class Scenario:
     def generate_measurements(self, tag_estimate, tag_truth):
         for anchor in self.anchors:
             distance = np.random.normal(anchor.distance_to(tag_truth) + self.sigma, self.sigma)
+            self.measurements.clear_unused(self.anchors + [tag_estimate])
             self.measurements.update_relation(frozenset([anchor, tag_estimate]), distance)

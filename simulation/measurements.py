@@ -14,5 +14,8 @@ class Measurements:
 
         self.relation[pair] = distance
 
+    def clear_unused(self, used_stations):
+        self.relation = {pair: distance for pair, distance in self.relation.items() if all(station in used_stations for station in pair)}
+
     def remove_station(self, station):
         self.relation = {pair: distance for pair, distance in self.relation.items() if station not in pair}
