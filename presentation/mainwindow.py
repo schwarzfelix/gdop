@@ -80,14 +80,6 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(self.angles_tree, "Angles")
 
     def create_display_tab(self):
-        display_tab_widget = QWidget()
-        display_tab_layout = QVBoxLayout()
-        display_tab_widget.setLayout(display_tab_layout)
-
-        display_tab_widget = QWidget()
-        display_tab_layout = QVBoxLayout()
-        display_tab_widget.setLayout(display_tab_layout)
-
         self.display_tree = QTreeWidget()
         self.display_tree.setHeaderHidden(True)
 
@@ -130,8 +122,7 @@ class MainWindow(QMainWindow):
         tag_anchor_labels_item = QTreeWidgetItem(tag_anchor_node)
         self.display_tree.setItemWidget(tag_anchor_labels_item, 0, self.tag_anchor_labels_checkbox)
 
-        display_tab_layout.addWidget(self.display_tree)
-        self.tab_widget.addTab(display_tab_widget, "Display")
+        self.tab_widget.addTab(self.display_tree, "Display")
 
     def update_display_config(self):
         self.display_config.showAnchorCircles = self.anchor_circles_checkbox.isChecked()
