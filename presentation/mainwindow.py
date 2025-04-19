@@ -1,17 +1,15 @@
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox, QTabWidget, QCheckBox, \
-    QTreeWidgetItem, QTreeWidget
-from PyQt5.QtWidgets import QSlider
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox, QTabWidget
+from PyQt5.QtWidgets import QSlider, QCheckBox, QTreeWidgetItem, QTreeWidget
 from PyQt5.QtCore import Qt
-
-import presentation
-from simulation import geometry
-from presentation import displayconfig
-from itertools import combinations
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar,
 )
+
+import presentation
+from simulation import geometry
+from itertools import combinations
 
 class MainWindow(QMainWindow):
 
@@ -24,7 +22,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.scenario = gdop_scenario
-        self.display_config = displayconfig.DisplayConfig()
+        self.display_config = presentation.DisplayConfig()
         self.plot = presentation.TrilatPlot(self)
 
         self.setWindowTitle("Trilateration & GDOP")
@@ -93,12 +91,12 @@ class MainWindow(QMainWindow):
         self.display_tree = QTreeWidget()
         self.display_tree.setHeaderHidden(True)
 
-        # Root node for "Anchor"
         anchor_node = QTreeWidgetItem(self.display_tree, ["Anchor"])
         self.anchor_circles_checkbox = QCheckBox("Show Anchor Circles")
         self.anchor_circles_checkbox.setChecked(self.display_config.showAnchorCircles)
         self.anchor_circles_checkbox.stateChanged.connect(self.update_display_config)
-        self.display_tree.setItemWidget(anchor_node, 0, self.anchor_circles_checkbox)
+        self.anchor_circles_item = QTreeWidgetItem(anchor_node)
+        self.display_tree.setItemWidget(self.anchor_circles_item, 0, self.anchor_circles_checkbox)
 
         self.anchor_labels_checkbox = QCheckBox("Show Anchor Labels")
         self.anchor_labels_checkbox.setChecked(self.display_config.showAnchorLabels)
@@ -106,7 +104,6 @@ class MainWindow(QMainWindow):
         anchor_labels_item = QTreeWidgetItem(anchor_node)
         self.display_tree.setItemWidget(anchor_labels_item, 0, self.anchor_labels_checkbox)
 
-        # Root node for "Between Anchors"
         between_anchors_node = QTreeWidgetItem(self.display_tree, ["Between Anchors"])
         self.between_anchors_lines_checkbox = QCheckBox("Show Lines Between Anchors")
         self.between_anchors_lines_checkbox.setChecked(self.display_config.showBetweenAnchorsLines)
@@ -120,7 +117,6 @@ class MainWindow(QMainWindow):
         between_anchors_labels_item = QTreeWidgetItem(between_anchors_node)
         self.display_tree.setItemWidget(between_anchors_labels_item, 0, self.between_anchors_labels_checkbox)
 
-        # Root node for "Tag and Anchors"
         tag_anchor_node = QTreeWidgetItem(self.display_tree, ["Tag and Anchors"])
         self.tag_anchor_lines_checkbox = QCheckBox("Show Lines Between Tag and Anchors")
         self.tag_anchor_lines_checkbox.setChecked(self.display_config.showTagAnchorLines)
@@ -134,7 +130,6 @@ class MainWindow(QMainWindow):
         tag_anchor_labels_item = QTreeWidgetItem(tag_anchor_node)
         self.display_tree.setItemWidget(tag_anchor_labels_item, 0, self.tag_anchor_labels_checkbox)
 
-        # Add the tree to the layout
         display_tab_layout.addWidget(self.display_tree)
         self.tab_widget.addTab(display_tab_widget, "Display")
 
