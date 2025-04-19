@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox, QTabWidget
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox, QTabWidget, QCheckBox, \
+    QTreeWidgetItem, QTreeWidget
 from PyQt5.QtWidgets import QSlider
 from PyQt5.QtCore import Qt
 
@@ -48,6 +49,7 @@ class MainWindow(QMainWindow):
         self.create_plot_tab()
         self.create_sigma_tab()
         self.create_angles_tab()
+        self.create_display_tab()
         layout.addWidget(self.tab_widget)
 
     def create_plot_tab(self):
@@ -78,6 +80,72 @@ class MainWindow(QMainWindow):
         self.angle_text.setReadOnly(True)
         self.angle_text.setText("Angles will be displayed here.")
         self.tab_widget.addTab(self.angle_text, "Angles")
+
+    def create_display_tab(self):
+        display_tab_widget = QWidget()
+        display_tab_layout = QVBoxLayout()
+        display_tab_widget.setLayout(display_tab_layout)
+
+        display_tab_widget = QWidget()
+        display_tab_layout = QVBoxLayout()
+        display_tab_widget.setLayout(display_tab_layout)
+
+        self.display_tree = QTreeWidget()
+        self.display_tree.setHeaderHidden(True)
+
+        # Root node for "Anchor"
+        anchor_node = QTreeWidgetItem(self.display_tree, ["Anchor"])
+        self.anchor_circles_checkbox = QCheckBox("Show Anchor Circles")
+        self.anchor_circles_checkbox.setChecked(self.display_config.showAnchorCircles)
+        self.anchor_circles_checkbox.stateChanged.connect(self.update_display_config)
+        self.display_tree.setItemWidget(anchor_node, 0, self.anchor_circles_checkbox)
+
+        self.anchor_labels_checkbox = QCheckBox("Show Anchor Labels")
+        self.anchor_labels_checkbox.setChecked(self.display_config.showAnchorLabels)
+        self.anchor_labels_checkbox.stateChanged.connect(self.update_display_config)
+        anchor_labels_item = QTreeWidgetItem(anchor_node)
+        self.display_tree.setItemWidget(anchor_labels_item, 0, self.anchor_labels_checkbox)
+
+        # Root node for "Between Anchors"
+        between_anchors_node = QTreeWidgetItem(self.display_tree, ["Between Anchors"])
+        self.between_anchors_lines_checkbox = QCheckBox("Show Lines Between Anchors")
+        self.between_anchors_lines_checkbox.setChecked(self.display_config.showBetweenAnchorsLines)
+        self.between_anchors_lines_checkbox.stateChanged.connect(self.update_display_config)
+        between_anchors_lines_item = QTreeWidgetItem(between_anchors_node)
+        self.display_tree.setItemWidget(between_anchors_lines_item, 0, self.between_anchors_lines_checkbox)
+
+        self.between_anchors_labels_checkbox = QCheckBox("Show Labels Between Anchors")
+        self.between_anchors_labels_checkbox.setChecked(self.display_config.showBetweenAnchorsLabels)
+        self.between_anchors_labels_checkbox.stateChanged.connect(self.update_display_config)
+        between_anchors_labels_item = QTreeWidgetItem(between_anchors_node)
+        self.display_tree.setItemWidget(between_anchors_labels_item, 0, self.between_anchors_labels_checkbox)
+
+        # Root node for "Tag and Anchors"
+        tag_anchor_node = QTreeWidgetItem(self.display_tree, ["Tag and Anchors"])
+        self.tag_anchor_lines_checkbox = QCheckBox("Show Lines Between Tag and Anchors")
+        self.tag_anchor_lines_checkbox.setChecked(self.display_config.showTagAnchorLines)
+        self.tag_anchor_lines_checkbox.stateChanged.connect(self.update_display_config)
+        tag_anchor_lines_item = QTreeWidgetItem(tag_anchor_node)
+        self.display_tree.setItemWidget(tag_anchor_lines_item, 0, self.tag_anchor_lines_checkbox)
+
+        self.tag_anchor_labels_checkbox = QCheckBox("Show Labels Between Tag and Anchors")
+        self.tag_anchor_labels_checkbox.setChecked(self.display_config.showTagAnchorLabels)
+        self.tag_anchor_labels_checkbox.stateChanged.connect(self.update_display_config)
+        tag_anchor_labels_item = QTreeWidgetItem(tag_anchor_node)
+        self.display_tree.setItemWidget(tag_anchor_labels_item, 0, self.tag_anchor_labels_checkbox)
+
+        # Add the tree to the layout
+        display_tab_layout.addWidget(self.display_tree)
+        self.tab_widget.addTab(display_tab_widget, "Display")
+
+    def update_display_config(self):
+        self.display_config.showAnchorCircles = self.anchor_circles_checkbox.isChecked()
+        self.display_config.showAnchorLabels = self.anchor_labels_checkbox.isChecked()
+        self.display_config.showBetweenAnchorsLines = self.between_anchors_lines_checkbox.isChecked()
+        self.display_config.showTagAnchorLines = self.tag_anchor_lines_checkbox.isChecked()
+        self.display_config.showTagAnchorLabels = self.tag_anchor_labels_checkbox.isChecked()
+
+        self.update_all()
 
     def slider_changed(self):
         self.scenario.sigma = self.slider.value() / self.SIGMA_SLIDER_RESOLUTION

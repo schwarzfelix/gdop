@@ -78,7 +78,7 @@ class TrilatPlot:
             plot.set_offsets([anchor_positions[i]])
         self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
 
-        if self.display_config.showCirclesAroundAnchors:
+        if self.display_config.showAnchorCircles:
             for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
                 bigger_circle.set_center(anchor_positions[i])
                 bigger_circle.set_radius(distances_truth[i] + self.scenario.sigma)
@@ -95,37 +95,44 @@ class TrilatPlot:
 
         for i in range(len(anchor_positions)):
             for j in range(i + 1, len(anchor_positions)):
-                line, = self.ax_trilat.plot(
-                    [anchor_positions[i][0], anchor_positions[j][0]],
-                    [anchor_positions[i][1], anchor_positions[j][1]],
-                    'b--', alpha=0.5
-                )
-                self.lines_plot.append(line)
+                if self.display_config.showBetweenAnchorsLines:
+                    line, = self.ax_trilat.plot(
+                        [anchor_positions[i][0], anchor_positions[j][0]],
+                        [anchor_positions[i][1], anchor_positions[j][1]],
+                        'b--', alpha=0.5
+                    )
+                    self.lines_plot.append(line)
 
 
                 xm = (anchor_positions[i][0] + anchor_positions[j][0]) / 2
                 ym = (anchor_positions[i][1] + anchor_positions[j][1]) / 2
                 distance = np.linalg.norm(anchor_positions[i] - anchor_positions[j])
-                t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
-                self.lines_plot.append(t)
+
+                if self.display_config.showBetweenAnchorsLabels:
+                    t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
+                    self.lines_plot.append(t)
 
         for anchor_position in anchor_positions:
-            line, = self.ax_trilat.plot(
-                [anchor_position[0], estimate_position[0]],
-                [anchor_position[1], estimate_position[1]],
-                'r--', alpha=0.5
-            )
-            self.lines_plot.append(line)
+            if self.display_config.showTagAnchorLines:
+                line, = self.ax_trilat.plot(
+                    [anchor_position[0], estimate_position[0]],
+                    [anchor_position[1], estimate_position[1]],
+                    'r--', alpha=0.5
+                )
+                self.lines_plot.append(line)
 
             xm = (anchor_position[0] + estimate_position[0]) / 2
             ym = (anchor_position[1] + estimate_position[1]) / 2
             distance = np.linalg.norm(anchor_position - estimate_position)
-            t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
-            self.lines_plot.append(t)
 
-        for i in range(len(self.scenario.anchors)):
-            name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.anchors[i].name(), ha='center', va='center')
-            self.lines_plot.append(name)
+            if self.display_config.showTagAnchorLabels:
+                t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
+                self.lines_plot.append(t)
+
+        if self.display_config.showAnchorLabels:
+            for i in range(len(self.scenario.anchors)):
+                name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.anchors[i].name(), ha='center', va='center')
+                self.lines_plot.append(name)
 
         self.ax_gdop.clear()
         self.ax_gdop.bar(["GDOP"], [gdop], color="orange")

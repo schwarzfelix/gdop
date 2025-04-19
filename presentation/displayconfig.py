@@ -1,10 +1,11 @@
 class DisplayConfig():
     def __init__(self):
 
-        self.showDistanceLabelsToTag = False
-        self.showDistanceLinesToTag = False
+        self.showAnchorCircles = False
+        self.showAnchorLabels = False
 
-        self.showDistanceLabelsBetweenAnchors = False
-        self.showDistanceLinesBetweenAnchors = False
+        self.showTagAnchorLabels = False
+        self.showTagAnchorLines = False
 
-        self.showCirclesAroundAnchors = False
+        self.showBetweenAnchorsLabels = False
+        self.showBetweenAnchorsLines = False
