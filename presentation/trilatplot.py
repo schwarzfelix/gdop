@@ -85,6 +85,10 @@ class TrilatPlot:
 
                 smaller_circle.set_center(anchor_positions[i])
                 smaller_circle.set_radius(distances_truth[i] - self.scenario.sigma)
+        else:
+            for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
+                bigger_circle.set_radius(0)
+                smaller_circle.set_radius(0)
 
         for line in self.lines_plot:
             try:
