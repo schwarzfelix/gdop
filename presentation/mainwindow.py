@@ -74,10 +74,10 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(inside_tab_widget, "Sigma")
 
     def create_angles_tab(self):
-        self.angle_text = QTextEdit()
-        self.angle_text.setReadOnly(True)
-        self.angle_text.setText("Angles will be displayed here.")
-        self.tab_widget.addTab(self.angle_text, "Angles")
+        self.angles_tree = QTreeWidget()
+        self.angles_tree.setHeaderHidden(True)
+        self.update_angles_tree()
+        self.tab_widget.addTab(self.angles_tree, "Angles")
 
     def create_display_tab(self):
         display_tab_widget = QWidget()
@@ -151,16 +151,41 @@ class MainWindow(QMainWindow):
         self.scenario.sigma = self.sigma_input.value()
         self.update_all()
 
-    def update_angles(self):
-        angles_text = ""
+    def create_angles_tab(self):
+        self.angles_tree = QTreeWidget()
+        self.angles_tree.setHeaderHidden(True)
+
+        self.update_angles_tree()
+
+        self.tab_widget.addTab(self.angles_tree, "Angles")
+
+    def update_angles_tree(self):
+        self.angles_tree.clear()
+
         anchor_positions = self.scenario.anchor_positions()
-        for (i, j) in combinations(range(len(anchor_positions)), 2):
-            angle = geometry.angle_vectors(
-                anchor_positions[i] - self.scenario.tag_truth.position(),
-                anchor_positions[j] - self.scenario.tag_truth.position()
-            )
-            angles_text += f"Angle between {self.scenario.anchors[i].name()} and {self.scenario.anchors[j].name()}: {angle:.2f}°\n"
-        self.angle_text.setText(angles_text)
+        tag_position = self.scenario.tag_truth.position()
+
+        for i, anchor in enumerate(self.scenario.anchors):
+            anchor_node = QTreeWidgetItem(self.angles_tree, [anchor.name()])
+            other_stations = [
+                (self.scenario.anchors[j].name(), anchor_positions[j])
+                for j in range(len(self.scenario.anchors)) if j != i
+            ]
+            other_stations.append(("Tag", tag_position))
+
+            for (name1, pos1), (name2, pos2) in combinations(other_stations, 2):
+                angle = geometry.angle_vectors(pos1 - anchor_positions[i], pos2 - anchor_positions[i])
+                QTreeWidgetItem(anchor_node, [f"Angle between {name1} and {name2}: {angle:.2f}°"])
+
+        tag_node = QTreeWidgetItem(self.angles_tree, ["Tag"])
+        other_stations = [
+            (anchor.name(), anchor_positions[i])
+            for i, anchor in enumerate(self.scenario.anchors)
+        ]
+
+        for (name1, pos1), (name2, pos2) in combinations(other_stations, 2):
+            angle = geometry.angle_vectors(pos1 - tag_position, pos2 - tag_position)
+            QTreeWidgetItem(tag_node, [f"Angle between {name1} and {name2}: {angle:.2f}°"])
 
     def update_sigma(self):
         self.slider.setValue(int(self.scenario.sigma * self.SIGMA_SLIDER_RESOLUTION))
@@ -168,5 +193,5 @@ class MainWindow(QMainWindow):
 
     def update_all(self):
         self.plot.update_plot()
-        self.update_angles()
+        self.update_angles_tree()
         self.update_sigma()
