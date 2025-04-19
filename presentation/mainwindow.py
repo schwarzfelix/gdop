@@ -137,6 +137,7 @@ class MainWindow(QMainWindow):
         self.display_config.showAnchorCircles = self.anchor_circles_checkbox.isChecked()
         self.display_config.showAnchorLabels = self.anchor_labels_checkbox.isChecked()
         self.display_config.showBetweenAnchorsLines = self.between_anchors_lines_checkbox.isChecked()
+        self.display_config.showBetweenAnchorsLabels = self.between_anchors_labels_checkbox.isChecked()
         self.display_config.showTagAnchorLines = self.tag_anchor_lines_checkbox.isChecked()
         self.display_config.showTagAnchorLabels = self.tag_anchor_labels_checkbox.isChecked()
 
