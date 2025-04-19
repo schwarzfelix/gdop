@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 
 import presentation
 from simulation import geometry
-
+from presentation import displayconfig
 from itertools import combinations
 
 from matplotlib.backends.backend_qt5agg import (
@@ -23,6 +23,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.scenario = gdop_scenario
+        self.display_config = displayconfig.DisplayConfig()
         self.plot = presentation.TrilatPlot(self)
 
         self.setWindowTitle("Trilateration & GDOP")

@@ -15,6 +15,7 @@ class TrilatPlot:
     def __init__(self, window):
         self.window = window
         self.scenario = self.window.scenario
+        self.display_config = self.window.display_config
 
         self.dragging_point = None
 
@@ -77,12 +78,13 @@ class TrilatPlot:
             plot.set_offsets([anchor_positions[i]])
         self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
 
-        for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
-            bigger_circle.set_center(anchor_positions[i])
-            bigger_circle.set_radius(distances_truth[i] + self.scenario.sigma)
+        if self.display_config.showCirclesAroundAnchors:
+            for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
+                bigger_circle.set_center(anchor_positions[i])
+                bigger_circle.set_radius(distances_truth[i] + self.scenario.sigma)
 
-            smaller_circle.set_center(anchor_positions[i])
-            smaller_circle.set_radius(distances_truth[i] - self.scenario.sigma)
+                smaller_circle.set_center(anchor_positions[i])
+                smaller_circle.set_radius(distances_truth[i] - self.scenario.sigma)
 
         for line in self.lines_plot:
             try:
