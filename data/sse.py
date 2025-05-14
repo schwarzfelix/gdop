@@ -30,11 +30,12 @@ class SSEData:
         self.updates.append(update)
 
 def process_data(data, scenario):
-    print(f"Processing data: {data}")
     source_station = scenario.get_station_by_name(str(data["source_id"]))
     destination_station = scenario.get_station_by_name(str(data["destination_id"]))
-    print(f"Stations list: {scenario.stations}")
-    print(f"Stations list size: {len(scenario.stations)}")
+    raw_distance = data["raw_distance"]
+    scenario.measurements.update_relation(frozenset([source_station, destination_station]), raw_distance)
+    print(f"Measurements list: {scenario.measurements}")
+    print(f"Count measurements: {len(scenario.measurements.relation)}")
 
 def fetch_sse_data(url, scenario):
     sse_data = SSEData()
