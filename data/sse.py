@@ -31,8 +31,10 @@ class SSEData:
 
 def process_data(data, scenario):
     print(f"Processing data: {data}")
-    #source_station = scenario.get_station(data["source_id"])
-    #destination_station = scenario.get_station(data["destination_id"])
+    source_station = scenario.get_station_by_name(str(data["source_id"]))
+    destination_station = scenario.get_station_by_name(str(data["destination_id"]))
+    print(f"Stations list: {scenario.stations}")
+    print(f"Stations list size: {len(scenario.stations)}")
 
 def fetch_sse_data(url, scenario):
     sse_data = SSEData()

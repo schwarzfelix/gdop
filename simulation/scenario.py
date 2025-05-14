@@ -26,10 +26,10 @@ class Scenario:
             self.measurements.clear_unused(self.anchors + [tag_estimate])
             self.measurements.update_relation(frozenset([anchor, tag_estimate]), distance)
 
-    def get_station(self, name):
-        for station in self.stations:
-            if station.name == name:
-                return station
+    def get_station_by_name(self, name):
+        for s in self.stations:
+            if str(s.name()) == str(name):
+                return s
         new_station = station.Tag(self, name)
         self.stations.append(new_station)
         return new_station
