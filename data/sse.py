@@ -29,10 +29,12 @@ class SSEData:
         )
         self.updates.append(update)
 
-def process_data(data):
+def process_data(data, scenario):
     print(f"Processing data: {data}")
+    #source_station = scenario.get_station(data["source_id"])
+    #destination_station = scenario.get_station(data["destination_id"])
 
-def fetch_sse_data(url):
+def fetch_sse_data(url, scenario):
     sse_data = SSEData()
 
     try:
@@ -53,7 +55,7 @@ def fetch_sse_data(url):
                 try:
                     update_data = json.loads(event.data)
                     sse_data.add_update(update_data)
-                    process_data(update_data)
+                    process_data(update_data, scenario)
                 except json.JSONDecodeError as e:
                     print(f"Error decoding event data: {e}")
     except requests.RequestException as e:
@@ -61,6 +63,6 @@ def fetch_sse_data(url):
     except Exception as e:
         print(f"Unexpected error: {e}")
 
-def test_function():
+def test_function(scenario):
     url = "https://gps-no.legincy.de/api/v1/rangings/stream"
-    fetch_sse_data(url)
+    fetch_sse_data(url, scenario)
