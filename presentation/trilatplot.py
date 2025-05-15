@@ -134,8 +134,8 @@ class TrilatPlot:
                 self.lines_plot.append(t)
 
         if self.display_config.showAnchorLabels:
-            for i in range(len(self.scenario.anchors)):
-                name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.anchors[i].name(), ha='center', va='center')
+            for i in range(len(self.scenario.get_anchor_list())):
+                name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.get_anchor_list()[i].name(), ha='center', va='center')
                 self.lines_plot.append(name)
 
         self.ax_gdop.clear()
@@ -150,13 +150,13 @@ class TrilatPlot:
         self.fig.canvas.draw_idle()
 
     def add_anchor(self, x, y):
-        anchor_name = f"Anchor {len(self.scenario.anchors) + 1}"
-        self.scenario.anchors.append(station.Anchor([x, y], anchor_name))
+        anchor_name = f"Anchor {len(self.scenario.get_anchor_list()) + 1}"
+        self.scenario.stations.append(station.Anchor([x, y], anchor_name))
         self.update_anchors()
         self.update_plot()
 
     def remove_anchor(self, index):
-        self.scenario.anchors.pop(index)
+        self.scenario.stations.remove(self.scenario.get_anchor_list()[index])
         self.update_anchors()
         self.update_plot()
 
@@ -176,7 +176,7 @@ class TrilatPlot:
         for i, plot in enumerate(self.anchor_plots):
             contains, _ = plot.contains(event)
             if contains:
-                self.dragging_point = self.scenario.anchors[i]
+                self.dragging_point = self.scenario.get_anchor_list()[i]
                 return
         contains, _ = self.tag_truth_plot.contains(event)
         if contains:

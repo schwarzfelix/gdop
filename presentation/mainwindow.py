@@ -156,11 +156,11 @@ class MainWindow(QMainWindow):
         anchor_positions = self.scenario.anchor_positions()
         tag_position = self.scenario.tag_truth.position()
 
-        for i, anchor in enumerate(self.scenario.anchors):
+        for i, anchor in enumerate(self.scenario.get_anchor_list()):
             anchor_node = QTreeWidgetItem(self.angles_tree, [anchor.name()])
             other_stations = [
-                (self.scenario.anchors[j].name(), anchor_positions[j])
-                for j in range(len(self.scenario.anchors)) if j != i
+                (self.scenario.get_anchor_list()[j].name(), anchor_positions[j])
+                for j in range(len(self.scenario.get_anchor_list())) if j != i
             ]
             other_stations.append(("Tag", tag_position))
 
@@ -171,7 +171,7 @@ class MainWindow(QMainWindow):
         tag_node = QTreeWidgetItem(self.angles_tree, ["Tag"])
         other_stations = [
             (anchor.name(), anchor_positions[i])
-            for i, anchor in enumerate(self.scenario.anchors)
+            for i, anchor in enumerate(self.scenario.get_anchor_list())
         ]
 
         for (name1, pos1), (name2, pos2) in combinations(other_stations, 2):
