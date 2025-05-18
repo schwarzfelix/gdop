@@ -34,8 +34,6 @@ def process_data(data, scenario):
     destination_station = scenario.get_station_by_name(str(data["destination_id"]))
     raw_distance = data["raw_distance"]
     scenario.measurements.update_relation(frozenset([source_station, destination_station]), raw_distance)
-    print(f"Measurements list: {scenario.measurements}")
-    print(f"Count measurements: {len(scenario.measurements.relation)}")
 
 def fetch_sse_data(url, scenario):
     sse_data = SSEData()
@@ -46,7 +44,6 @@ def fetch_sse_data(url, scenario):
         client = SSEClient(response)
 
         for event in client.events():
-            print(f"Raw Event: {event}")
             if event.event == "connected":
                 try:
                     status_data = json.loads(event.data)
