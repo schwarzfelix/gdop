@@ -71,6 +71,11 @@ class TrilatPlot:
         distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
         estimate_position = self.scenario.tag_estimate.position()
         gdop = self.scenario.tag_estimate.dilution_of_precision()
+        tags = self.scenario.get_tag_list()
+
+        for i, plot in enumerate(self.tag_plots):
+            plot.remove()
+        self.tag_plots = [self.ax_trilat.scatter(x, y, c='red', s=self.STATION_DOT_SIZE, picker=True) for x, y in [tag.position() for tag in tags]]
 
         self.tag_estimate_plot.set_xdata([estimate_position[0]])
         self.tag_estimate_plot.set_ydata([estimate_position[1]])
