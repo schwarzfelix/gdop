@@ -33,6 +33,7 @@ class TrilatPlot:
 
         self.tag_truth_plot = self.ax_trilat.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
         self.tag_estimate_plot, = self.ax_trilat.plot([], [], 'rx', markersize=10)
+        self.tag_plots = []
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
