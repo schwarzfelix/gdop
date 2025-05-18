@@ -37,5 +37,4 @@ class Scenario:
         return [s for s in self.stations if isinstance(s, station.Tag)]
 
     def get_anchor_list(self):
-        #return self.anchors
         return [s for s in self.stations if isinstance(s, station.Anchor)]
