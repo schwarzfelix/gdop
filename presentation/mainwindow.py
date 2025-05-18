@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox, QTabWidget
 from PyQt5.QtWidgets import QSlider, QCheckBox, QTreeWidgetItem, QTreeWidget
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
@@ -49,6 +49,8 @@ class MainWindow(QMainWindow):
         self.create_angles_tab()
         self.create_display_tab()
         layout.addWidget(self.tab_widget)
+
+        self.start_periodic_update()
 
     def create_plot_tab(self):
         self.tab_widget.addTab(self.toolbar, "Plot")
@@ -186,3 +188,9 @@ class MainWindow(QMainWindow):
         self.plot.update_plot()
         self.update_angles_tree()
         self.update_sigma()
+
+    def start_periodic_update(self):
+        self.update_timer = QTimer()
+        self.update_timer.timeout.connect(self.update_all)
+        self.update_timer.start(2000)
+        #TODO add switch to turn on/off periodic update
