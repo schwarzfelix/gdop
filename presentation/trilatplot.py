@@ -75,7 +75,8 @@ class TrilatPlot:
 
         for i, plot in enumerate(self.tag_plots):
             plot.remove()
-        self.tag_plots = [self.ax_trilat.scatter(x, y, c='red', s=self.STATION_DOT_SIZE, picker=True) for x, y in [tag.position() for tag in tags]]
+        self.tag_plots = [self.ax_trilat.scatter(x, y, c='red', s=self.STATION_DOT_SIZE, picker=True) for x, y in
+                          [tag.position() for tag in tags]]
 
         self.tag_estimate_plot.set_xdata([estimate_position[0]])
         self.tag_estimate_plot.set_ydata([estimate_position[1]])
@@ -143,6 +144,9 @@ class TrilatPlot:
             for i in range(len(self.scenario.get_anchor_list())):
                 name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.get_anchor_list()[i].name(), ha='center', va='center')
                 self.lines_plot.append(name)
+            for i in range(len(self.scenario.get_tag_list())):
+                name = self.ax_trilat.text(self.scenario.get_tag_list()[i].position()[0], self.scenario.get_tag_list()[i].position()[1], self.scenario.get_tag_list()[i].name(), ha='center', va='center')
+                self.lines_plot.append(name)
 
         self.ax_gdop.clear()
         self.ax_gdop.bar(["GDOP"], [gdop], color="orange")
@@ -170,7 +174,7 @@ class TrilatPlot:
         if event.inaxes is None:
             return
 
-        if event.button == 3:
+        if event.button == 3 and self.display_config.rightClickAnchors:
             for i, plot in enumerate(self.anchor_plots):
                 contains, _ = plot.contains(event)
                 if contains:

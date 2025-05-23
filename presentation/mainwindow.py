@@ -124,6 +124,13 @@ class MainWindow(QMainWindow):
         tag_anchor_labels_item = QTreeWidgetItem(tag_anchor_node)
         self.display_tree.setItemWidget(tag_anchor_labels_item, 0, self.tag_anchor_labels_checkbox)
 
+        interaction_node = QTreeWidgetItem(self.display_tree, ["Interaction"])
+        self.right_click_anchors_checkbox = QCheckBox("Enable Right-Click Anchor Control")
+        self.right_click_anchors_checkbox.setChecked(self.display_config.rightClickAnchors)
+        self.right_click_anchors_checkbox.stateChanged.connect(self.update_display_config)
+        right_click_anchors_item = QTreeWidgetItem(interaction_node)
+        self.display_tree.setItemWidget(right_click_anchors_item, 0, self.right_click_anchors_checkbox)
+
         self.tab_widget.addTab(self.display_tree, "Display")
 
     def update_display_config(self):
@@ -133,6 +140,8 @@ class MainWindow(QMainWindow):
         self.display_config.showBetweenAnchorsLabels = self.between_anchors_labels_checkbox.isChecked()
         self.display_config.showTagAnchorLines = self.tag_anchor_lines_checkbox.isChecked()
         self.display_config.showTagAnchorLabels = self.tag_anchor_labels_checkbox.isChecked()
+
+        self.display_config.rightClickAnchors = self.right_click_anchors_checkbox.isChecked()
 
         self.update_all()
 
