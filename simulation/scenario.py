@@ -9,7 +9,8 @@ class Scenario:
             station.Anchor([0.0, 0.0], 'Anchor A'),
             station.Anchor([10.0, 0.0], 'Anchor B'),
             station.Anchor([5.0, 8.66], 'Anchor C'),
-            station.Tag(self, 'Tag')
+            station.Tag(self, '⍺'),
+            station.Tag(self, 'β'),
         ]
         self.tag_truth = station.Anchor([5.0, 4.0], scenario=self)
         self.sigma = 0.0

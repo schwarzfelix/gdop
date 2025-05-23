@@ -32,7 +32,10 @@ class TrilatPlot:
         self.lines_plot = []
 
         self.tag_truth_plot = self.ax_trilat.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
-        self.tag_estimate_plot, = self.ax_trilat.plot([], [], 'rx', markersize=10)
+        self.tag_estimate_plots = []
+        for _ in self.scenario.get_tag_list():
+            plot, = self.ax_trilat.plot([], [], 'rx', markersize=10)
+            self.tag_estimate_plots.append(plot)
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
@@ -70,9 +73,9 @@ class TrilatPlot:
         tag_positions = self.scenario.tag_positions()
         gdop = self.scenario.get_tag_list()[0].dilution_of_precision()
 
-
-        self.tag_estimate_plot.set_xdata([tag_positions[0][0]])
-        self.tag_estimate_plot.set_ydata([tag_positions[0][1]])
+        for i, plot in enumerate(self.tag_estimate_plots):
+            plot.set_xdata([tag_positions[i][0]])
+            plot.set_ydata([tag_positions[i][1]])
 
         for i, plot in enumerate(self.anchor_plots):
             plot.set_offsets([anchor_positions[i]])
@@ -116,22 +119,22 @@ class TrilatPlot:
                     t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
                     self.lines_plot.append(t)
 
-        for anchor_position in anchor_positions:
-            if self.display_config.showTagAnchorLines:
-                line, = self.ax_trilat.plot(
-                    [anchor_position[0], tag_positions[0][0]],
-                    [anchor_position[1], tag_positions[0][1]],
-                    'r--', alpha=0.5
-                )
-                self.lines_plot.append(line)
+        for tag_position in tag_positions:
+            for anchor_position in anchor_positions:
+                if self.display_config.showTagAnchorLines:
+                    line, = self.ax_trilat.plot(
+                        [anchor_position[0], tag_position[0]],
+                        [anchor_position[1], tag_position[1]],
+                        'r--', alpha=0.5
+                    )
+                    self.lines_plot.append(line)
 
-            xm = (anchor_position[0] + tag_positions[0][0]) / 2
-            ym = (anchor_position[1] + tag_positions[0][1]) / 2
-            distance = np.linalg.norm(anchor_position - tag_positions[0])
-
-            if self.display_config.showTagAnchorLabels:
-                t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
-                self.lines_plot.append(t)
+                if self.display_config.showTagAnchorLabels:
+                    xm = (anchor_position[0] + tag_position[0]) / 2
+                    ym = (anchor_position[1] + tag_position[1]) / 2
+                    distance = np.linalg.norm(anchor_position - tag_position)
+                    t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
+                    self.lines_plot.append(t)
 
         if self.display_config.showAnchorLabels:
             for i in range(len(self.scenario.get_anchor_list())):
@@ -139,11 +142,15 @@ class TrilatPlot:
                 self.lines_plot.append(name)
 
         self.ax_gdop.clear()
-        self.ax_gdop.bar(["GDOP"], [gdop], color="orange")
+        tags = self.scenario.get_tag_list()
+        gdop_values = [tag.dilution_of_precision() for tag in tags]
+        x_pos = range(len(gdop_values))
+        self.ax_gdop.bar(x_pos, gdop_values, color="orange")
         self.ax_gdop.set_ylim(0, 12)
-        self.ax_gdop.set_xticks([0])
-        self.ax_gdop.set_xticklabels(["GDOP"])
-        self.ax_gdop.text(0, gdop, f"{gdop:.2f}", ha="center")
+        self.ax_gdop.set_xticks(x_pos)
+        self.ax_gdop.set_xticklabels([tag.name() for tag in tags], rotation=90)
+        for i, gdop in enumerate(gdop_values):
+            self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
 
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
