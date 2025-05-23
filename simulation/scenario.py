@@ -9,15 +9,18 @@ class Scenario:
             station.Anchor([0.0, 0.0], 'Anchor A'),
             station.Anchor([10.0, 0.0], 'Anchor B'),
             station.Anchor([5.0, 8.66], 'Anchor C'),
+            station.Tag(self, 'Tag')
         ]
         self.tag_truth = station.Anchor([5.0, 4.0], scenario=self)
-        self.tag_estimate = station.Tag(self, 'Tag')
         self.sigma = 0.0
 
-        self.generate_measurements(self.tag_estimate, self.tag_truth)
+        self.generate_measurements(self.get_tag_list()[0], self.tag_truth)
 
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.get_anchor_list()])
+
+    def tag_positions(self):
+        return np.array([tag.position() for tag in self.get_tag_list()])
 
     def generate_measurements(self, tag_estimate, tag_truth):
         for anchor in self.get_anchor_list():

@@ -77,7 +77,7 @@ class Tag(Station):
 
     def position(self, exclude=None):
 
-        tags_only_network = True
+        tags_only_network = False
         #TODO GUI switch
         if tags_only_network and len(self.scenario.get_tag_list()) > 0:
             if self.scenario.get_tag_list()[0] == self:
