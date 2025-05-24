@@ -1,6 +1,9 @@
+import threading
+
 import requests
 from sseclient import SSEClient
 import json
+
 
 class Update:
     def __init__(self, id, source_id, destination_id, raw_distance):
@@ -63,6 +66,15 @@ def fetch_sse_data(url, scenario):
     except Exception as e:
         print(f"Unexpected error: {e}")
 
-def test_function(scenario):
-    url = "https://gps-no.legincy.de/api/v1/rangings/stream"
-    fetch_sse_data(url, scenario)
+class Streamer:
+    def __init__(self, url, scenario):
+        self.url = url
+        self.scenario = scenario
+        self.sse_thread = threading.Thread(target=fetch_sse_data, args=(self.url, self.scenario,), daemon=True)
+        self.sse_thread.start()
+
+    def stop_streaming(self):
+        if self.sse_thread.is_alive():
+            self.sse_thread.join(timeout=1)
+            if self.sse_thread.is_alive():
+                print("Streamer thread did not stop gracefully.")

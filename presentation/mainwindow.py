@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox, QTabWidget
 from PyQt5.QtWidgets import QSlider, QCheckBox, QTreeWidgetItem, QTreeWidget
 from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLineEdit, QDoubleSpinBox, QTabWidget
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
@@ -48,6 +49,7 @@ class MainWindow(QMainWindow):
         self.create_sigma_tab()
         self.create_angles_tab()
         self.create_display_tab()
+        self.create_streaming_tab()
         layout.addWidget(self.tab_widget)
 
         self.start_periodic_update()
@@ -133,6 +135,38 @@ class MainWindow(QMainWindow):
 
         self.tab_widget.addTab(self.display_tree, "Display")
 
+    def create_streaming_tab(self):
+        self.streaming_tree = QTreeWidget()
+        self.streaming_tree.setHeaderHidden(True)
+
+        root_node = QTreeWidgetItem(self.streaming_tree)
+        self.stream_enabled_checkbox = QCheckBox("Stream Measurements")
+        self.stream_enabled_checkbox.setChecked(False)
+        self.stream_enabled_checkbox.stateChanged.connect(self.update_streaming_config)
+        self.streaming_tree.setItemWidget(root_node, 0, self.stream_enabled_checkbox)
+
+        url_node = QTreeWidgetItem(self.streaming_tree)
+        self.url_input = QLineEdit()
+        self.url_input.setPlaceholderText("Enter SSE URL")
+        self.streaming_tree.setItemWidget(url_node, 0, self.url_input)
+
+        self.tab_widget.addTab(self.streaming_tree, "Streaming")
+
+        self.tab_widget.addTab(self.streaming_tree, "Streaming")
+
+    def update_streaming_config(self):
+        is_enabled = self.stream_enabled_checkbox.isChecked()
+        if is_enabled:
+            url = self.url_input.text().strip()
+            if url:
+                self.scenario.start_streaming(url)
+            else:
+                self.stream_enabled_checkbox.setChecked(False)
+                print("Please enter a valid SSE URL.")
+        else:
+            self.scenario.stop_streaming()
+            print("Streaming stopped.")
+
     def update_display_config(self):
         self.display_config.showAnchorCircles = self.anchor_circles_checkbox.isChecked()
         self.display_config.showAnchorLabels = self.anchor_labels_checkbox.isChecked()
@@ -152,14 +186,6 @@ class MainWindow(QMainWindow):
     def sigma_input_changed(self):
         self.scenario.sigma = self.sigma_input.value()
         self.update_all()
-
-    def create_angles_tab(self):
-        self.angles_tree = QTreeWidget()
-        self.angles_tree.setHeaderHidden(True)
-
-        self.update_angles_tree()
-
-        self.tab_widget.addTab(self.angles_tree, "Angles")
 
     def update_angles_tree(self):
         self.angles_tree.clear()

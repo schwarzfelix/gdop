@@ -1,6 +1,7 @@
 import numpy as np
 
 from simulation import measurements, station, geometry
+from data.sse import Streamer
 
 class Scenario:
     def __init__(self):
@@ -14,6 +15,8 @@ class Scenario:
         ]
         self.tag_truth = station.Anchor([5.0, 4.0], scenario=self)
         self.sigma = 0.0
+
+        self.streamer = None
 
         self.generate_measurements(self.get_tag_list()[0], self.tag_truth)
 
@@ -42,3 +45,11 @@ class Scenario:
 
     def get_anchor_list(self):
         return [s for s in self.stations if isinstance(s, station.Anchor)]
+
+    def start_streaming(self, url):
+        self.streamer = Streamer(url, self)
+
+    def stop_streaming(self):
+        if self.streamer:
+            self.streamer.stop_streaming()
+            self.streamer = None
