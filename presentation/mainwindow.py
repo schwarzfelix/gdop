@@ -229,3 +229,4 @@ class MainWindow(QMainWindow):
         self.update_timer.timeout.connect(self.update_all)
         self.update_timer.start(2000)
         #TODO add switch to turn on/off periodic update
+        #TODO instead of periodically, update when new SSE data received
