@@ -32,7 +32,10 @@ class TrilatPlot:
         self.lines_plot = []
 
         self.tag_truth_plot = self.ax_trilat.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
-        self.tag_estimate_plot, = self.ax_trilat.plot([], [], 'rx', markersize=10)
+        self.tag_estimate_plots = []
+        for _ in self.scenario.get_tag_list():
+            plot, = self.ax_trilat.plot([], [], 'rx', markersize=10)
+            self.tag_estimate_plots.append(plot)
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
@@ -66,13 +69,13 @@ class TrilatPlot:
     def update_plot(self):
 
         anchor_positions = self.scenario.anchor_positions()
-        distances_estimate = self.scenario.tag_estimate.distances()
         distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
-        estimate_position = self.scenario.tag_estimate.position()
-        gdop = self.scenario.tag_estimate.dilution_of_precision()
+        tag_positions = self.scenario.tag_positions()
+        gdop = self.scenario.get_tag_list()[0].dilution_of_precision()
 
-        self.tag_estimate_plot.set_xdata([estimate_position[0]])
-        self.tag_estimate_plot.set_ydata([estimate_position[1]])
+        for i, plot in enumerate(self.tag_estimate_plots):
+            plot.set_xdata([tag_positions[i][0]])
+            plot.set_ydata([tag_positions[i][1]])
 
         for i, plot in enumerate(self.anchor_plots):
             plot.set_offsets([anchor_positions[i]])
@@ -116,47 +119,51 @@ class TrilatPlot:
                     t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
                     self.lines_plot.append(t)
 
-        for anchor_position in anchor_positions:
-            if self.display_config.showTagAnchorLines:
-                line, = self.ax_trilat.plot(
-                    [anchor_position[0], estimate_position[0]],
-                    [anchor_position[1], estimate_position[1]],
-                    'r--', alpha=0.5
-                )
-                self.lines_plot.append(line)
+        for tag_position in tag_positions:
+            for anchor_position in anchor_positions:
+                if self.display_config.showTagAnchorLines:
+                    line, = self.ax_trilat.plot(
+                        [anchor_position[0], tag_position[0]],
+                        [anchor_position[1], tag_position[1]],
+                        'r--', alpha=0.5
+                    )
+                    self.lines_plot.append(line)
 
-            xm = (anchor_position[0] + estimate_position[0]) / 2
-            ym = (anchor_position[1] + estimate_position[1]) / 2
-            distance = np.linalg.norm(anchor_position - estimate_position)
-
-            if self.display_config.showTagAnchorLabels:
-                t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
-                self.lines_plot.append(t)
+                if self.display_config.showTagAnchorLabels:
+                    xm = (anchor_position[0] + tag_position[0]) / 2
+                    ym = (anchor_position[1] + tag_position[1]) / 2
+                    distance = np.linalg.norm(anchor_position - tag_position)
+                    t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
+                    self.lines_plot.append(t)
 
         if self.display_config.showAnchorLabels:
-            for i in range(len(self.scenario.anchors)):
-                name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.anchors[i].name(), ha='center', va='center')
+            for i in range(len(self.scenario.get_anchor_list())):
+                name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.get_anchor_list()[i].name(), ha='center', va='center')
                 self.lines_plot.append(name)
 
         self.ax_gdop.clear()
-        self.ax_gdop.bar(["GDOP"], [gdop], color="orange")
+        tags = self.scenario.get_tag_list()
+        gdop_values = [tag.dilution_of_precision() for tag in tags]
+        x_pos = range(len(gdop_values))
+        self.ax_gdop.bar(x_pos, gdop_values, color="orange")
         self.ax_gdop.set_ylim(0, 12)
-        self.ax_gdop.set_xticks([0])
-        self.ax_gdop.set_xticklabels(["GDOP"])
-        self.ax_gdop.text(0, gdop, f"{gdop:.2f}", ha="center")
+        self.ax_gdop.set_xticks(x_pos)
+        self.ax_gdop.set_xticklabels([tag.name() for tag in tags], rotation=90)
+        for i, gdop in enumerate(gdop_values):
+            self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
 
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
         self.fig.canvas.draw_idle()
 
     def add_anchor(self, x, y):
-        anchor_name = f"Anchor {len(self.scenario.anchors) + 1}"
-        self.scenario.anchors.append(station.Anchor([x, y], anchor_name))
+        anchor_name = f"Anchor {len(self.scenario.get_anchor_list()) + 1}"
+        self.scenario.stations.append(station.Anchor([x, y], anchor_name))
         self.update_anchors()
         self.update_plot()
 
     def remove_anchor(self, index):
-        self.scenario.anchors.pop(index)
+        self.scenario.stations.remove(self.scenario.get_anchor_list()[index])
         self.update_anchors()
         self.update_plot()
 
@@ -164,7 +171,7 @@ class TrilatPlot:
         if event.inaxes is None:
             return
 
-        if event.button == 3:
+        if event.button == 3 and self.display_config.rightClickAnchors:
             for i, plot in enumerate(self.anchor_plots):
                 contains, _ = plot.contains(event)
                 if contains:
@@ -176,7 +183,7 @@ class TrilatPlot:
         for i, plot in enumerate(self.anchor_plots):
             contains, _ = plot.contains(event)
             if contains:
-                self.dragging_point = self.scenario.anchors[i]
+                self.dragging_point = self.scenario.get_anchor_list()[i]
                 return
         contains, _ = self.tag_truth_plot.contains(event)
         if contains:
@@ -196,5 +203,5 @@ class TrilatPlot:
 
         x, y = event.xdata, event.ydata
         self.dragging_point.update_position([x, y])
-        self.scenario.generate_measurements(self.scenario.tag_estimate, self.scenario.tag_truth)
+        self.scenario.generate_measurements(self.scenario.get_tag_list()[0], self.scenario.tag_truth)
         self.update_plot()

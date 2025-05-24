@@ -19,3 +19,9 @@ class Measurements:
 
     def remove_station(self, station):
         self.relation = {pair: distance for pair, distance in self.relation.items() if station not in pair}
+
+    def __str__(self):
+        return f"Measurements(relation={self.relation})"
+
+    def __repr__(self):
+        return f"Measurements(relation={self.relation})"

@@ -24,7 +24,8 @@ def trilateration(anchor_positions, distances):
         d = np.linalg.norm(p2 - p1)
 
         if d > r1 + r2 or d < abs(r1 - r2):
-            raise ValueError("The hyper-spheres do not intersect.")
+            print("The hyper-spheres do not intersect.")
+            #raise ValueError("The hyper-spheres do not intersect.")
 
         a = (r1 ** 2 - r2 ** 2 + d ** 2) / (2 * d)
         base = p1 + a * (p2 - p1) / d

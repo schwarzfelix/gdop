@@ -38,6 +38,9 @@ class Station(ABC):
     def __str__(self):
         return self.name()
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}(name={self.name()})"
+
 class Anchor(Station):
 
     def __init__(self, position, name='FixedDevice', scenario=None):
@@ -74,23 +77,43 @@ class Tag(Station):
 
     def position(self, exclude=None):
 
+        tags_only_network = False
+        #TODO GUI switch
+        if tags_only_network and len(self.scenario.get_tag_list()) > 0:
+            if self.scenario.get_tag_list()[0] == self:
+                return [0, 0]
+
         if exclude is None:
             exclude = {self}
         exclude |= {self}
 
         relation_subset = self.measurements.find_relation(self)
 
-        satellite_positions = []
+        anchor_count = 0
+        partner_count = 0
+        for measurement in relation_subset:
+            partner = next(iter(measurement[0].copy() - {self}))
+            if partner in exclude:
+                continue
+            partner_count += 1
+            if isinstance(partner, Anchor):
+                anchor_count += 1
+        # TODO check if anchors are distinct
+
+        if partner_count < 1:
+            return [0, 0]
+
+        station_positions = []
         distances = []
 
         for measurement in relation_subset:
             partner = next(iter(measurement[0].copy() - {self}))
             if partner in exclude:
                 continue
-            satellite_positions.append(partner.position(exclude))
+            station_positions.append(partner.position(exclude))
             distances = np.append(distances, measurement[1])
 
-        return geometry.trilateration(np.array(satellite_positions), np.array(distances))
+        return geometry.trilateration(np.array(station_positions), np.array(distances))
 
     def distance_to(self, other: Station):
         return distance_between(self.measurements, self, other)

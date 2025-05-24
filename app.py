@@ -1,4 +1,5 @@
 import sys
+import threading
 from PyQt5.QtWidgets import QApplication
 
 import presentation

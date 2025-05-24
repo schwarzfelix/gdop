@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox, QTabWidget
 from PyQt5.QtWidgets import QSlider, QCheckBox, QTreeWidgetItem, QTreeWidget
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLineEdit, QDoubleSpinBox, QTabWidget
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
@@ -48,7 +49,10 @@ class MainWindow(QMainWindow):
         self.create_sigma_tab()
         self.create_angles_tab()
         self.create_display_tab()
+        self.create_streaming_tab()
         layout.addWidget(self.tab_widget)
+
+        self.start_periodic_update()
 
     def create_plot_tab(self):
         self.tab_widget.addTab(self.toolbar, "Plot")
@@ -122,7 +126,46 @@ class MainWindow(QMainWindow):
         tag_anchor_labels_item = QTreeWidgetItem(tag_anchor_node)
         self.display_tree.setItemWidget(tag_anchor_labels_item, 0, self.tag_anchor_labels_checkbox)
 
+        interaction_node = QTreeWidgetItem(self.display_tree, ["Interaction"])
+        self.right_click_anchors_checkbox = QCheckBox("Enable Right-Click Anchor Control")
+        self.right_click_anchors_checkbox.setChecked(self.display_config.rightClickAnchors)
+        self.right_click_anchors_checkbox.stateChanged.connect(self.update_display_config)
+        right_click_anchors_item = QTreeWidgetItem(interaction_node)
+        self.display_tree.setItemWidget(right_click_anchors_item, 0, self.right_click_anchors_checkbox)
+
         self.tab_widget.addTab(self.display_tree, "Display")
+
+    def create_streaming_tab(self):
+        self.streaming_tree = QTreeWidget()
+        self.streaming_tree.setHeaderHidden(True)
+
+        root_node = QTreeWidgetItem(self.streaming_tree)
+        self.stream_enabled_checkbox = QCheckBox("Stream Measurements")
+        self.stream_enabled_checkbox.setChecked(False)
+        self.stream_enabled_checkbox.stateChanged.connect(self.update_streaming_config)
+        self.streaming_tree.setItemWidget(root_node, 0, self.stream_enabled_checkbox)
+
+        url_node = QTreeWidgetItem(self.streaming_tree)
+        self.url_input = QLineEdit()
+        self.url_input.setPlaceholderText("Enter SSE URL")
+        self.streaming_tree.setItemWidget(url_node, 0, self.url_input)
+
+        self.tab_widget.addTab(self.streaming_tree, "Streaming")
+
+        self.tab_widget.addTab(self.streaming_tree, "Streaming")
+
+    def update_streaming_config(self):
+        is_enabled = self.stream_enabled_checkbox.isChecked()
+        if is_enabled:
+            url = self.url_input.text().strip()
+            if url:
+                self.scenario.start_streaming(url)
+            else:
+                self.stream_enabled_checkbox.setChecked(False)
+                print("Please enter a valid SSE URL.")
+        else:
+            self.scenario.stop_streaming()
+            print("Streaming stopped.")
 
     def update_display_config(self):
         self.display_config.showAnchorCircles = self.anchor_circles_checkbox.isChecked()
@@ -131,6 +174,8 @@ class MainWindow(QMainWindow):
         self.display_config.showBetweenAnchorsLabels = self.between_anchors_labels_checkbox.isChecked()
         self.display_config.showTagAnchorLines = self.tag_anchor_lines_checkbox.isChecked()
         self.display_config.showTagAnchorLabels = self.tag_anchor_labels_checkbox.isChecked()
+
+        self.display_config.rightClickAnchors = self.right_click_anchors_checkbox.isChecked()
 
         self.update_all()
 
@@ -142,25 +187,17 @@ class MainWindow(QMainWindow):
         self.scenario.sigma = self.sigma_input.value()
         self.update_all()
 
-    def create_angles_tab(self):
-        self.angles_tree = QTreeWidget()
-        self.angles_tree.setHeaderHidden(True)
-
-        self.update_angles_tree()
-
-        self.tab_widget.addTab(self.angles_tree, "Angles")
-
     def update_angles_tree(self):
         self.angles_tree.clear()
 
         anchor_positions = self.scenario.anchor_positions()
         tag_position = self.scenario.tag_truth.position()
 
-        for i, anchor in enumerate(self.scenario.anchors):
+        for i, anchor in enumerate(self.scenario.get_anchor_list()):
             anchor_node = QTreeWidgetItem(self.angles_tree, [anchor.name()])
             other_stations = [
-                (self.scenario.anchors[j].name(), anchor_positions[j])
-                for j in range(len(self.scenario.anchors)) if j != i
+                (self.scenario.get_anchor_list()[j].name(), anchor_positions[j])
+                for j in range(len(self.scenario.get_anchor_list())) if j != i
             ]
             other_stations.append(("Tag", tag_position))
 
@@ -171,7 +208,7 @@ class MainWindow(QMainWindow):
         tag_node = QTreeWidgetItem(self.angles_tree, ["Tag"])
         other_stations = [
             (anchor.name(), anchor_positions[i])
-            for i, anchor in enumerate(self.scenario.anchors)
+            for i, anchor in enumerate(self.scenario.get_anchor_list())
         ]
 
         for (name1, pos1), (name2, pos2) in combinations(other_stations, 2):
@@ -186,3 +223,10 @@ class MainWindow(QMainWindow):
         self.plot.update_plot()
         self.update_angles_tree()
         self.update_sigma()
+
+    def start_periodic_update(self):
+        self.update_timer = QTimer()
+        self.update_timer.timeout.connect(self.update_all)
+        self.update_timer.start(2000)
+        #TODO add switch to turn on/off periodic update
+        #TODO instead of periodically, update when new SSE data received

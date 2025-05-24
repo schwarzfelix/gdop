@@ -1,0 +1,771 @@
+event: connected
+data: {"status":"connected"}
+
+event : update
+data: {"id":17,"source_id":7,"destination_id":1,"raw_distance":110.58633436040785}
+
+event : update
+data: {"id":18,"source_id":7,"destination_id":3,"raw_distance":575.5610778052029}
+
+event : update
+data: {"id":19,"source_id":7,"destination_id":4,"raw_distance":156.45347154724809}
+
+event : update
+data: {"id":20,"source_id":7,"destination_id":5,"raw_distance":455.30948870898175}
+
+event : update
+data: {"id":21,"source_id":7,"destination_id":6,"raw_distance":442.3349376124069}
+
+event : update
+data: {"id":22,"source_id":7,"destination_id":8,"raw_distance":832.2856922224514}
+
+event : update
+data: {"id":23,"source_id":7,"destination_id":10,"raw_distance":56.511150688506945}
+
+event : update
+data: {"id":24,"source_id":7,"destination_id":11,"raw_distance":212.28279023600217}
+
+event : update
+data: {"id":25,"source_id":7,"destination_id":12,"raw_distance":193.58990289069362}
+
+event : update
+data: {"id":26,"source_id":7,"destination_id":13,"raw_distance":632.0509157873423}
+
+event : update
+data: {"id":27,"source_id":7,"destination_id":14,"raw_distance":334.44342570624366}
+
+event : update
+data: {"id":28,"source_id":7,"destination_id":15,"raw_distance":557.0495343345136}
+
+event : update
+data: {"id":29,"source_id":7,"destination_id":16,"raw_distance":283.94980487798387}
+
+event : update
+data: {"id":30,"source_id":7,"destination_id":18,"raw_distance":444.73131924964144}
+
+event : update
+data: {"id":31,"source_id":7,"destination_id":19,"raw_distance":785.5504456594682}
+
+event : update
+data: {"id":32,"source_id":7,"destination_id":20,"raw_distance":554.9894054145456}
+
+event : update
+data: {"id":1,"source_id":2,"destination_id":1,"raw_distance":361.08519900313513}
+
+event : update
+data: {"id":2,"source_id":2,"destination_id":3,"raw_distance":313.33125931694747}
+
+event : update
+data: {"id":3,"source_id":2,"destination_id":4,"raw_distance":465.67570157709685}
+
+event : update
+data: {"id":4,"source_id":2,"destination_id":5,"raw_distance":601.5297576765563}
+
+event : update
+data: {"id":5,"source_id":2,"destination_id":6,"raw_distance":349.871891792716}
+
+event : update
+data: {"id":6,"source_id":2,"destination_id":8,"raw_distance":917.4404687184856}
+
+event : update
+data: {"id":7,"source_id":2,"destination_id":10,"raw_distance":342.825568391184}
+
+event : update
+data: {"id":8,"source_id":2,"destination_id":11,"raw_distance":490.6123528049843}
+
+event : update
+data: {"id":9,"source_id":2,"destination_id":12,"raw_distance":443.1944572691519}
+
+event : update
+data: {"id":10,"source_id":2,"destination_id":13,"raw_distance":948.0877727734651}
+
+event : update
+data: {"id":11,"source_id":2,"destination_id":14,"raw_distance":438.11534253181577}
+
+event : update
+data: {"id":12,"source_id":2,"destination_id":15,"raw_distance":325.5574469877512}
+
+event : update
+data: {"id":13,"source_id":2,"destination_id":16,"raw_distance":53.08383465480352}
+
+event : update
+data: {"id":14,"source_id":2,"destination_id":18,"raw_distance":466.82295212455125}
+
+event : update
+data: {"id":15,"source_id":2,"destination_id":19,"raw_distance":839.9901412560712}
+
+event : update
+data: {"id":16,"source_id":2,"destination_id":20,"raw_distance":443.7337295519897}
+
+event : update
+data: {"id":33,"source_id":9,"destination_id":1,"raw_distance":643.6404555676683}
+
+event : update
+data: {"id":34,"source_id":9,"destination_id":3,"raw_distance":684.7075604482941}
+
+event : update
+data: {"id":35,"source_id":9,"destination_id":4,"raw_distance":718.3117757890927}
+
+event : update
+data: {"id":36,"source_id":9,"destination_id":5,"raw_distance":334.2261542788754}
+
+event : update
+data: {"id":37,"source_id":9,"destination_id":6,"raw_distance":445.37754321434466}
+
+event : update
+data: {"id":38,"source_id":9,"destination_id":8,"raw_distance":169.87982997346623}
+
+event : update
+data: {"id":39,"source_id":9,"destination_id":10,"raw_distance":800.3365227511803}
+
+event : update
+data: {"id":40,"source_id":9,"destination_id":11,"raw_distance":919.5075340414485}
+
+event : update
+data: {"id":41,"source_id":9,"destination_id":12,"raw_distance":927.387546127131}
+
+event : update
+data: {"id":42,"source_id":9,"destination_id":13,"raw_distance":985.6666314143765}
+
+event : update
+data: {"id":43,"source_id":9,"destination_id":14,"raw_distance":411.8890515005645}
+
+event : update
+data: {"id":44,"source_id":9,"destination_id":15,"raw_distance":618.443753909467}
+
+event : update
+data: {"id":45,"source_id":9,"destination_id":16,"raw_distance":810.598360444614}
+
+event : update
+data: {"id":46,"source_id":9,"destination_id":18,"raw_distance":321.7585438355828}
+
+event : update
+data: {"id":47,"source_id":9,"destination_id":19,"raw_distance":66.37067721629562}
+
+event : update
+data: {"id":48,"source_id":9,"destination_id":20,"raw_distance":399.35764659546555}
+
+event : update
+data: {"id":49,"source_id":17,"destination_id":1,"raw_distance":221.33775013525798}
+
+event : update
+data: {"id":50,"source_id":17,"destination_id":3,"raw_distance":370.02810062322226}
+
+event : update
+data: {"id":51,"source_id":17,"destination_id":4,"raw_distance":347.0181865472808}
+
+event : update
+data: {"id":52,"source_id":17,"destination_id":5,"raw_distance":325.7939808919743}
+
+event : update
+data: {"id":53,"source_id":17,"destination_id":6,"raw_distance":166.74430851814793}
+
+event : update
+data: {"id":54,"source_id":17,"destination_id":8,"raw_distance":643.4257680099424}
+
+event : update
+data: {"id":55,"source_id":17,"destination_id":10,"raw_distance":332.9705812218503}
+
+event : update
+data: {"id":56,"source_id":17,"destination_id":11,"raw_distance":487.4805157518824}
+
+event : update
+data: {"id":57,"source_id":17,"destination_id":12,"raw_distance":470.37352959550327}
+
+event : update
+data: {"id":58,"source_id":17,"destination_id":13,"raw_distance":806.8453453196313}
+
+event : update
+data: {"id":59,"source_id":17,"destination_id":14,"raw_distance":162.11189904192776}
+
+event : update
+data: {"id":60,"source_id":17,"destination_id":15,"raw_distance":328.7116124309706}
+
+event : update
+data: {"id":61,"source_id":17,"destination_id":16,"raw_distance":296.15251503654014}
+
+event : update
+data: {"id":62,"source_id":17,"destination_id":18,"raw_distance":199.51377136872605}
+
+event : update
+data: {"id":63,"source_id":17,"destination_id":19,"raw_distance":573.0559549520648}
+
+event : update
+data: {"id":64,"source_id":17,"destination_id":20,"raw_distance":278.22939741163265}
+
+event : update
+data: {"id":17,"source_id":7,"destination_id":1,"raw_distance":97.27042201049034}
+
+event : update
+data: {"id":18,"source_id":7,"destination_id":3,"raw_distance":587.3133574363328}
+
+event : update
+data: {"id":19,"source_id":7,"destination_id":4,"raw_distance":136.75428228805677}
+
+event : update
+data: {"id":20,"source_id":7,"destination_id":5,"raw_distance":442.2310471527199}
+
+event : update
+data: {"id":21,"source_id":7,"destination_id":6,"raw_distance":445.32528383025226}
+
+event : update
+data: {"id":22,"source_id":7,"destination_id":8,"raw_distance":820.6162084658996}
+
+event : update
+data: {"id":23,"source_id":7,"destination_id":10,"raw_distance":62.462803164710294}
+
+event : update
+data: {"id":24,"source_id":7,"destination_id":11,"raw_distance":208.27477842226534}
+
+event : update
+data: {"id":25,"source_id":7,"destination_id":12,"raw_distance":195.44109928758778}
+
+event : update
+data: {"id":26,"source_id":7,"destination_id":13,"raw_distance":614.2173738282845}
+
+event : update
+data: {"id":27,"source_id":7,"destination_id":14,"raw_distance":326.3379639651502}
+
+event : update
+data: {"id":28,"source_id":7,"destination_id":15,"raw_distance":566.9382483987729}
+
+event : update
+data: {"id":29,"source_id":7,"destination_id":16,"raw_distance":302.46588275180005}
+
+event : update
+data: {"id":30,"source_id":7,"destination_id":18,"raw_distance":440.1762346683606}
+
+event : update
+data: {"id":31,"source_id":7,"destination_id":19,"raw_distance":775.8677490033122}
+
+event : update
+data: {"id":32,"source_id":7,"destination_id":20,"raw_distance":557.4408980762406}
+
+event : update
+data: {"id":1,"source_id":2,"destination_id":1,"raw_distance":367.2766394353614}
+
+event : update
+data: {"id":2,"source_id":2,"destination_id":3,"raw_distance":328.6183477089044}
+
+event : update
+data: {"id":3,"source_id":2,"destination_id":4,"raw_distance":468.3368944812473}
+
+event : update
+data: {"id":4,"source_id":2,"destination_id":5,"raw_distance":616.3838047178025}
+
+event : update
+data: {"id":5,"source_id":2,"destination_id":6,"raw_distance":369.7012164482461}
+
+event : update
+data: {"id":6,"source_id":2,"destination_id":8,"raw_distance":935.4425819638519}
+
+event : update
+data: {"id":7,"source_id":2,"destination_id":10,"raw_distance":340.12708461935694}
+
+event : update
+data: {"id":8,"source_id":2,"destination_id":11,"raw_distance":484.6527666871476}
+
+event : update
+data: {"id":9,"source_id":2,"destination_id":12,"raw_distance":435.68764573169943}
+
+event : update
+data: {"id":10,"source_id":2,"destination_id":13,"raw_distance":949.0910760596324}
+
+event : update
+data: {"id":11,"source_id":2,"destination_id":14,"raw_distance":453.34634842600786}
+
+event : update
+data: {"id":12,"source_id":2,"destination_id":15,"raw_distance":343.0883441790246}
+
+event : update
+data: {"id":13,"source_id":2,"destination_id":16,"raw_distance":40.26780844328967}
+
+event : update
+data: {"id":14,"source_id":2,"destination_id":18,"raw_distance":485.06107128660176}
+
+event : update
+data: {"id":15,"source_id":2,"destination_id":19,"raw_distance":858.632579570744}
+
+event : update
+data: {"id":16,"source_id":2,"destination_id":20,"raw_distance":463.7270422701012}
+
+event : update
+data: {"id":33,"source_id":9,"destination_id":1,"raw_distance":628.0206299062653}
+
+event : update
+data: {"id":34,"source_id":9,"destination_id":3,"raw_distance":665.195113137343}
+
+event : update
+data: {"id":35,"source_id":9,"destination_id":4,"raw_distance":704.7622364922191}
+
+event : update
+data: {"id":36,"source_id":9,"destination_id":5,"raw_distance":323.78206215585544}
+
+event : update
+data: {"id":37,"source_id":9,"destination_id":6,"raw_distance":425.39082170565166}
+
+event : update
+data: {"id":38,"source_id":9,"destination_id":8,"raw_distance":187.40565095810987}
+
+event : update
+data: {"id":39,"source_id":9,"destination_id":10,"raw_distance":784.229693583507}
+
+event : update
+data: {"id":40,"source_id":9,"destination_id":11,"raw_distance":905.0307249845201}
+
+event : update
+data: {"id":41,"source_id":9,"destination_id":12,"raw_distance":912.0250724401999}
+
+event : update
+data: {"id":42,"source_id":9,"destination_id":13,"raw_distance":980.5365974637123}
+
+event : update
+data: {"id":43,"source_id":9,"destination_id":14,"raw_distance":395.59179383981314}
+
+event : update
+data: {"id":44,"source_id":9,"destination_id":15,"raw_distance":598.9208349798299}
+
+event : update
+data: {"id":45,"source_id":9,"destination_id":16,"raw_distance":791.2258482853765}
+
+event : update
+data: {"id":46,"source_id":9,"destination_id":18,"raw_distance":302.9389291677628}
+
+event : update
+data: {"id":47,"source_id":9,"destination_id":19,"raw_distance":85.33290964889915}
+
+event : update
+data: {"id":48,"source_id":9,"destination_id":20,"raw_distance":379.82113057235324}
+
+event : update
+data: {"id":49,"source_id":17,"destination_id":1,"raw_distance":213.84921396380682}
+
+event : update
+data: {"id":50,"source_id":17,"destination_id":3,"raw_distance":367.6023525113829}
+
+event : update
+data: {"id":51,"source_id":17,"destination_id":4,"raw_distance":340.5292850319202}
+
+event : update
+data: {"id":52,"source_id":17,"destination_id":5,"raw_distance":341.5918771418463}
+
+event : update
+data: {"id":53,"source_id":17,"destination_id":6,"raw_distance":179.2448173640281}
+
+event : update
+data: {"id":54,"source_id":17,"destination_id":8,"raw_distance":662.9895311441761}
+
+event : update
+data: {"id":55,"source_id":17,"destination_id":10,"raw_distance":318.27068582604386}
+
+event : update
+data: {"id":56,"source_id":17,"destination_id":11,"raw_distance":474.35907532798217}
+
+event : update
+data: {"id":57,"source_id":17,"destination_id":12,"raw_distance":455.4791694726442}
+
+event : update
+data: {"id":58,"source_id":17,"destination_id":13,"raw_distance":805.7646383652113}
+
+event : update
+data: {"id":59,"source_id":17,"destination_id":14,"raw_distance":177.67438532574153}
+
+event : update
+data: {"id":60,"source_id":17,"destination_id":15,"raw_distance":329.325614619926}
+
+event : update
+data: {"id":61,"source_id":17,"destination_id":16,"raw_distance":276.96620448209467}
+
+event : update
+data: {"id":62,"source_id":17,"destination_id":18,"raw_distance":219.51311007679652}
+
+event : update
+data: {"id":63,"source_id":17,"destination_id":19,"raw_distance":592.9875001151319}
+
+event : update
+data: {"id":64,"source_id":17,"destination_id":20,"raw_distance":291.81605454684683}
+
+event : update
+data: {"id":17,"source_id":7,"destination_id":1,"raw_distance":86.5663482476063}
+
+event : update
+data: {"id":18,"source_id":7,"destination_id":3,"raw_distance":599.5026316555986}
+
+event : update
+data: {"id":19,"source_id":7,"destination_id":4,"raw_distance":117.15706845537527}
+
+event : update
+data: {"id":20,"source_id":7,"destination_id":5,"raw_distance":429.68577777621175}
+
+event : update
+data: {"id":21,"source_id":7,"destination_id":6,"raw_distance":449.1870654910018}
+
+event : update
+data: {"id":22,"source_id":7,"destination_id":8,"raw_distance":809.2727906680742}
+
+event : update
+data: {"id":23,"source_id":7,"destination_id":10,"raw_distance":73.55061798685007}
+
+event : update
+data: {"id":24,"source_id":7,"destination_id":11,"raw_distance":206.1377782535384}
+
+event : update
+data: {"id":25,"source_id":7,"destination_id":12,"raw_distance":199.2922378825962}
+
+event : update
+data: {"id":26,"source_id":7,"destination_id":13,"raw_distance":596.5212523266972}
+
+event : update
+data: {"id":27,"source_id":7,"destination_id":14,"raw_distance":319.2812685575394}
+
+event : update
+data: {"id":28,"source_id":7,"destination_id":15,"raw_distance":577.3506484733856}
+
+event : update
+data: {"id":29,"source_id":7,"destination_id":16,"raw_distance":321.15997379406764}
+
+event : update
+data: {"id":30,"source_id":7,"destination_id":18,"raw_distance":436.49088056006957}
+
+event : update
+data: {"id":31,"source_id":7,"destination_id":19,"raw_distance":766.5846497361816}
+
+event : update
+data: {"id":32,"source_id":7,"destination_id":20,"raw_distance":560.5956382043126}
+
+event : update
+data: {"id":1,"source_id":2,"destination_id":1,"raw_distance":374.4352264554328}
+
+event : update
+data: {"id":2,"source_id":2,"destination_id":3,"raw_distance":344.3886740831013}
+
+event : update
+data: {"id":3,"source_id":2,"destination_id":4,"raw_distance":471.83157421410095}
+
+event : update
+data: {"id":4,"source_id":2,"destination_id":5,"raw_distance":631.5219236624898}
+
+event : update
+data: {"id":5,"source_id":2,"destination_id":6,"raw_distance":389.5479921909647}
+
+event : update
+data: {"id":6,"source_id":2,"destination_id":8,"raw_distance":953.5243230563136}
+
+event : update
+data: {"id":7,"source_id":2,"destination_id":10,"raw_distance":338.59045621604287}
+
+event : update
+data: {"id":8,"source_id":2,"destination_id":11,"raw_distance":479.4539892316792}
+
+event : update
+data: {"id":9,"source_id":2,"destination_id":12,"raw_distance":428.98265971058044}
+
+event : update
+data: {"id":10,"source_id":2,"destination_id":13,"raw_distance":950.5142378888979}
+
+event : update
+data: {"id":11,"source_id":2,"destination_id":14,"raw_distance":468.93578441042473}
+
+event : update
+data: {"id":12,"source_id":2,"destination_id":15,"raw_distance":360.8761179876375}
+
+event : update
+data: {"id":13,"source_id":2,"destination_id":16,"raw_distance":35.00141842829267}
+
+event : update
+data: {"id":14,"source_id":2,"destination_id":18,"raw_distance":503.433031420397}
+
+event : update
+data: {"id":15,"source_id":2,"destination_id":19,"raw_distance":877.3348140779696}
+
+event : update
+data: {"id":16,"source_id":2,"destination_id":20,"raw_distance":483.72090788287625}
+
+event : update
+data: {"id":33,"source_id":9,"destination_id":1,"raw_distance":612.6555207719658}
+
+event : update
+data: {"id":34,"source_id":9,"destination_id":3,"raw_distance":645.7125008458106}
+
+event : update
+data: {"id":35,"source_id":9,"destination_id":4,"raw_distance":691.5257137184049}
+
+event : update
+data: {"id":36,"source_id":9,"destination_id":5,"raw_distance":314.2650558744161}
+
+event : update
+data: {"id":37,"source_id":9,"destination_id":6,"raw_distance":405.4054099086169}
+
+event : update
+data: {"id":38,"source_id":9,"destination_id":8,"raw_distance":205.3840290535075}
+
+event : update
+data: {"id":39,"source_id":9,"destination_id":10,"raw_distance":768.3058472683337}
+
+event : update
+data: {"id":40,"source_id":9,"destination_id":11,"raw_distance":890.7677144873551}
+
+event : update
+data: {"id":41,"source_id":9,"destination_id":12,"raw_distance":896.8454743195183}
+
+event : update
+data: {"id":42,"source_id":9,"destination_id":13,"raw_distance":975.7895929183009}
+
+event : update
+data: {"id":43,"source_id":9,"destination_id":14,"raw_distance":379.64871125919524}
+
+event : update
+data: {"id":44,"source_id":9,"destination_id":15,"raw_distance":579.4304586369619}
+
+event : update
+data: {"id":45,"source_id":9,"destination_id":16,"raw_distance":771.88534383957}
+
+event : update
+data: {"id":46,"source_id":9,"destination_id":18,"raw_distance":284.28054643156116}
+
+event : update
+data: {"id":47,"source_id":9,"destination_id":19,"raw_distance":104.6821099526785}
+
+event : update
+data: {"id":48,"source_id":9,"destination_id":20,"raw_distance":360.3354722536382}
+
+event : update
+data: {"id":49,"source_id":17,"destination_id":1,"raw_distance":208.02060713049121}
+
+event : update
+data: {"id":50,"source_id":17,"destination_id":3,"raw_distance":366.2542612625504}
+
+event : update
+data: {"id":51,"source_id":17,"destination_id":4,"raw_distance":335.110080621485}
+
+event : update
+data: {"id":52,"source_id":17,"destination_id":5,"raw_distance":357.81042896084}
+
+event : update
+data: {"id":53,"source_id":17,"destination_id":6,"raw_distance":193.01229152707424}
+
+event : update
+data: {"id":54,"source_id":17,"destination_id":8,"raw_distance":682.578579999669}
+
+event : update
+data: {"id":55,"source_id":17,"destination_id":10,"raw_distance":304.1760196878509}
+
+event : update
+data: {"id":56,"source_id":17,"destination_id":11,"raw_distance":461.73131955100814}
+
+event : update
+data: {"id":57,"source_id":17,"destination_id":12,"raw_distance":440.98899113566046}
+
+event : update
+data: {"id":58,"source_id":17,"destination_id":13,"raw_distance":805.1794170342936}
+
+event : update
+data: {"id":59,"source_id":17,"destination_id":14,"raw_distance":194.051814190901}
+
+event : update
+data: {"id":60,"source_id":17,"destination_id":15,"raw_distance":331.14860220543795}
+
+event : update
+data: {"id":61,"source_id":17,"destination_id":16,"raw_distance":257.903556950979}
+
+event : update
+data: {"id":62,"source_id":17,"destination_id":18,"raw_distance":239.51255922269146}
+
+event : update
+data: {"id":63,"source_id":17,"destination_id":19,"raw_distance":612.9235050800091}
+
+event : update
+data: {"id":64,"source_id":17,"destination_id":20,"raw_distance":306.10720638125514}
+
+event : update
+data: {"id":17,"source_id":7,"destination_id":1,"raw_distance":79.53571713232256}
+
+event : update
+data: {"id":18,"source_id":7,"destination_id":3,"raw_distance":612.1027943906473}
+
+event : update
+data: {"id":19,"source_id":7,"destination_id":4,"raw_distance":97.72319915963395}
+
+event : update
+data: {"id":20,"source_id":7,"destination_id":5,"raw_distance":417.7217209824082}
+
+event : update
+data: {"id":21,"source_id":7,"destination_id":6,"raw_distance":453.8980405226931}
+
+event : update
+data: {"id":22,"source_id":7,"destination_id":8,"raw_distance":798.2693391546719}
+
+event : update
+data: {"id":23,"source_id":7,"destination_id":10,"raw_distance":87.85092505660799}
+
+event : update
+data: {"id":24,"source_id":7,"destination_id":11,"raw_distance":205.9300461801682}
+
+event : update
+data: {"id":25,"source_id":7,"destination_id":12,"raw_distance":205.03065348812083}
+
+event : update
+data: {"id":26,"source_id":7,"destination_id":13,"raw_distance":578.9751520076728}
+
+event : update
+data: {"id":27,"source_id":7,"destination_id":14,"raw_distance":313.34420399698416}
+
+event : update
+data: {"id":28,"source_id":7,"destination_id":15,"raw_distance":588.2589269087288}
+
+event : update
+data: {"id":29,"source_id":7,"destination_id":16,"raw_distance":340.00271661559816}
+
+event : update
+data: {"id":30,"source_id":7,"destination_id":18,"raw_distance":433.6974291570036}
+
+event : update
+data: {"id":31,"source_id":7,"destination_id":19,"raw_distance":757.7158349136052}
+
+event : update
+data: {"id":32,"source_id":7,"destination_id":20,"raw_distance":564.4418342923879}
+
+event : update
+data: {"id":1,"source_id":2,"destination_id":1,"raw_distance":382.5066636629093}
+
+event : update
+data: {"id":2,"source_id":2,"destination_id":3,"raw_distance":360.578839121908}
+
+event : update
+data: {"id":3,"source_id":2,"destination_id":4,"raw_distance":476.14138878947955}
+
+event : update
+data: {"id":4,"source_id":2,"destination_id":5,"raw_distance":646.9241728474437}
+
+event : update
+data: {"id":5,"source_id":2,"destination_id":6,"raw_distance":409.409681122358}
+
+event : update
+data: {"id":6,"source_id":2,"destination_id":8,"raw_distance":971.6812466898826}
+
+event : update
+data: {"id":7,"source_id":2,"destination_id":10,"raw_distance":338.23151891790457}
+
+event : update
+data: {"id":8,"source_id":2,"destination_id":11,"raw_distance":475.0409996230173}
+
+event : update
+data: {"id":9,"source_id":2,"destination_id":12,"raw_distance":423.11761960653024}
+
+event : update
+data: {"id":10,"source_id":2,"destination_id":13,"raw_distance":952.3553760036186}
+
+event : update
+data: {"id":11,"source_id":2,"destination_id":14,"raw_distance":484.8490777242393}
+
+event : update
+data: {"id":12,"source_id":2,"destination_id":15,"raw_distance":378.88459081381194}
+
+event : update
+data: {"id":13,"source_id":2,"destination_id":16,"raw_distance":40.35718259689815}
+
+event : update
+data: {"id":14,"source_id":2,"destination_id":18,"raw_distance":521.9246989485697}
+
+event : update
+data: {"id":15,"source_id":2,"destination_id":19,"raw_distance":896.0931007915088}
+
+event : update
+data: {"id":16,"source_id":2,"destination_id":20,"raw_distance":503.71526055251877}
+
+event : update
+data: {"id":33,"source_id":9,"destination_id":1,"raw_distance":597.5647769713969}
+
+event : update
+data: {"id":34,"source_id":9,"destination_id":3,"raw_distance":626.2625080230329}
+
+event : update
+data: {"id":35,"source_id":9,"destination_id":4,"raw_distance":678.6205239174424}
+
+event : update
+data: {"id":36,"source_id":9,"destination_id":5,"raw_distance":305.76171590570567}
+
+event : update
+data: {"id":37,"source_id":9,"destination_id":6,"raw_distance":385.4215115622606}
+
+event : update
+data: {"id":38,"source_id":9,"destination_id":8,"raw_distance":223.705880051176}
+
+event : update
+data: {"id":39,"source_id":9,"destination_id":10,"raw_distance":752.576599154759}
+
+event : update
+data: {"id":40,"source_id":9,"destination_id":11,"raw_distance":876.7289371179935}
+
+event : update
+data: {"id":41,"source_id":9,"destination_id":12,"raw_distance":881.858195434647}
+
+event : update
+data: {"id":42,"source_id":9,"destination_id":13,"raw_distance":971.431232939117}
+
+event : update
+data: {"id":43,"source_id":9,"destination_id":14,"raw_distance":364.10633140352604}
+
+event : update
+data: {"id":44,"source_id":9,"destination_id":15,"raw_distance":559.9760228970017}
+
+event : update
+data: {"id":45,"source_id":9,"destination_id":16,"raw_distance":752.5793148059205}
+
+event : update
+data: {"id":46,"source_id":9,"destination_id":18,"raw_distance":265.8173496097332}
+
+event : update
+data: {"id":47,"source_id":9,"destination_id":19,"raw_distance":124.23760629995313}
+
+event : update
+data: {"id":48,"source_id":9,"destination_id":20,"raw_distance":340.90939250663706}
+
+event : update
+data: {"id":49,"source_id":17,"destination_id":1,"raw_distance":203.99426381381}
+
+event : update
+data: {"id":50,"source_id":17,"destination_id":3,"raw_distance":365.9957352402485}
+
+event : update
+data: {"id":51,"source_id":17,"destination_id":4,"raw_distance":330.8131471146901}
+
+event : update
+data: {"id":52,"source_id":17,"destination_id":5,"raw_distance":374.39497274534875}
+
+event : update
+data: {"id":53,"source_id":17,"destination_id":6,"raw_distance":207.79505482373926}
+
+event : update
+data: {"id":54,"source_id":17,"destination_id":8,"raw_distance":702.1907983888387}
+
+event : update
+data: {"id":55,"source_id":17,"destination_id":10,"raw_distance":290.77460764328686}
+
+event : update
+data: {"id":56,"source_id":17,"destination_id":11,"raw_distance":449.63884458820075}
+
+event : update
+data: {"id":57,"source_id":17,"destination_id":12,"raw_distance":426.9441494882036}
+
+event : update
+data: {"id":58,"source_id":17,"destination_id":13,"raw_distance":805.0907618346827}
+
+event : update
+data: {"id":59,"source_id":17,"destination_id":14,"raw_distance":211.05455688205333}
+
+event : update
+data: {"id":60,"source_id":17,"destination_id":15,"raw_distance":334.16078920250175}
+
+event : update
+data: {"id":61,"source_id":17,"destination_id":16,"raw_distance":238.9941650976364}
+
+event : update
+data: {"id":62,"source_id":17,"destination_id":18,"raw_distance":259.5120932735482}
+
+event : update
+data: {"id":63,"source_id":17,"destination_id":19,"raw_distance":632.8635483785858}
+
+event : update
+data: {"id":64,"source_id":17,"destination_id":20,"raw_distance":321.00877543423076}
+

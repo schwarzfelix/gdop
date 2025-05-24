@@ -9,3 +9,5 @@ class DisplayConfig():
 
         self.showBetweenAnchorsLabels = False
         self.showBetweenAnchorsLines = True
+
+        self.rightClickAnchors = False
