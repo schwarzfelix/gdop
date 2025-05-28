@@ -41,9 +41,6 @@ class TrilatPlot:
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
         self.fig.canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
 
-        self.update_anchors()
-        self.update_plot()
-
 
     def update_anchors(self):
 
@@ -159,13 +156,12 @@ class TrilatPlot:
     def add_anchor(self, x, y):
         anchor_name = f"Anchor {len(self.scenario.get_anchor_list()) + 1}"
         self.scenario.stations.append(station.Anchor([x, y], anchor_name))
-        self.update_anchors()
-        self.update_plot()
+        self.window.update_all()
 
     def remove_anchor(self, index):
-        self.scenario.stations.remove(self.scenario.get_anchor_list()[index])
-        self.update_anchors()
-        self.update_plot()
+        anchor_to_remove = self.scenario.get_anchor_list()[index]
+        self.scenario.remove_station(anchor_to_remove)
+        self.window.update_all()
 
     def on_mouse_press(self, event):
         if event.inaxes is None:
@@ -204,4 +200,4 @@ class TrilatPlot:
         x, y = event.xdata, event.ydata
         self.dragging_point.update_position([x, y])
         self.scenario.generate_measurements(self.scenario.get_tag_list()[0], self.scenario.tag_truth)
-        self.update_plot()
+        self.window.update_all()

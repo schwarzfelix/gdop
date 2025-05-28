@@ -13,6 +13,9 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItem,
     QVBoxLayout,
     QWidget,
+    QLabel,
+    QPushButton,
+    QHBoxLayout,
 )
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
@@ -64,6 +67,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.tab_widget)
 
         self.start_periodic_update()
+        self.update_all()
 
     def create_plot_tab(self):
         self.tab_widget.addTab(self.toolbar, "Plot")
@@ -217,7 +221,23 @@ class MainWindow(QMainWindow):
         station_positions = {station: station.position() for station in all_stations}
 
         for station in all_stations:
-            station_node = QTreeWidgetItem(self.angles_tree, [station.name()])
+            station_node = QTreeWidgetItem(self.angles_tree)
+
+            station_widget = QWidget()
+            layout = QHBoxLayout()
+            layout.setContentsMargins(0, 0, 0, 0)
+
+            name_label = QLabel(station.name())
+            delete_button = QPushButton("␡")
+            delete_button.clicked.connect(lambda checked, s=station: self.delete_station(s))
+
+            layout.addWidget(name_label)
+            layout.addWidget(delete_button)
+            layout.addStretch()
+            station_widget.setLayout(layout)
+
+            self.angles_tree.setItemWidget(station_node, 0, station_widget)
+
             other_stations = [
                 (other_station.name(), station_positions[other_station])
                 for other_station in all_stations if other_station != station
@@ -233,12 +253,18 @@ class MainWindow(QMainWindow):
                     [f"Angle between {name1} and {name2}: {angle:.2f}°"]
                 )
 
+    def delete_station(self, station):
+        self.scenario.remove_station(station)
+        self.update_all()
+
     def update_sigma(self):
         self.slider.setValue(int(self.scenario.sigma * self.SIGMA_SLIDER_RESOLUTION))
         self.sigma_input.setValue(self.scenario.sigma)
 
     def update_all(self):
-        self.plot.update_plot()
+        if hasattr(self, "plot") and self.plot is not None:
+            self.plot.update_anchors()
+            self.plot.update_plot()
         self.update_angles_tree()
         self.update_sigma()
 

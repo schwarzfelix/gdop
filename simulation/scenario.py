@@ -53,3 +53,8 @@ class Scenario:
         if self.streamer:
             self.streamer.stop_streaming()
             self.streamer = None
+
+    def remove_station(self, station):
+        if station in self.stations:
+            self.measurements.remove_station(station)
+            self.stations.remove(station)
