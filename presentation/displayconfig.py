@@ -8,6 +8,6 @@ class DisplayConfig():
         self.showTagAnchorLines = True
 
         self.showBetweenAnchorsLabels = False
-        self.showBetweenAnchorsLines = True
+        self.showBetweenAnchorsLines = False
 
         self.rightClickAnchors = False
