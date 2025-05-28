@@ -1,7 +1,19 @@
-from PyQt5.QtWidgets import QSlider, QCheckBox, QTreeWidgetItem, QTreeWidget
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLineEdit, QDoubleSpinBox, QTabWidget, QSpinBox
+from itertools import combinations
 
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QDoubleSpinBox,
+    QLineEdit,
+    QMainWindow,
+    QSlider,
+    QSpinBox,
+    QTabWidget,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar,
@@ -9,7 +21,7 @@ from matplotlib.backends.backend_qt5agg import (
 
 import presentation
 from simulation import geometry
-from itertools import combinations
+
 
 class MainWindow(QMainWindow):
 
