@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QTextEdit, QDoubleSpinBox, QTabWidget
 from PyQt5.QtWidgets import QSlider, QCheckBox, QTreeWidgetItem, QTreeWidget
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLineEdit, QDoubleSpinBox, QTabWidget
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLineEdit, QDoubleSpinBox, QTabWidget, QSpinBox
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg as FigureCanvas,
@@ -150,7 +149,19 @@ class MainWindow(QMainWindow):
         self.url_input.setPlaceholderText("Enter SSE URL")
         self.streaming_tree.setItemWidget(url_node, 0, self.url_input)
 
-        self.tab_widget.addTab(self.streaming_tree, "Streaming")
+        periodic_node = QTreeWidgetItem(self.streaming_tree)
+        self.periodic_update_checkbox = QCheckBox("Enable Periodic Update")
+        self.periodic_update_checkbox.setChecked(False)
+        self.periodic_update_checkbox.stateChanged.connect(self.update_periodic_config)
+        self.streaming_tree.setItemWidget(periodic_node, 0, self.periodic_update_checkbox)
+
+        interval_node = QTreeWidgetItem(self.streaming_tree)
+        self.interval_input = QSpinBox()
+        self.interval_input.setRange(100, 10000)
+        self.interval_input.setValue(2000)
+        self.interval_input.setSuffix(" ms")
+        self.interval_input.valueChanged.connect(self.update_periodic_interval)
+        self.streaming_tree.setItemWidget(interval_node, 0, self.interval_input)
 
         self.tab_widget.addTab(self.streaming_tree, "Streaming")
 
@@ -227,6 +238,15 @@ class MainWindow(QMainWindow):
     def start_periodic_update(self):
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.update_all)
-        self.update_timer.start(2000)
-        #TODO add switch to turn on/off periodic update
         #TODO instead of periodically, update when new SSE data received
+
+    def update_periodic_config(self):
+        is_enabled = self.periodic_update_checkbox.isChecked()
+        if is_enabled:
+            self.update_timer.start(self.interval_input.value())
+        else:
+            self.update_timer.stop()
+
+    def update_periodic_interval(self):
+        if self.periodic_update_checkbox.isChecked():
+            self.update_timer.setInterval(self.interval_input.value())
