@@ -213,30 +213,25 @@ class MainWindow(QMainWindow):
     def update_angles_tree(self):
         self.angles_tree.clear()
 
-        anchor_positions = self.scenario.anchor_positions()
-        tag_position = self.scenario.tag_truth.position()
+        all_stations = self.scenario.stations
+        station_positions = {station: station.position() for station in all_stations}
 
-        for i, anchor in enumerate(self.scenario.get_anchor_list()):
-            anchor_node = QTreeWidgetItem(self.angles_tree, [anchor.name()])
+        for station in all_stations:
+            station_node = QTreeWidgetItem(self.angles_tree, [station.name()])
             other_stations = [
-                (self.scenario.get_anchor_list()[j].name(), anchor_positions[j])
-                for j in range(len(self.scenario.get_anchor_list())) if j != i
+                (other_station.name(), station_positions[other_station])
+                for other_station in all_stations if other_station != station
             ]
-            other_stations.append(("Tag", tag_position))
 
             for (name1, pos1), (name2, pos2) in combinations(other_stations, 2):
-                angle = geometry.angle_vectors(pos1 - anchor_positions[i], pos2 - anchor_positions[i])
-                QTreeWidgetItem(anchor_node, [f"Angle between {name1} and {name2}: {angle:.2f}°"])
-
-        tag_node = QTreeWidgetItem(self.angles_tree, ["Tag"])
-        other_stations = [
-            (anchor.name(), anchor_positions[i])
-            for i, anchor in enumerate(self.scenario.get_anchor_list())
-        ]
-
-        for (name1, pos1), (name2, pos2) in combinations(other_stations, 2):
-            angle = geometry.angle_vectors(pos1 - tag_position, pos2 - tag_position)
-            QTreeWidgetItem(tag_node, [f"Angle between {name1} and {name2}: {angle:.2f}°"])
+                angle = geometry.angle_vectors(
+                    pos1 - station_positions[station],
+                    pos2 - station_positions[station]
+                )
+                QTreeWidgetItem(
+                    station_node,
+                    [f"Angle between {name1} and {name2}: {angle:.2f}°"]
+                )
 
     def update_sigma(self):
         self.slider.setValue(int(self.scenario.sigma * self.SIGMA_SLIDER_RESOLUTION))
