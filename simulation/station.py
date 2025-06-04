@@ -80,8 +80,13 @@ class Tag(Station):
         tags_only_network = False
         #TODO GUI switch
         if tags_only_network and len(self.scenario.get_tag_list()) > 0:
-            if self.scenario.get_tag_list()[0] == self:
+            first_tag = self.scenario.get_tag_list()[0]
+            second_tag = self.scenario.get_tag_list()[1]
+            if first_tag == self:
                 return [0, 0]
+            if second_tag == self:
+                distance = first_tag.distance_to(second_tag)
+                return [distance, 0]
 
         if exclude is None:
             exclude = {self}
