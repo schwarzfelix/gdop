@@ -64,6 +64,7 @@ class MainWindow(QMainWindow):
         self.create_angles_tab()
         self.create_display_tab()
         self.create_streaming_tab()
+        self.create_measurements_tab()
         layout.addWidget(self.tab_widget)
 
         self.start_periodic_update()
@@ -181,6 +182,22 @@ class MainWindow(QMainWindow):
 
         self.tab_widget.addTab(self.streaming_tree, "Streaming")
 
+    def create_measurements_tab(self):
+        self.measurements_tree = QTreeWidget()
+        self.measurements_tree.setHeaderHidden(True)
+        self.update_measurements_tree()
+        self.tab_widget.addTab(self.measurements_tree, "Measurements")
+
+    def update_measurements_tree(self):
+        self.measurements_tree.clear()
+
+        for pair, distance in self.scenario.measurements.relation.items():
+            station1, station2 = pair
+            measurement_item = QTreeWidgetItem(
+                self.measurements_tree,
+                [f"{station1.name()} ↔ {station2.name()}: {distance:.2f}"]
+            )
+
     def update_streaming_config(self):
         is_enabled = self.stream_enabled_checkbox.isChecked()
         if is_enabled:
@@ -266,6 +283,7 @@ class MainWindow(QMainWindow):
             self.plot.update_anchors()
             self.plot.update_plot()
         self.update_angles_tree()
+        self.update_measurements_tree()
         self.update_sigma()
 
     def start_periodic_update(self):
