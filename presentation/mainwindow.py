@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         self.tab_widget = QTabWidget()
         self.create_plot_tab()
         self.create_sigma_tab()
-        self.create_angles_tab()
+        self.create_stations_tab()
         self.create_display_tab()
         self.create_streaming_tab()
         self.create_measurements_tab()
@@ -93,11 +93,11 @@ class MainWindow(QMainWindow):
 
         self.tab_widget.addTab(inside_tab_widget, "Sigma")
 
-    def create_angles_tab(self):
-        self.angles_tree = QTreeWidget()
-        self.angles_tree.setHeaderHidden(True)
-        self.update_angles_tree()
-        self.tab_widget.addTab(self.angles_tree, "Angles")
+    def create_stations_tab(self):
+        self.stations_tree = QTreeWidget()
+        self.stations_tree.setHeaderHidden(True)
+        self.update_stations_tree()
+        self.tab_widget.addTab(self.stations_tree, "Stations")
 
     def create_display_tab(self):
         self.display_tree = QTreeWidget()
@@ -231,14 +231,14 @@ class MainWindow(QMainWindow):
         self.scenario.sigma = self.sigma_input.value()
         self.update_all()
 
-    def update_angles_tree(self):
-        self.angles_tree.clear()
+    def update_stations_tree(self):
+        self.stations_tree.clear()
 
         all_stations = self.scenario.stations
         station_positions = {station: station.position() for station in all_stations}
 
         for station in all_stations:
-            station_node = QTreeWidgetItem(self.angles_tree)
+            station_node = QTreeWidgetItem(self.stations_tree)
 
             station_widget = QWidget()
             layout = QHBoxLayout()
@@ -253,7 +253,7 @@ class MainWindow(QMainWindow):
             layout.addStretch()
             station_widget.setLayout(layout)
 
-            self.angles_tree.setItemWidget(station_node, 0, station_widget)
+            self.stations_tree.setItemWidget(station_node, 0, station_widget)
 
             other_stations = [
                 (other_station.name(), station_positions[other_station])
@@ -282,7 +282,7 @@ class MainWindow(QMainWindow):
         if hasattr(self, "plot") and self.plot is not None:
             self.plot.update_anchors()
             self.plot.update_plot()
-        self.update_angles_tree()
+        self.update_stations_tree()
         self.update_measurements_tree()
         self.update_sigma()
 
