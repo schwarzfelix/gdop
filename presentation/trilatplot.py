@@ -65,6 +65,13 @@ class TrilatPlot:
 
     def update_plot(self):
 
+        for plot in self.tag_estimate_plots:
+            plot.remove()
+        self.tag_estimate_plots = []
+        for _ in self.scenario.get_tag_list():
+            plot, = self.ax_trilat.plot([], [], 'rx', markersize=10)
+            self.tag_estimate_plots.append(plot)
+
         anchor_positions = self.scenario.anchor_positions()
         distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
         tag_positions = self.scenario.tag_positions()
