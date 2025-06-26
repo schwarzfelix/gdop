@@ -7,7 +7,7 @@ class Scenario:
     def __init__(self):
         self.measurements = measurements.Measurements()
         self.stations = [
-            station.Anchor([0.0, 0.0], 'Anchor A'),
+            station.Anchor([0.5, 0.5], 'Anchor A'),
             station.Anchor([10.0, 0.0], 'Anchor B'),
             station.Anchor([5.0, 8.66], 'Anchor C'),
             station.Tag(self, '⍺'),
