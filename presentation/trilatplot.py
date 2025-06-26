@@ -145,16 +145,19 @@ class TrilatPlot:
                 name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.get_anchor_list()[i].name(), ha='center', va='center')
                 self.lines_plot.append(name)
 
-        self.ax_gdop.clear()
-        tags = self.scenario.get_tag_list()
-        gdop_values = [tag.dilution_of_precision() for tag in tags]
-        x_pos = range(len(gdop_values))
-        self.ax_gdop.bar(x_pos, gdop_values, color="orange")
-        self.ax_gdop.set_ylim(0, 12)
-        self.ax_gdop.set_xticks(x_pos)
-        self.ax_gdop.set_xticklabels([tag.name() for tag in tags], rotation=90)
-        for i, gdop in enumerate(gdop_values):
-            self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
+        if self.display_config.showGDOP:
+            self.ax_gdop.clear()
+            tags = self.scenario.get_tag_list()
+            gdop_values = [tag.dilution_of_precision() for tag in tags]
+            x_pos = range(len(gdop_values))
+            self.ax_gdop.bar(x_pos, gdop_values, color="orange")
+            self.ax_gdop.set_ylim(0, 12)
+            self.ax_gdop.set_xticks(x_pos)
+            self.ax_gdop.set_xticklabels([tag.name() for tag in tags], rotation=90)
+            for i, gdop in enumerate(gdop_values):
+                self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
+        else:
+            self.ax_gdop.clear()
 
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 

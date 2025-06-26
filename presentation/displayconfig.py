@@ -11,3 +11,4 @@ class DisplayConfig():
         self.showBetweenAnchorsLines = False
 
         self.rightClickAnchors = False
+        self.showGDOP = True

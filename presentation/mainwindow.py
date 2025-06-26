@@ -149,6 +149,12 @@ class MainWindow(QMainWindow):
         right_click_anchors_item = QTreeWidgetItem(interaction_node)
         self.display_tree.setItemWidget(right_click_anchors_item, 0, self.right_click_anchors_checkbox)
 
+        self.gdop_checkbox = QCheckBox("Show GDOP Calculation")
+        self.gdop_checkbox.setChecked(self.display_config.showGDOP)
+        self.gdop_checkbox.stateChanged.connect(self.update_display_config)
+        gdop_checkbox_item = QTreeWidgetItem(interaction_node)
+        self.display_tree.setItemWidget(gdop_checkbox_item, 0, self.gdop_checkbox)
+
         self.tab_widget.addTab(self.display_tree, "Display")
 
     def create_streaming_tab(self):
@@ -220,6 +226,7 @@ class MainWindow(QMainWindow):
         self.display_config.showTagAnchorLabels = self.tag_anchor_labels_checkbox.isChecked()
 
         self.display_config.rightClickAnchors = self.right_click_anchors_checkbox.isChecked()
+        self.display_config.showGDOP = self.gdop_checkbox.isChecked()
 
         self.update_all()
 
