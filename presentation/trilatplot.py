@@ -74,8 +74,8 @@ class TrilatPlot:
 
         anchor_positions = self.scenario.anchor_positions()
         distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
+
         tag_positions = self.scenario.tag_positions()
-        gdop = self.scenario.get_tag_list()[0].dilution_of_precision()
 
         for i, plot in enumerate(self.tag_estimate_plots):
             plot.set_xdata([tag_positions[i][0]])

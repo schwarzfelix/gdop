@@ -62,6 +62,8 @@ class Anchor(Station):
             scenario = self.scenario
         if scenario is None:
             raise ValueError("Scenario must be provided to calculate distances.")
+        if len(scenario.anchor_positions()) < 1:
+            return np.array([])
 
         return geometry.euclidean_distances(scenario.anchor_positions(), self.position())
 
@@ -79,7 +81,7 @@ class Tag(Station):
 
         tags_only_network = False
         #TODO GUI switch
-        if tags_only_network and len(self.scenario.get_tag_list()) > 0:
+        if tags_only_network and len(self.scenario.get_tag_list()) > 2:
             first_tag = self.scenario.get_tag_list()[0]
             second_tag = self.scenario.get_tag_list()[1]
             if first_tag == self:
