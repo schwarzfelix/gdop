@@ -12,3 +12,5 @@ class DisplayConfig():
 
         self.rightClickAnchors = False
         self.showGDOP = False
+
+        self.showTagLabels = True

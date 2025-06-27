@@ -155,6 +155,13 @@ class MainWindow(QMainWindow):
         gdop_checkbox_item = QTreeWidgetItem(interaction_node)
         self.display_tree.setItemWidget(gdop_checkbox_item, 0, self.gdop_checkbox)
 
+        tag_labels_checkbox = QCheckBox("Show Tag Labels")
+        tag_labels_checkbox.setChecked(self.display_config.showTagLabels)
+        tag_labels_checkbox.stateChanged.connect(self.update_display_config)
+        tag_labels_item = QTreeWidgetItem(tag_anchor_node)
+        self.display_tree.setItemWidget(tag_labels_item, 0, tag_labels_checkbox)
+        self.tag_labels_checkbox = tag_labels_checkbox  # Save reference
+
         self.tab_widget.addTab(self.display_tree, "Display")
 
     def create_streaming_tab(self):
@@ -227,6 +234,7 @@ class MainWindow(QMainWindow):
 
         self.display_config.rightClickAnchors = self.right_click_anchors_checkbox.isChecked()
         self.display_config.showGDOP = self.gdop_checkbox.isChecked()
+        self.display_config.showTagLabels = self.tag_labels_checkbox.isChecked()
 
         self.update_all()
 

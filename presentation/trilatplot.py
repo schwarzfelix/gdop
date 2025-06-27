@@ -140,6 +140,14 @@ class TrilatPlot:
                     t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
                     self.lines_plot.append(t)
 
+        if self.display_config.showTagLabels:
+            tag_list = self.scenario.get_tag_list()
+            tag_positions = self.scenario.tag_positions()
+            for i, tag in enumerate(tag_list):
+                tag_pos = tag_positions[i]
+                name = self.ax_trilat.text(tag_pos[0], tag_pos[1], tag.name(), ha='center', va='bottom', color='red')
+                self.lines_plot.append(name)
+
         if self.display_config.showAnchorLabels:
             for i in range(len(self.scenario.get_anchor_list())):
                 name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.get_anchor_list()[i].name(), ha='center', va='center')
