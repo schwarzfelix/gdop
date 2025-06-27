@@ -3,8 +3,17 @@ class Measurements:
     def __init__(self) -> None:
         self.relation = {}
 
-    def find_relation(self, single_or_pair):
-        return [(pair, distance) for pair, distance in self.relation.items() if single_or_pair in pair]
+    def find_relation_pair_distance(self, station_pair):
+        if not isinstance(station_pair, frozenset):
+            raise ValueError("Pair must be a frozenset")
+        if len(station_pair) != 2:
+            raise ValueError("Pair must have two elements")
+
+        result = self.relation.get(station_pair, None)
+        return result
+
+    def find_relation_single(self, station_single):
+        return [(pair, distance) for pair, distance in self.relation.items() if station_single in pair]
 
     def update_relation(self, pair, distance: float):
         if not isinstance(pair, frozenset):

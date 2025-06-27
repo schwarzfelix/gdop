@@ -10,7 +10,7 @@ def distance_between(station1, station2, measurements=None):
         measurements = station2.measurements
 
     if measurements is not None:
-        pair, measured_distance = measurements.find_relation({station1, station2})
+        measured_distance = measurements.find_relation_pair_distance(frozenset({station1, station2}))
         if measured_distance is not None:
             return measured_distance
 
@@ -79,7 +79,7 @@ class Tag(Station):
 
     def position(self, exclude=None):
 
-        tags_only_network = False
+        tags_only_network = True
         #TODO GUI switch
         if tags_only_network and len(self.scenario.get_tag_list()) > 2:
             first_tag = self.scenario.get_tag_list()[0]
@@ -87,14 +87,14 @@ class Tag(Station):
             if first_tag == self:
                 return [0, 0]
             if second_tag == self:
-                distance = first_tag.distance_to(second_tag)
+                distance = first_tag.distance_to(self)
                 return [distance, 0]
 
         if exclude is None:
             exclude = {self}
         exclude |= {self}
 
-        relation_subset = self.measurements.find_relation(self)
+        relation_subset = self.measurements.find_relation_single(self)
 
         anchor_count = 0
         partner_count = 0
@@ -123,7 +123,7 @@ class Tag(Station):
         return geometry.trilateration(np.array(station_positions), np.array(distances))
 
     def distance_to(self, other: Station):
-        return distance_between(self.measurements, self, other)
+        return distance_between(self, other, self.measurements)
 
     def distances(self):
         return geometry.euclidean_distances(self.scenario.anchor_positions(), self.position())

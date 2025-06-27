@@ -275,15 +275,16 @@ class MainWindow(QMainWindow):
                 for other_station in all_stations if other_station != station
             ]
 
-            for (name1, pos1), (name2, pos2) in combinations(other_stations, 2):
-                angle = geometry.angle_vectors(
-                    pos1 - station_positions[station],
-                    pos2 - station_positions[station]
-                )
-                QTreeWidgetItem(
-                    station_node,
-                    [f"Angle between {name1} and {name2}: {angle:.2f}°"]
-                )
+            #TODO fix angle calculation, (list/vecor operations not supported)
+            #for (name1, pos1), (name2, pos2) in combinations(other_stations, 2):
+            #    angle = geometry.angle_vectors(
+            #        pos1 - station_positions[station],
+            #        pos2 - station_positions[station]
+            #    )
+            #    QTreeWidgetItem(
+            #        station_node,
+            #        [f"Angle between {name1} and {name2}: {angle:.2f}°"]
+            #    )
 
     def delete_station(self, station):
         self.scenario.remove_station(station)
