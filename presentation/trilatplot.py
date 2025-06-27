@@ -209,5 +209,6 @@ class TrilatPlot:
 
         x, y = event.xdata, event.ydata
         self.dragging_point.update_position([x, y])
-        self.scenario.generate_measurements(self.scenario.get_tag_list()[0], self.scenario.tag_truth)
+        if len(self.scenario.get_tag_list()) > 0:
+            self.scenario.generate_measurements(self.scenario.get_tag_list()[0], self.scenario.tag_truth)
         self.window.update_all()
