@@ -142,7 +142,6 @@ class TrilatPlot:
 
         if self.display_config.showTagLabels:
             tag_list = self.scenario.get_tag_list()
-            tag_positions = self.scenario.tag_positions()
             for i, tag in enumerate(tag_list):
                 tag_pos = tag_positions[i]
                 name = self.ax_trilat.text(tag_pos[0], tag_pos[1], tag.name(), ha='center', va='bottom', color='red')
