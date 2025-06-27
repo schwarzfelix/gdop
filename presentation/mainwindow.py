@@ -293,10 +293,6 @@ class MainWindow(QMainWindow):
         self.update_measurements_tree()
         self.update_sigma()
 
-        print("Current stations in scenario:")
-        for station in self.scenario.stations:
-            print(f" - {station.name()} at {station.position()}")
-
     def start_periodic_update(self):
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.update_all)
