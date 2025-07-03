@@ -7,15 +7,13 @@ def euclidean_distances(anchor_positions, tag_position, sigma=0.0):
     return distances
 
 def trilateration(anchor_positions, distances):
-
     anchor_positions = np.array(anchor_positions)
     distances = np.array(distances)
-
     num_anchors, dimensions = anchor_positions.shape
 
     if num_anchors == 1:
-        direction = np.random.randn(dimensions)
-        direction /= np.linalg.norm(direction)
+        direction = np.zeros(dimensions)
+        direction[0] = 1  # Fixed direction
         return anchor_positions[0] + distances[0] * direction
 
     if num_anchors == 2 and dimensions >= 2:
@@ -25,20 +23,25 @@ def trilateration(anchor_positions, distances):
 
         if d > r1 + r2 or d < abs(r1 - r2):
             print("The hyper-spheres do not intersect.")
-            #raise ValueError("The hyper-spheres do not intersect.")
 
         a = (r1 ** 2 - r2 ** 2 + d ** 2) / (2 * d)
         base = p1 + a * (p2 - p1) / d
         h = np.sqrt(max(r1 ** 2 - a ** 2, 0))
 
-        random_vec = np.random.randn(dimensions)
-        random_vec -= np.dot(random_vec, (p2 - p1)) * (p2 - p1) / d ** 2
-        random_vec /= np.linalg.norm(random_vec)
-        return base + h * random_vec
+        # orthogonal vector
+        v = (p2 - p1) / d
+        if dimensions == 2:
+            orth = np.array([-v[1], v[0]])
+        else:
+            # Gram-Schmidt with fixed vector
+            fixed = np.zeros(dimensions)
+            fixed[1] = 1
+            orth = fixed - np.dot(fixed, v) * v
+            orth /= np.linalg.norm(orth)
+        return base + h * orth
 
     A = -2 * (anchor_positions[1:] - anchor_positions[0])
-    b = distances[1:] ** 2 - distances[0] ** 2 - np.sum(anchor_positions[1:] ** 2, axis=1) + np.sum(
-        anchor_positions[0] ** 2)
+    b = distances[1:] ** 2 - distances[0] ** 2 - np.sum(anchor_positions[1:] ** 2, axis=1) + np.sum(anchor_positions[0] ** 2)
 
     try:
         solution = np.linalg.solve(A, b)
@@ -46,15 +49,8 @@ def trilateration(anchor_positions, distances):
     except np.linalg.LinAlgError:
         pass
 
-    base_solution, _, _, singular_vectors = np.linalg.lstsq(A, b, rcond=None)
-    null_space_basis = singular_vectors[A.shape[0]:]
-
-    if null_space_basis.size == 0:
-        return base_solution
-
-    random_combination = np.random.randn(null_space_basis.shape[0])
-    random_solution = base_solution + null_space_basis.T @ random_combination
-    return random_solution
+    base_solution, _, _, _ = np.linalg.lstsq(A, b, rcond=None)
+    return base_solution
 
 def geometry_matrix(anchor_positions, tag_position, distances=None):
     if distances is None:
