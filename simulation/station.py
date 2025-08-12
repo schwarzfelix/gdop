@@ -78,7 +78,7 @@ class Tag(Station):
         self._name = name
 
     def position(self, exclude=None):
-
+        
         tags_only_network = True
         #TODO GUI switch
         if tags_only_network and len(self.scenario.get_tag_list()) > 2:
@@ -126,7 +126,18 @@ class Tag(Station):
         return distance_between(self, other, self.measurements)
 
     def distances(self):
-        return geometry.euclidean_distances(self.scenario.anchor_positions(), self.position())
+        """
+        Handle case of empty anchor list to avoid broadcasting errors.
+        If no anchors are defined, return an empty array.
+        I ran into a crash after entering a SSE Url before defining anchors
+
+        basti - br0sinski@github
+        """
+        anchors = self.scenario.anchor_positions()
+        # if no anchors available => return empty distances
+        if anchors is None or anchors.size == 0:
+            return np.array([])
+        return geometry.euclidean_distances(anchors, self.position())
 
     def dilution_of_precision(self):
         return geometry.dilution_of_precision(self.scenario.anchor_positions(), self.position(), self.distances())
