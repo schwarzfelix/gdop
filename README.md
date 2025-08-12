@@ -12,7 +12,7 @@ This project is a Python-based tool designed for real-time calculation and visua
     cd gdop
     ```
 
-**Optional:** Create and activate a virtual environment:
+**Optional: Create and activate a virtual environment:**
     ```bash
     python3 -m venv env
     source env/bin/activate  
