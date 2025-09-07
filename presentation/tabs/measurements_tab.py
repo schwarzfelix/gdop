@@ -28,7 +28,7 @@ class MeasurementsTab(BaseTab):
         """Update the measurements tree with current measurement data."""
         if not self.measurements_tree:
             return
-            
+
         self.measurements_tree.clear()
 
         for pair, distance in self.scenario.measurements.relation.items():
@@ -37,6 +37,8 @@ class MeasurementsTab(BaseTab):
                 self.measurements_tree,
                 [f"{station1.name()} ↔ {station2.name()}: {distance:.2f}"]
             )
+            # Group measurements by tag
+            measurement_item.setExpanded(True)
             
     def update(self):
         """Update the measurements tree."""

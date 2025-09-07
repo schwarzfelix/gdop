@@ -31,7 +31,7 @@ class Scenario:
     def generate_measurements(self, tag_estimate, tag_truth):
         for anchor in self.get_anchor_list():
             distance = np.random.normal(anchor.distance_to(tag_truth) + self.sigma, self.sigma)
-            self.measurements.clear_unused(self.get_anchor_list() + [tag_estimate])
+            # Removed clear_unused to preserve all measurements
             self.measurements.update_relation(frozenset([anchor, tag_estimate]), distance)
 
     def get_station_by_name(self, name):
