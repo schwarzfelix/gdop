@@ -4,9 +4,63 @@ Stations tab for the GDOP application.
 
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QWidget, QHBoxLayout, 
-    QLabel, QPushButton, QInputDialog
+    QLabel, QPushButton, QInputDialog, QDialog, QFormLayout,
+    QLineEdit, QVBoxLayout, QDialogButtonBox
 )
+from PyQt5.QtCore import Qt
 from .base_tab import BaseTab
+from simulation.station import Anchor
+
+
+class StationEditDialog(QDialog):
+    """Dialog for editing station name and coordinates."""
+    
+    def __init__(self, station, parent=None):
+        super().__init__(parent)
+        self.station = station
+        self.setWindowTitle(f"Edit Station: {station.name()}")
+        self.setModal(True)
+        self.resize(300, 200)
+        
+        layout = QVBoxLayout()
+        form_layout = QFormLayout()
+        
+        # Name field
+        self.name_edit = QLineEdit(station.name())
+        form_layout.addRow("Name:", self.name_edit)
+        
+        # Coordinate fields (only for Anchor stations)
+        self.x_edit = None
+        self.y_edit = None
+        if isinstance(station, Anchor):
+            position = station.position()
+            self.x_edit = QLineEdit(str(position[0]))
+            self.y_edit = QLineEdit(str(position[1]))
+            form_layout.addRow("X Coordinate:", self.x_edit)
+            form_layout.addRow("Y Coordinate:", self.y_edit)
+        
+        layout.addLayout(form_layout)
+        
+        # Buttons
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        layout.addWidget(button_box)
+        
+        self.setLayout(layout)
+    
+    def get_values(self):
+        """Get the edited values from the dialog."""
+        values = {'name': self.name_edit.text().strip()}
+        
+        if self.x_edit and self.y_edit:
+            try:
+                values['x'] = float(self.x_edit.text())
+                values['y'] = float(self.y_edit.text())
+            except ValueError:
+                return None  # Invalid coordinate values
+        
+        return values
 
 
 class StationsTab(BaseTab):
@@ -46,7 +100,7 @@ class StationsTab(BaseTab):
 
             name_label = QLabel(station.name())
             rename_button = QPushButton("✎")
-            rename_button.setToolTip("Rename station")
+            rename_button.setToolTip("Edit station (name and coordinates)")
             rename_button.clicked.connect(lambda checked, s=station: self.rename_station_dialog(s))
 
             delete_button = QPushButton("␡")
@@ -78,16 +132,31 @@ class StationsTab(BaseTab):
             #    )
 
     def rename_station_dialog(self, station):
-        """Show dialog to rename a station."""
-        current_name = station.name()
-        new_name, ok = QInputDialog.getText(
-            self.main_window, 
-            "Rename Station", 
-            f"Enter new name for station '{current_name}':", 
-            text=current_name
-        )
-        if ok and new_name and new_name != current_name:
-            self.rename_station(station, new_name)
+        """Show dialog to edit station name and coordinates."""
+        dialog = StationEditDialog(station, self.main_window)
+        
+        if dialog.exec_() == QDialog.Accepted:
+            values = dialog.get_values()
+            if values is None:
+                # Invalid input (e.g., non-numeric coordinates)
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.warning(
+                    self.main_window,
+                    "Invalid Input",
+                    "Please enter valid numeric values for coordinates."
+                )
+                return
+            
+            # Update name
+            if values['name'] and values['name'] != station.name():
+                self.rename_station(station, values['name'])
+            
+            # Update coordinates for Anchor stations
+            if isinstance(station, Anchor) and 'x' in values and 'y' in values:
+                current_pos = station.position()
+                if current_pos[0] != values['x'] or current_pos[1] != values['y']:
+                    station.update_position([values['x'], values['y']])
+                    self.main_window.update_all()
 
     def rename_station(self, station, new_name):
         """Rename a station."""
