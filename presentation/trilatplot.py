@@ -72,10 +72,12 @@ class TrilatPlot:
             plot, = self.ax_trilat.plot([], [], 'rx', markersize=10)
             self.tag_estimate_plots.append(plot)
 
+
         anchor_positions = self.scenario.anchor_positions()
         distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
 
         tag_positions = self.scenario.tag_positions()
+
 
         for i, plot in enumerate(self.tag_estimate_plots):
             plot.set_xdata([tag_positions[i][0]])

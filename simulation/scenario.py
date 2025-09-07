@@ -7,19 +7,20 @@ class Scenario:
     def __init__(self):
         self.measurements = measurements.Measurements()
         self.stations = [
-            #station.Anchor([0.5, 0.5], 'Anchor A'),
-            #station.Anchor([10.0, 0.0], 'Anchor B'),
-            #station.Anchor([5.0, 8.66], 'Anchor C'),
-            #station.Tag(self, '⍺'),
-            #station.Tag(self, 'β'),
+            station.Anchor([0.5, 0.5], 'Anchor A'),
+            station.Anchor([10.0, 0.0], 'Anchor B'),
+            station.Anchor([5.0, 8.66], 'Anchor C'),
+            station.Tag(self, '⍺'),
+            station.Tag(self, 'β'),
         ]
         self.tag_truth = station.Anchor([5.0, 4.0], scenario=self)
         self.sigma = 0.0
 
         self.streamer = None
 
-        if len(self.get_tag_list()) > 0:
-            self.generate_measurements(self.get_tag_list()[0], self.tag_truth)
+        # Generate measurements for all tags
+        for tag in self.get_tag_list():
+            self.generate_measurements(tag, self.tag_truth)
 
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.get_anchor_list()])
