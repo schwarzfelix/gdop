@@ -260,11 +260,17 @@ class MainWindow(QMainWindow):
             layout.setContentsMargins(0, 0, 0, 0)
 
             name_label = QLabel(station.name())
+            rename_button = QPushButton("✎")
+            rename_button.setToolTip("Rename station")
+            rename_button.clicked.connect(lambda checked, s=station: self.rename_station_dialog(s))
+
             delete_button = QPushButton("␡")
+            delete_button.setToolTip("Delete station")
             delete_button.clicked.connect(lambda checked, s=station: self.delete_station(s))
 
-            layout.addWidget(name_label)
             layout.addWidget(delete_button)
+            layout.addWidget(rename_button)
+            layout.addWidget(name_label)
             layout.addStretch()
             station_widget.setLayout(layout)
 
@@ -285,6 +291,24 @@ class MainWindow(QMainWindow):
             #        station_node,
             #        [f"Angle between {name1} and {name2}: {angle:.2f}°"]
             #    )
+
+    def rename_station_dialog(self, station):
+        from PyQt5.QtWidgets import QInputDialog
+        current_name = station.name()
+        new_name, ok = QInputDialog.getText(self, "Rename Station", f"Enter new name for station '{current_name}':", text=current_name)
+        if ok and new_name and new_name != current_name:
+            self.rename_station(station, new_name)
+
+    def rename_station(self, station, new_name):
+        # Try to set the name attribute if possible
+        if hasattr(station, '_name'):
+            station._name = new_name
+        elif hasattr(station, 'name') and callable(getattr(station, 'name', None)):
+            try:
+                station.name = lambda: new_name
+            except Exception:
+                pass
+        self.update_all()
 
     def delete_station(self, station):
         self.scenario.remove_station(station)
