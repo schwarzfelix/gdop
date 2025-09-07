@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (
     QLineEdit, QSpinBox, QPushButton, QVBoxLayout, QWidget
 )
 from .base_tab import BaseTab
+import data.csv as csvio
 
 
 class DataTab(BaseTab):
@@ -74,8 +75,8 @@ class DataTab(BaseTab):
 
     def import_csv_measurements(self):
         """Import measurements from CSV file."""
-        # TODO: Implement CSV import functionality
-        print("CSV import functionality will be implemented here.")
+        df = csvio.read_workspace_csvs("workspace")
+        print(df.head())
 
     def update_streaming_config(self):
         """Update streaming configuration based on checkbox state."""
