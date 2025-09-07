@@ -1,16 +1,16 @@
 """
-Streaming tab for the GDOP application.
+Data tab for the GDOP application.
 """
 
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QCheckBox, 
-    QLineEdit, QSpinBox
+    QLineEdit, QSpinBox, QPushButton, QVBoxLayout, QWidget
 )
 from .base_tab import BaseTab
 
 
-class StreamingTab(BaseTab):
-    """Tab for streaming configuration options."""
+class DataTab(BaseTab):
+    """Tab for data import and streaming configuration options."""
     
     def __init__(self, main_window):
         super().__init__(main_window)
@@ -19,13 +19,24 @@ class StreamingTab(BaseTab):
         self.url_input = None
         self.periodic_update_checkbox = None
         self.interval_input = None
+        self.csv_import_button = None
     
     @property
     def tab_name(self):
-        return "Streaming"
+        return "Data"
         
     def create_widget(self):
-        """Create and return the streaming tab widget."""
+        """Create and return the data tab widget."""
+        # Create main widget and layout
+        main_widget = QWidget()
+        layout = QVBoxLayout(main_widget)
+        
+        # CSV Import section
+        self.csv_import_button = QPushButton("Import CSV Measurements")
+        self.csv_import_button.clicked.connect(self.import_csv_measurements)
+        layout.addWidget(self.csv_import_button)
+        
+        # Streaming section
         self.streaming_tree = QTreeWidget()
         self.streaming_tree.setHeaderHidden(True)
 
@@ -58,7 +69,13 @@ class StreamingTab(BaseTab):
         self.interval_input.valueChanged.connect(self.update_periodic_interval)
         self.streaming_tree.setItemWidget(interval_node, 0, self.interval_input)
 
-        return self.streaming_tree
+        layout.addWidget(self.streaming_tree)
+        return main_widget
+
+    def import_csv_measurements(self):
+        """Import measurements from CSV file."""
+        # TODO: Implement CSV import functionality
+        print("CSV import functionality will be implemented here.")
 
     def update_streaming_config(self):
         """Update streaming configuration based on checkbox state."""

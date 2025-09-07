@@ -7,7 +7,7 @@ from .plot_tab import PlotTab
 from .sigma_tab import SigmaTab
 from .stations_tab import StationsTab
 from .display_tab import DisplayTab
-from .streaming_tab import StreamingTab
+from .data_tab import DataTab
 from .measurements_tab import MeasurementsTab
 
 __all__ = [
@@ -16,6 +16,6 @@ __all__ = [
     'SigmaTab',
     'StationsTab',
     'DisplayTab',
-    'StreamingTab',
+    'DataTab',
     'MeasurementsTab'
 ]

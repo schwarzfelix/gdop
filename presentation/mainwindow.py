@@ -13,7 +13,7 @@ from presentation.tabs import (
     SigmaTab,
     StationsTab,
     DisplayTab,
-    StreamingTab,
+    DataTab,
     MeasurementsTab
 )
 
@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         self.sigma_tab = SigmaTab(self)
         self.stations_tab = StationsTab(self)
         self.display_tab = DisplayTab(self)
-        self.streaming_tab = StreamingTab(self)
+        self.data_tab = DataTab(self)
         self.measurements_tab = MeasurementsTab(self)
         
         # Add tabs to tab widget
@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(self.sigma_tab.get_widget(), self.sigma_tab.tab_name)
         self.tab_widget.addTab(self.stations_tab.get_widget(), self.stations_tab.tab_name)
         self.tab_widget.addTab(self.display_tab.get_widget(), self.display_tab.tab_name)
-        self.tab_widget.addTab(self.streaming_tab.get_widget(), self.streaming_tab.tab_name)
+        self.tab_widget.addTab(self.data_tab.get_widget(), self.data_tab.tab_name)
         self.tab_widget.addTab(self.measurements_tab.get_widget(), self.measurements_tab.tab_name)
 
     def update_sigma(self):
