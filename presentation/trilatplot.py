@@ -203,7 +203,8 @@ class TrilatPlot:
         for i, plot in enumerate(self.anchor_plots):
             contains, _ = plot.contains(event)
             if contains:
-                self.dragging_point = self.scenario.get_anchor_list()[i]
+                if self.display_config.dragAnchors:
+                    self.dragging_point = self.scenario.get_anchor_list()[i]
                 return
         if self.tag_truth_plot:
             contains, _ = self.tag_truth_plot.contains(event)

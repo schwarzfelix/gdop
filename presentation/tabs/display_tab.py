@@ -22,6 +22,7 @@ class DisplayTab(BaseTab):
         self.right_click_anchors_checkbox = None
         self.gdop_checkbox = None
         self.tag_labels_checkbox = None
+        self.drag_anchors_checkbox = None
     
     @property
     def tab_name(self):
@@ -96,6 +97,12 @@ class DisplayTab(BaseTab):
         gdop_checkbox_item = QTreeWidgetItem(interaction_node)
         self.display_tree.setItemWidget(gdop_checkbox_item, 0, self.gdop_checkbox)
 
+        self.drag_anchors_checkbox = QCheckBox("Enable Dragging Anchors")
+        self.drag_anchors_checkbox.setChecked(self.display_config.dragAnchors)
+        self.drag_anchors_checkbox.stateChanged.connect(self.update_display_config)
+        drag_anchors_item = QTreeWidgetItem(interaction_node)
+        self.display_tree.setItemWidget(drag_anchors_item, 0, self.drag_anchors_checkbox)
+
         return self.display_tree
 
     def update_display_config(self):
@@ -110,5 +117,6 @@ class DisplayTab(BaseTab):
         self.display_config.rightClickAnchors = self.right_click_anchors_checkbox.isChecked()
         self.display_config.showGDOP = self.gdop_checkbox.isChecked()
         self.display_config.showTagLabels = self.tag_labels_checkbox.isChecked()
+        self.display_config.dragAnchors = self.drag_anchors_checkbox.isChecked()
 
         self.main_window.update_all()

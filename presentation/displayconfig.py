@@ -10,7 +10,8 @@ class DisplayConfig():
         self.showBetweenAnchorsLabels = False
         self.showBetweenAnchorsLines = False
 
-        self.rightClickAnchors = True
+        self.rightClickAnchors = False
         self.showGDOP = True
 
         self.showTagLabels = True
+        self.dragAnchors = False
