@@ -6,8 +6,12 @@ No UI components - just business logic.
 
 import pandas as pd
 from typing import List, Optional, Tuple
+import os
+import json
 
 from data.csv import read_workspace_csvs
+from simulation.station import Anchor, Tag
+from simulation import measurements
 
 
 def get_available_scenarios(workspace_dir: str = "workspace") -> Tuple[List[str], Optional[str]]:
@@ -78,6 +82,29 @@ def import_scenario_data(scenario_obj, scenario_name: str, workspace_dir: str = 
         Tuple of (success, message)
     """
     try:
+        # Load scenario configuration from JSON
+        scenario_path = os.path.join(workspace_dir, scenario_name, "scenario.json")
+        if not os.path.exists(scenario_path):
+            return False, f"Scenario configuration file not found: {scenario_path}"
+        
+        with open(scenario_path, 'r') as f:
+            data = json.load(f)
+        
+        # Clear existing stations and load from JSON
+        scenario_obj.stations = []
+        for st in data.get('stations', []):
+            name = st['name']
+            typ = st['type']
+            if typ == 'ANCHOR':
+                pos = st['position']
+                scenario_obj.stations.append(Anchor(pos, name))
+            elif typ == 'TAG':
+                # Tags don't have fixed positions - they are calculated from measurements
+                scenario_obj.stations.append(Tag(scenario_obj, name))
+        
+        # Clear existing measurements
+        scenario_obj.measurements = measurements.Measurements()
+        
         # Get scenario data
         scenario_data, error = get_scenario_data(scenario_name, workspace_dir)
         if error:
@@ -120,9 +147,6 @@ def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenari
         scenario_data: DataFrame containing the measurement data for the scenario
         scenario_name: Name of the imported scenario
     """
-    # Clear existing measurements to replace with imported data
-    scenario_obj.measurements.relation.clear()
-    
     # Expected columns (mapped from CSV headers)
     # Based on the actual CSV format: time(ms), true_range(m), est._range(m), std_dev(m), ap-ssid
     expected_cols = ['time(ms)', 'true_range(m)', 'est._range(m)', 'std_dev(m)', 'ap-ssid']

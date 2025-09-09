@@ -24,8 +24,8 @@ class TrilatPlot:
         self.ax_trilat = plt.subplot(gs[0])
         self.ax_gdop = plt.subplot(gs[1])
 
-        self.ax_trilat.set_xlim(-1500, 1500)
-        self.ax_trilat.set_ylim(-1500, 1500)
+        self.ax_trilat.set_xlim(-15, 15)
+        self.ax_trilat.set_ylim(-15, 15)
 
         self.anchor_plots = []
         self.circle_pairs = []
