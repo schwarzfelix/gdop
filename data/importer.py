@@ -154,17 +154,13 @@ def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenari
     # Use existing anchor stations as measurement anchors for imported data
     existing_anchors = scenario_obj.get_anchor_list()
     
-    # Create a single tag to hold all imported measurements if needed
+    # Get tags from the loaded scenario
     existing_tags = scenario_obj.get_tag_list()
-    if existing_tags:
-        target_tag = existing_tags[0]  # Use existing tag
-    else:
-        # Import only works if there are existing tags or we create a proper one
-        # For now, let's just use the first existing anchor and create measurements between anchors
-        if len(existing_anchors) < 2:
-            print("Warning: Need at least 2 anchor stations or existing tags to import measurements")
-            return
-        target_tag = existing_anchors[0]  # Use first anchor as "tag" for measurements
+    if not existing_tags:
+        print("Warning: No tags found in scenario configuration. Measurements require at least one tag.")
+        return
+    
+    target_tag = existing_tags[0]  # Use first tag from JSON configuration
     
     # Process measurements - group by timestamp to create measurement sets
     processed_count = 0
