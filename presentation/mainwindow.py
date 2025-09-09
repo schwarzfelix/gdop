@@ -95,4 +95,4 @@ class MainWindow(QMainWindow):
         """Start the periodic update timer."""
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.update_all)
-        #TODO instead of periodically, update when new SSE data received
+        #TODO instead of periodically, update when new streaming data received

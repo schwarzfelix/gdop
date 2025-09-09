@@ -1,7 +1,7 @@
 import numpy as np
 
 from simulation import measurements, station, geometry
-from data.sse import Streamer
+from data.streaming import Streamer
 
 class Scenario:
     def __init__(self):

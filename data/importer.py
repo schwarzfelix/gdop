@@ -1,16 +1,15 @@
 """
-CSV Import module for GDOP application.
-Pure data processing for importing measurement data from CSV files.
-No UI components - just business logic.
+Import module for GDOP application.
+Handles importing measurement data from CSV files and scenario configurations from JSON files.
+Pure data processing - no UI components.
 """
 
 import pandas as pd
 from typing import List, Optional, Tuple
 import os
-import json
 
-from data.csv import read_workspace_csvs
-from simulation.station import Anchor, Tag
+from data.import_measurements import read_workspace_csvs
+from data.import_scenario import load_scenario_from_json
 from simulation import measurements
 
 
@@ -83,27 +82,8 @@ def import_scenario_data(scenario_obj, scenario_name: str, workspace_dir: str = 
     """
     try:
         # Load scenario configuration from JSON
-        scenario_path = os.path.join(workspace_dir, scenario_name, "scenario.json")
-        if not os.path.exists(scenario_path):
-            return False, f"Scenario configuration file not found: {scenario_path}"
-        
-        with open(scenario_path, 'r') as f:
-            data = json.load(f)
-        
-        # Clear existing stations and load from JSON
-        scenario_obj.stations = []
-        for st in data.get('stations', []):
-            name = st['name']
-            typ = st['type']
-            if typ == 'ANCHOR':
-                pos = st['position']
-                scenario_obj.stations.append(Anchor(pos, name))
-            elif typ == 'TAG':
-                # Tags don't have fixed positions - they are calculated from measurements
-                scenario_obj.stations.append(Tag(scenario_obj, name))
-        
-        # Clear existing measurements
-        scenario_obj.measurements = measurements.Measurements()
+        if not load_scenario_from_json(scenario_obj, scenario_name, workspace_dir):
+            return False, f"Failed to load scenario configuration for '{scenario_name}'"
         
         # Get scenario data
         scenario_data, error = get_scenario_data(scenario_name, workspace_dir)

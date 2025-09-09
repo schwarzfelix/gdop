@@ -100,7 +100,7 @@ class DataTab(BaseTab):
         # URL input
         url_node = QTreeWidgetItem(self.streaming_tree)
         self.url_input = QLineEdit()
-        self.url_input.setPlaceholderText("Enter SSE URL")
+        self.url_input.setPlaceholderText("Enter Streaming URL")
         self.streaming_tree.setItemWidget(url_node, 0, self.url_input)
 
         # Periodic update checkbox
@@ -195,7 +195,7 @@ class DataTab(BaseTab):
                 self.scenario.start_streaming(url)
             else:
                 self.stream_enabled_checkbox.setChecked(False)
-                print("Please enter a valid SSE URL.")
+                print("Please enter a valid Streaming URL.")
         else:
             self.scenario.stop_streaming()
             print("Streaming stopped.")

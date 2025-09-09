@@ -15,7 +15,7 @@ class Update:
     def __repr__(self):
         return f"Update(id={self.id}, source_id={self.source_id}, destination_id={self.destination_id}, raw_distance={self.raw_distance})"
 
-class SSEData:
+class StreamingData:
     def __init__(self):
         self.status = None
         self.updates = []
@@ -38,8 +38,8 @@ def process_data(data, scenario):
     raw_distance = data["raw_distance"]
     scenario.measurements.update_relation(frozenset([source_station, destination_station]), raw_distance)
 
-def fetch_sse_data(url, scenario):
-    sse_data = SSEData()
+def fetch_streaming_data(url, scenario):
+    streaming_data = StreamingData()
 
     try:
         response = requests.get(url, stream=True, timeout=10)
@@ -50,19 +50,19 @@ def fetch_sse_data(url, scenario):
             if event.event == "connected":
                 try:
                     status_data = json.loads(event.data)
-                    sse_data.update_status(status_data["status"])
-                    print(f"Status updated: {sse_data.status}")
+                    streaming_data.update_status(status_data["status"])
+                    print(f"Status updated: {streaming_data.status}")
                 except json.JSONDecodeError as e:
                     print(f"Error decoding 'connected' event data: {e}")
             elif event.event in ["update", "message"]:
                 try:
                     update_data = json.loads(event.data)
-                    sse_data.add_update(update_data)
+                    streaming_data.add_update(update_data)
                     process_data(update_data, scenario)
                 except json.JSONDecodeError as e:
                     print(f"Error decoding event data: {e}")
     except requests.RequestException as e:
-        print(f"Error fetching SSE data: {e}")
+        print(f"Error fetching streaming data: {e}")
     except Exception as e:
         print(f"Unexpected error: {e}")
 
@@ -70,13 +70,13 @@ class Streamer:
     def __init__(self, url, scenario):
         self.url = url
         self.scenario = scenario
-        self.sse_thread = threading.Thread(target=fetch_sse_data, args=(self.url, self.scenario,), daemon=True)
-        self.sse_thread.start()
+        self.streaming_thread = threading.Thread(target=fetch_streaming_data, args=(self.url, self.scenario,), daemon=True)
+        self.streaming_thread.start()
 
     def stop_streaming(self):
-        if self.sse_thread.is_alive():
-            self.sse_thread.join(timeout=1)
-            if self.sse_thread.is_alive():
+        if self.streaming_thread.is_alive():
+            self.streaming_thread.join(timeout=1)
+            if self.streaming_thread.is_alive():
                 print("Streamer thread did not stop gracefully.")
 
 """
@@ -84,7 +84,7 @@ Refering to simulation/station/Tag/distances
 
 Handle case of empty anchor list to avoid broadcasting errors.
 If no anchors are defined, return an empty array.
-I ran into a crash after entering a SSE Url before defining anchors
+I ran into a crash after entering a streaming URL before defining anchors
 
 Status updated: connected
 Traceback (most recent call last):
