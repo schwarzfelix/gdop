@@ -12,6 +12,7 @@ class Scenario:
             station.Anchor([5.0, 8.66], 'Anchor C'),
             station.Tag(self, '⍺'),
             station.Tag(self, 'β'),
+            station.Tag(self, 'SANDBOX_TAG')
         ]
         self.tag_truth = station.Anchor([5.0, 4.0], scenario=self)
         self.sigma = 0.0

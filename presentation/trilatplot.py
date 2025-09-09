@@ -31,7 +31,11 @@ class TrilatPlot:
         self.circle_pairs = []
         self.lines_plot = []
 
-        self.tag_truth_plot = self.ax_trilat.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
+        self.sandbox_tag = next((tag for tag in self.scenario.get_tag_list() if tag.name() == "SANDBOX_TAG"), None)
+        if self.sandbox_tag:
+            self.tag_truth_plot = self.ax_trilat.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
+        else:
+            self.tag_truth_plot = None
         self.tag_estimate_plots = []
         for _ in self.scenario.get_tag_list():
             plot, = self.ax_trilat.plot([], [], 'rx', markersize=10)
@@ -85,7 +89,8 @@ class TrilatPlot:
 
         for i, plot in enumerate(self.anchor_plots):
             plot.set_offsets([anchor_positions[i]])
-        self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
+        if self.tag_truth_plot:
+            self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
 
         if self.display_config.showAnchorCircles:
             for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
@@ -200,9 +205,10 @@ class TrilatPlot:
             if contains:
                 self.dragging_point = self.scenario.get_anchor_list()[i]
                 return
-        contains, _ = self.tag_truth_plot.contains(event)
-        if contains:
-            self.dragging_point = self.scenario.tag_truth
+        if self.tag_truth_plot:
+            contains, _ = self.tag_truth_plot.contains(event)
+            if contains:
+                self.dragging_point = self.scenario.tag_truth
 
     def on_mouse_release(self, event):
         if self.dragging_point is not None:
@@ -218,6 +224,6 @@ class TrilatPlot:
 
         x, y = event.xdata, event.ydata
         self.dragging_point.update_position([x, y])
-        if len(self.scenario.get_tag_list()) > 0:
-            self.scenario.generate_measurements(self.scenario.get_tag_list()[0], self.scenario.tag_truth)
+        if self.sandbox_tag:
+            self.scenario.generate_measurements(self.sandbox_tag, self.scenario.tag_truth)
         self.window.update_all()
