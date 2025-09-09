@@ -126,35 +126,6 @@ class Tag(Station):
         return distance_between(self, other, self.measurements)
 
     def distances(self):
-        """
-        Handle case of empty anchor list to avoid broadcasting errors.
-        If no anchors are defined, return an empty array.
-        I ran into a crash after entering a SSE Url before defining anchors
-
-        Status updated: connected
-        Traceback (most recent call last):
-        File "/home/bastian/Workspace/gdop/presentation/mainwindow.py", line 239, in update_display_config
-            self.update_all()
-        File "/home/bastian/Workspace/gdop/presentation/mainwindow.py", line 300, in update_all
-            self.plot.update_plot()
-        File "/home/bastian/Workspace/gdop/presentation/trilatplot.py", line 158, in update_plot
-            gdop_values = [tag.dilution_of_precision() for tag in tags]
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        File "/home/bastian/Workspace/gdop/simulation/station.py", line 132, in dilution_of_precision
-            return geometry.dilution_of_precision(self.scenario.anchor_positions(), self.position(), self.distances())
-                                                                                                    ^^^^^^^^^^^^^^^^
-        File "/home/bastian/Workspace/gdop/simulation/station.py", line 129, in distances
-            return geometry.euclidean_distances(self.scenario.anchor_positions(), self.position())
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        File "/home/bastian/Workspace/gdop/simulation/geometry.py", line 4, in euclidean_distances
-            distances = np.linalg.norm(anchor_positions - tag_position, axis=1)
-                                    ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
-        ValueError: operands could not be broadcast together with shapes (0,) (2,)
-        [1]    8420 IOT instruction (core dumped)  python3 app.py
-
-
-        basti - br0sinski@github
-        """
         anchors = self.scenario.anchor_positions()
         # if no anchors available => return empty distances
         if anchors is None or anchors.size == 0:
