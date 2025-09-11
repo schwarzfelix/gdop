@@ -31,20 +31,22 @@ def load_scenario_from_json(scenario_obj, scenario_name: str, workspace_dir: str
         with open(scenario_path, 'r') as f:
             data = json.load(f)
         
-        # Clear existing stations and load from JSON
+        # Clear existing stations and reset measurements before creating Tag objects
         scenario_obj.stations = []
+        # Initialize a fresh Measurements container so Tags created below
+        # will reference the new measurements instance
+        scenario_obj.measurements = measurements.Measurements()
+
         for st in data.get('stations', []):
             name = st['name']
             typ = st['type']
             if typ == 'ANCHOR':
                 pos = st['position']
-                scenario_obj.stations.append(Anchor(pos, name))
+                # pass the scenario into Anchor so methods that expect it can use it
+                scenario_obj.stations.append(Anchor(pos, name, scenario_obj))
             elif typ == 'TAG':
                 # Tags don't have fixed positions - they are calculated from measurements
                 scenario_obj.stations.append(Tag(scenario_obj, name))
-        
-        # Clear existing measurements
-        scenario_obj.measurements = measurements.Measurements()
         
         return True
         
