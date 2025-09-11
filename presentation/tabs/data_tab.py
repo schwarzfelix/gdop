@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QLabel
 )
 from .base_tab import BaseTab
-from data.importer import get_available_scenarios, import_scenario_data, validate_scenario_for_import
+from data.importer import get_available_scenarios, validate_scenario_for_import
 from PyQt5.QtWidgets import QComboBox, QFormLayout
 
 
@@ -209,9 +209,9 @@ class DataTab(BaseTab):
 
         agg_method = agg_dialog.get_method()
 
-        # Import the selected scenario with aggregation method
-        success, message = import_scenario_data(self.scenario, selected_scenario, "workspace", agg_method=agg_method)
-        
+        # Ask the Scenario instance to import the selected scenario (delegates to data.importer)
+        success, message = self.scenario.import_scenario(selected_scenario, workspace_dir="workspace", agg_method=agg_method)
+
         if success:
             QMessageBox.information(
                 self.main_window,

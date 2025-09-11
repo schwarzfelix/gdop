@@ -2,6 +2,7 @@ import numpy as np
 
 from simulation import measurements, station, geometry
 from data.streaming import Streamer
+import data.importer as importer
 
 class Scenario:
     def __init__(self):
@@ -61,3 +62,16 @@ class Scenario:
         if station in self.stations:
             self.measurements.remove_station(station)
             self.stations.remove(station)
+
+    def import_scenario(self, scenario_name, workspace_dir='workspace', agg_method='lowest'):
+        """
+        Trigger importing CSV scenario data into this Scenario instance.
+
+        Returns:
+            (success: bool, message: str)
+        """
+        try:
+            ok, msg = importer.import_scenario_data(self, scenario_name, workspace_dir=workspace_dir, agg_method=agg_method)
+            return ok, msg
+        except Exception as e:
+            return False, f"Importer raised exception: {e}"
