@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import presentation
 from presentation.tabs import (
     PlotTab,
-    SigmaTab,
+    SandboxTab,
     StationsTab,
     DisplayTab,
     DataTab,
@@ -59,7 +59,7 @@ class MainWindow(QMainWindow):
         """Create all tabs using the new tab classes."""
         # Create tab instances
         self.plot_tab = PlotTab(self)
-        self.sigma_tab = SigmaTab(self)
+        self.sandbox_tab = SandboxTab(self)
         self.stations_tab = StationsTab(self)
         self.display_tab = DisplayTab(self)
         self.data_tab = DataTab(self)
@@ -67,16 +67,27 @@ class MainWindow(QMainWindow):
         
         # Add tabs to tab widget
         self.tab_widget.addTab(self.plot_tab.get_widget(), self.plot_tab.tab_name)
-        self.tab_widget.addTab(self.sigma_tab.get_widget(), self.sigma_tab.tab_name)
+        self.tab_widget.addTab(self.sandbox_tab.get_widget(), self.sandbox_tab.tab_name)
         self.tab_widget.addTab(self.stations_tab.get_widget(), self.stations_tab.tab_name)
         self.tab_widget.addTab(self.display_tab.get_widget(), self.display_tab.tab_name)
         self.tab_widget.addTab(self.data_tab.get_widget(), self.data_tab.tab_name)
         self.tab_widget.addTab(self.measurements_tab.get_widget(), self.measurements_tab.tab_name)
 
-    def update_sigma(self):
-        """Update sigma controls with current scenario values."""
-        if hasattr(self, 'sigma_tab') and self.sigma_tab:
-            self.sigma_tab.update_sigma()
+    def update_sandbox(self):
+        """Update sandbox controls with current scenario values."""
+        # Prefer the new attribute name `sandbox_tab`, but accept the old `sigma_tab` as well
+        tab = None
+        if hasattr(self, 'sandbox_tab') and self.sandbox_tab:
+            tab = self.sandbox_tab
+        elif hasattr(self, 'sigma_tab') and self.sigma_tab:
+            tab = self.sigma_tab
+
+        if tab:
+            if hasattr(tab, 'update_sandbox'):
+                tab.update_sandbox()
+            elif hasattr(tab, 'update_sigma'):
+                tab.update_sigma()
+        #TODO remove old sigma_tab support later
 
     def update_all(self):
         """Update all UI components."""
@@ -90,7 +101,7 @@ class MainWindow(QMainWindow):
         if hasattr(self, 'measurements_tab'):
             self.measurements_tab.update()
         
-        self.update_sigma()
+        self.update_sandbox()
 
     def start_periodic_update(self):
         """Start the periodic update timer."""
