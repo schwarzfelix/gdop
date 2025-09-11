@@ -68,7 +68,7 @@ def get_scenario_data(scenario_name: str, workspace_dir: str = "workspace") -> T
         return None, f"Error loading scenario data: {str(e)}"
 
 
-def import_scenario_data(scenario_obj, scenario_name: str, workspace_dir: str = "workspace") -> Tuple[bool, str]:
+def import_scenario_data(scenario_obj, scenario_name: str, workspace_dir: str = "workspace", agg_method: str = "lowest") -> Tuple[bool, str]:
     """
     Import CSV data for a scenario into the scenario object.
     
@@ -84,17 +84,17 @@ def import_scenario_data(scenario_obj, scenario_name: str, workspace_dir: str = 
         # Load scenario configuration from JSON
         if not load_scenario_from_json(scenario_obj, scenario_name, workspace_dir):
             return False, f"Failed to load scenario configuration for '{scenario_name}'"
-        
+
         # Get scenario data
         scenario_data, error = get_scenario_data(scenario_name, workspace_dir)
         if error:
             return False, error
-        
-        # Process the data
-        processed_count = _process_measurement_data(scenario_obj, scenario_data, scenario_name)
-        
-        return True, f"Successfully imported {len(scenario_data)} measurements from scenario '{scenario_name}'."
-        
+
+        # Process the data (aggregate per AP based on agg_method)
+        processed_count = _process_measurement_data(scenario_obj, scenario_data, scenario_name, agg_method=agg_method)
+
+        return True, f"Successfully imported {processed_count} measurements (agg={agg_method}) from scenario '{scenario_name}'."
+
     except Exception as e:
         return False, f"An error occurred while importing CSV data: {str(e)}"
 
@@ -118,7 +118,7 @@ def validate_scenario_for_import(scenario_obj) -> Tuple[bool, str]:
     return True, ""
 
 
-def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenario_name: str):
+def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenario_name: str, agg_method: str = "lowest"):
     """
     Process the imported measurement data and update the scenario.
     
@@ -142,40 +142,84 @@ def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenari
     
     target_tag = existing_tags[0]  # Use first tag from JSON configuration
     
-    # Process measurements - group by timestamp to create measurement sets
+    # Aggregate measurements per AP (ap-ssid) according to agg_method
     processed_count = 0
-    
-    for _, row in scenario_data.iterrows():
+
+    # Ensure the key columns exist
+    if 'ap-ssid' not in scenario_data.columns or 'est._range(m)' not in scenario_data.columns:
+        print("Warning: Input data missing required columns 'ap-ssid' or 'est._range(m)'.")
+        return 0
+
+    # Prepare aggregation
+    # Filter out invalid ranges
+    valid_df = scenario_data.copy()
+    valid_df = valid_df[pd.to_numeric(valid_df['est._range(m)'], errors='coerce').notnull()]
+    valid_df['est_range'] = pd.to_numeric(valid_df['est._range(m)'], errors='coerce')
+    valid_df = valid_df[valid_df['est_range'] > 0]
+
+    if valid_df.empty:
+        print(f"No valid measurements to import for scenario '{scenario_name}'")
+        return 0
+
+    # Define aggregation function
+    agg_method = (agg_method or "newest").lower()
+    if agg_method not in ("newest", "lowest", "mean", "median"):
+        print(f"Unknown aggregation method '{agg_method}', defaulting to 'newest'.")
+        agg_method = "newest"
+
+    aggregated = None
+    if agg_method == "newest":
+        # assume there is a timestamp column 'time(ms)'; pick the row with max time per ap-ssid
+        if 'time(ms)' in valid_df.columns:
+            valid_df['time_ms'] = pd.to_numeric(valid_df['time(ms)'], errors='coerce')
+            aggregated = valid_df.sort_values('time_ms').groupby('ap-ssid', sort=False).last()
+        else:
+            # fallback to last occurrence
+            aggregated = valid_df.groupby('ap-ssid', sort=False).last()
+    elif agg_method == "lowest":
+        aggregated = valid_df.groupby('ap-ssid', sort=False)['est_range'].min().to_frame()
+    elif agg_method == "mean":
+        aggregated = valid_df.groupby('ap-ssid', sort=False)['est_range'].mean().to_frame()
+    elif agg_method == "median":
+        aggregated = valid_df.groupby('ap-ssid', sort=False)['est_range'].median().to_frame()
+
+    # Normalize aggregated to a DataFrame with est_range column and ap-ssid as index
+    if isinstance(aggregated, pd.Series):
+        aggregated = aggregated.to_frame('est_range')
+    if 'est_range' not in aggregated.columns:
+        # In case 'last' produced full rows, extract est_range
+        if 'est_range' in valid_df.columns and 'est._range(m)' in valid_df.columns:
+            aggregated['est_range'] = aggregated.get('est_range') if 'est_range' in aggregated.columns else aggregated['est._range(m)']
+
+    # Iterate aggregated results and add measurements
+    for ap_ssid, row in aggregated.iterrows():
         try:
-            # Get estimated range (the main measurement value)
-            estimated_range = row.get('est._range(m)', 0.0)
-            
-            if estimated_range <= 0:
-                continue  # Skip invalid measurements
-            
-            # Use the AP name to determine which anchor this measurement corresponds to
-            ap_name = row.get('ap-ssid', 'Unknown_AP')
-            
+            estimated_range = float(row['est_range'])
+
             # Find a matching anchor station (by name similarity or use first available)
+            ap_name = ap_ssid if isinstance(ap_ssid, str) else str(ap_ssid)
             anchor_station = None
             for anchor in existing_anchors:
-                if ap_name.lower() in anchor.name().lower() or anchor.name().lower() in ap_name.lower():
-                    anchor_station = anchor
-                    break
-            
+                try:
+                    if ap_name.lower() in anchor.name().lower() or anchor.name().lower() in ap_name.lower():
+                        anchor_station = anchor
+                        break
+                except Exception:
+                    continue
+
             # If no matching anchor found, use the first available anchor
             if not anchor_station and existing_anchors:
                 anchor_station = existing_anchors[0]
-            
+
             if anchor_station and anchor_station != target_tag:
-                # Add measurement between anchor and tag
                 station_pair = frozenset([anchor_station, target_tag])
                 scenario_obj.measurements.update_relation(station_pair, estimated_range)
                 processed_count += 1
-                
+
         except Exception as e:
-            print(f"Warning: Failed to process measurement row: {e}")
+            print(f"Warning: Failed to process aggregated measurement for '{ap_ssid}': {e}")
             continue
-    
-    print(f"Processed {processed_count} measurements from {len(scenario_data)} rows in scenario '{scenario_name}'")
+
+    print(f"Processed {processed_count} aggregated measurements (method={agg_method}) for scenario '{scenario_name}'")
     print(f"Total measurement relations: {len(scenario_obj.measurements.relation)}")
+    return processed_count
