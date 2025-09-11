@@ -20,6 +20,7 @@ from presentation.tabs import (
 
 class MainWindow(QMainWindow):
 
+    WINDOW_TITLE = "GDOP App"
     FIGURE_DPI = 100
     SIGMA_SLIDER_MAX = 5
     SIGMA_SLIDER_RESOLUTION = 100
@@ -32,7 +33,7 @@ class MainWindow(QMainWindow):
         self.display_config = presentation.DisplayConfig()
         self.plot = presentation.TrilatPlot(self)
 
-        self.setWindowTitle("Trilateration & GDOP")
+        self.setWindowTitle(MainWindow.WINDOW_TITLE)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
