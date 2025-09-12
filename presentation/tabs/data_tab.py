@@ -116,7 +116,7 @@ class DataTab(BaseTab):
         layout = QVBoxLayout(main_widget)
         
         # CSV Import section
-        self.csv_import_button = QPushButton("Import CSV Measurements")
+        self.csv_import_button = QPushButton("Import scenario from workspace")
         self.csv_import_button.clicked.connect(self.import_csv_measurements)
         layout.addWidget(self.csv_import_button)
         
