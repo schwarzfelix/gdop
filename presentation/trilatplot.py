@@ -64,6 +64,8 @@ class TrilatPlot(QObject):
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
         self.fig.canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
+        # Keep trilat plot XY-proportional on window resize
+        self.fig.canvas.mpl_connect('resize_event', self._on_resize)
 
         # A short single-shot timer to coalesce frequent refresh requests
         # (e.g. during dragging or streaming) so we don't redraw the plot
@@ -190,6 +192,11 @@ class TrilatPlot(QObject):
         # Update GDOP bar chart if visible
         if self.display_config.showGDOP:
             try:
+                # Ensure the axis is visible when GDOP is enabled
+                try:
+                    self.ax_gdop.set_visible(True)
+                except Exception:
+                    pass
                 self.ax_gdop.clear()
                 tags = self.scenario.get_tag_list()
                 gdop_values = [tag.dilution_of_precision() for tag in tags]
@@ -202,6 +209,13 @@ class TrilatPlot(QObject):
                     self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
             except Exception:
                 # best-effort: ignore plotting errors
+                pass
+        else:
+            # When GDOP display is off, hide the GDOP axis so it's not visible
+            try:
+                self.ax_gdop.clear()
+                self.ax_gdop.set_visible(False)
+            except Exception:
                 pass
 
         # Update or create reusable line/text artists for anchor-anchor pairs
@@ -344,6 +358,12 @@ class TrilatPlot(QObject):
             except Exception:
                 pass
 
+        # Ensure trilat plot keeps equal XY scaling (expand X-range if needed)
+        try:
+            self._adjust_trilat_aspect()
+        except Exception:
+            pass
+
     def redraw(self):
         """Trigger a canvas redraw."""
         try:
@@ -375,6 +395,11 @@ class TrilatPlot(QObject):
         self.anchor_name_texts = []
 
         if self.display_config.showGDOP:
+            try:
+                # make sure axis is visible when enabling
+                self.ax_gdop.set_visible(True)
+            except Exception:
+                pass
             self.ax_gdop.clear()
             tags = self.scenario.get_tag_list()
             gdop_values = [tag.dilution_of_precision() for tag in tags]
@@ -386,11 +411,67 @@ class TrilatPlot(QObject):
             for i, gdop in enumerate(gdop_values):
                 self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
         else:
+            # When GDOP is disabled at init, clear and hide the axis
             self.ax_gdop.clear()
+            try:
+                self.ax_gdop.set_visible(False)
+            except Exception:
+                pass
 
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
+        # Adjust aspect for initial layout and request draw
+        try:
+            self._adjust_trilat_aspect()
+        except Exception:
+            pass
+
         self.fig.canvas.draw_idle()
+
+    def _on_resize(self, event):
+        """Matplotlib resize event handler: adjust trilat axis so x/y units stay proportional."""
+        try:
+            self._adjust_trilat_aspect()
+            # redraw after adjustment
+            self.fig.canvas.draw_idle()
+        except Exception:
+            pass
+
+    def _adjust_trilat_aspect(self):
+        """Adjust the trilat axis x-limits so that one unit in x equals one unit in y on screen.
+
+        Keeps the current y-limits and expands/contracts the x-limits based on the
+        pixel aspect ratio of the trilat axis.
+        """
+        # Get current y-range
+        ymin, ymax = self.ax_trilat.get_ylim()
+        yrange = ymax - ymin
+
+        # Get axis bounding box in figure pixels
+        try:
+            fig_w, fig_h = self.fig.canvas.get_width_height()
+            bbox = self.ax_trilat.get_position()
+            ax_w_px = bbox.width * fig_w
+            ax_h_px = bbox.height * fig_h
+            if ax_h_px <= 0:
+                return
+            # Required x-range so that px per unit matches in x and y
+            xrange_needed = yrange * (ax_w_px / ax_h_px)
+
+            # Center x around current center
+            xmin, xmax = self.ax_trilat.get_xlim()
+            xmid = 0.5 * (xmin + xmax)
+            new_xmin = xmid - 0.5 * xrange_needed
+            new_xmax = xmid + 0.5 * xrange_needed
+            self.ax_trilat.set_xlim(new_xmin, new_xmax)
+            # Ensure equal aspect so circles look circular
+            try:
+                self.ax_trilat.set_aspect('equal', adjustable='box')
+            except Exception:
+                pass
+        except Exception:
+            # best-effort: ignore errors
+            pass
 
     def add_anchor(self, x, y):
         anchor_name = f"Anchor {len(self.scenario.get_anchor_list()) + 1}"
