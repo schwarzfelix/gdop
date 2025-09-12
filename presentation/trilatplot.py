@@ -130,8 +130,24 @@ class TrilatPlot(QObject):
         Call `redraw()` after this to trigger a canvas update.
         """
         anchor_positions = self.scenario.anchor_positions()
-        distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
+        # Choose a reference tag for anchor circles. Prefer sandbox tag (interactive)
+        # otherwise use the first tag estimate, fallback to tag_truth.
         tag_positions = self.scenario.tag_positions()
+        reference_tag = None
+        if self.sandbox_tag is not None:
+            reference_tag = self.sandbox_tag
+        else:
+            tags = self.scenario.get_tag_list()
+            if len(tags) > 0:
+                reference_tag = tags[0]
+
+        if reference_tag is not None:
+            try:
+                distances_truth = reference_tag.distances()
+            except Exception:
+                distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
+        else:
+            distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
 
         # Update tag estimate scatter offsets
         if self.tag_estimate_scatter is not None:
