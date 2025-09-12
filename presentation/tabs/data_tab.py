@@ -219,13 +219,14 @@ class DataTab(BaseTab):
         success, message = self.scenario.import_scenario(selected_scenario, workspace_dir="workspace", agg_method=agg_method)
 
         if success:
-            QMessageBox.information(
-                self.main_window,
-                "Import Successful",
-                message
-            )
-            # Update the UI to reflect the imported data
+            # Update the UI to reflect the imported data (silent success)
             self.main_window.update_all()
+            # Show a non-modal transient message in the main window's status bar (5s)
+            try:
+                self.main_window.statusBar().showMessage(f"Imported scenario '{selected_scenario}' ({agg_method})", 5000)
+            except Exception:
+                # If main_window lacks a statusBar or call fails, silently ignore
+                pass
         else:
             QMessageBox.critical(
                 self.main_window,
