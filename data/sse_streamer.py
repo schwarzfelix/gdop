@@ -1,8 +1,12 @@
 import threading
+import logging
 
 import requests
 from sseclient import SSEClient
 import json
+
+
+_LOG = logging.getLogger(__name__)
 
 
 class SSEUpdate:
@@ -57,20 +61,20 @@ def fetch_sse_streaming_data(url, scenario):
                 try:
                     status_data = json.loads(event.data)
                     streaming_data.update_status(status_data["status"])
-                    print(f"Status updated: {streaming_data.status}")
+                    _LOG.info("SSE status updated: %s", streaming_data.status)
                 except json.JSONDecodeError as e:
-                    print(f"Error decoding 'connected' event data: {e}")
+                    _LOG.warning("Error decoding 'connected' event data: %s", e)
             elif event.event in ["update", "message"]:
                 try:
                     update_data = json.loads(event.data)
                     streaming_data.add_update(update_data)
                     process_sse_data(update_data, scenario)
                 except json.JSONDecodeError as e:
-                    print(f"Error decoding event data: {e}")
+                    _LOG.warning("Error decoding event data: %s", e)
     except requests.RequestException as e:
-        print(f"Error fetching streaming data: {e}")
+        _LOG.error("Error fetching streaming data: %s", e)
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        _LOG.exception("Unexpected error while fetching SSE data: %s", e)
 
 
 class SSEStreamer:
@@ -84,10 +88,4 @@ class SSEStreamer:
         if self.streaming_thread.is_alive():
             self.streaming_thread.join(timeout=1)
             if self.streaming_thread.is_alive():
-                print("SSEStreamer thread did not stop gracefully.")
-
-
-"""
-Notes: kept logic and behavior from previous streaming.py but renamed classes and functions
-to make the SSE-specific nature explicit now that MQTT is available as a separate streamer.
-"""
+                _LOG.warning("SSEStreamer thread did not stop gracefully.")

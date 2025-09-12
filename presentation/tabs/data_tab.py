@@ -12,6 +12,9 @@ from data.importer import get_available_scenarios, validate_scenario_for_import
 from PyQt5.QtWidgets import QComboBox, QFormLayout
 from data.mqtt_streamer import MQTTStreamer
 from typing import Optional
+import logging
+
+_LOG = logging.getLogger(__name__)
 
 
 class ScenarioSelectionDialog(QDialog):
@@ -241,7 +244,11 @@ class DataTab(BaseTab):
                     self._mqtt_streamer = None
             except Exception:
                 pass
-            print("Streaming turned off.")
+            _LOG.info("Streaming turned off.")
+            try:
+                self.main_window.statusBar().showMessage("Streaming turned off.", 3000)
+            except Exception:
+                pass
         elif selected_id == 1:
             # MQTT selected - not implemented yet
             # Try to start a minimal MQTT streamer using the URL as broker/topic
@@ -274,13 +281,18 @@ class DataTab(BaseTab):
             # create streamer and start
             try:
                 def _on_mqtt_message(topic_in, payload):
-                    # minimal handler: attempt to decode payload as utf-8 text and print
+                    # minimal handler: attempt to decode payload as utf-8 text and log
                     try:
                         text = payload.decode('utf-8')
                     except Exception:
                         text = str(payload)
                     # TODO: parse payload and call scenario.update_relation as needed
-                    print(f"MQTT message on {topic_in}: {text}")
+                    _LOG.info("MQTT message on %s: %s", topic_in, text)
+                    try:
+                        # briefly notify user a message arrived
+                        self.main_window.statusBar().showMessage(f"MQTT msg on {topic_in}", 2000)
+                    except Exception:
+                        pass
 
                 # stop existing streamer first
                 if getattr(self, '_mqtt_streamer', None):
@@ -314,5 +326,9 @@ class DataTab(BaseTab):
         else:
             # No selection or unknown id - treat as off
             self.scenario.stop_streaming()
-            print("Streaming turned off (unknown selection).")
+            _LOG.info("Streaming turned off (unknown selection).")
+            try:
+                self.main_window.statusBar().showMessage("Streaming turned off.", 3000)
+            except Exception:
+                pass
 

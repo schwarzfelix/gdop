@@ -6,6 +6,9 @@ Pure data processing - no UI components.
 
 import pandas as pd
 from typing import List, Optional, Tuple
+import logging
+
+_LOG = logging.getLogger(__name__)
 
 from data.import_measurements import read_workspace_csvs
 from data.import_scenario import load_scenario_from_json
@@ -141,7 +144,7 @@ def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenari
     # Get tags from the loaded scenario
     existing_tags = scenario_obj.get_tag_list()
     if not existing_tags:
-        print("Warning: No tags found in scenario configuration. Measurements require at least one tag.")
+        _LOG.warning("No tags found in scenario configuration. Measurements require at least one tag.")
         return
     
     target_tag = existing_tags[0]  # Use first tag from JSON configuration
@@ -151,7 +154,7 @@ def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenari
 
     # Ensure the key columns exist
     if 'ap-ssid' not in scenario_data.columns or 'est._range(m)' not in scenario_data.columns:
-        print("Warning: Input data missing required columns 'ap-ssid' or 'est._range(m)'.")
+        _LOG.warning("Input data missing required columns 'ap-ssid' or 'est._range(m)'.")
         return 0
 
     # Prepare aggregation
@@ -162,13 +165,13 @@ def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenari
     valid_df = valid_df[valid_df['est_range'] > 0]
 
     if valid_df.empty:
-        print(f"No valid measurements to import for scenario '{scenario_name}'")
+        _LOG.info("No valid measurements to import for scenario '%s'", scenario_name)
         return 0
 
     # Define aggregation function
     agg_method = (agg_method or "newest").lower()
     if agg_method not in ("newest", "lowest", "mean", "median"):
-        print(f"Unknown aggregation method '{agg_method}', defaulting to 'newest'.")
+        _LOG.warning("Unknown aggregation method '%s', defaulting to 'newest'.", agg_method)
         agg_method = "newest"
 
     aggregated = None
@@ -221,9 +224,8 @@ def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenari
                 processed_count += 1
 
         except Exception as e:
-            print(f"Warning: Failed to process aggregated measurement for '{ap_ssid}': {e}")
+            _LOG.warning("Failed to process aggregated measurement for '%s': %s", ap_ssid, e)
             continue
-
-    print(f"Processed {processed_count} aggregated measurements (method={agg_method}) for scenario '{scenario_name}'")
-    print(f"Total measurement relations: {len(scenario_obj.measurements.relation)}")
+    _LOG.info("Processed %d aggregated measurements (method=%s) for scenario '%s'", processed_count, agg_method, scenario_name)
+    _LOG.info("Total measurement relations: %d", len(scenario_obj.measurements.relation))
     return processed_count

@@ -1,4 +1,7 @@
 import numpy as np
+import logging
+
+_LOG = logging.getLogger(__name__)
 
 def euclidean_distances(anchor_positions, tag_position, sigma=0.0):
     distances = np.linalg.norm(anchor_positions - tag_position, axis=1)
@@ -22,7 +25,7 @@ def trilateration(anchor_positions, distances):
         d = np.linalg.norm(p2 - p1)
 
         if d > r1 + r2 or d < abs(r1 - r2):
-            print("The hyper-spheres do not intersect.")
+            _LOG.warning("The hyper-spheres do not intersect.")
 
         a = (r1 ** 2 - r2 ** 2 + d ** 2) / (2 * d)
         base = p1 + a * (p2 - p1) / d

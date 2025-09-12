@@ -2,6 +2,9 @@ from pathlib import Path
 import io
 import pandas as pd
 from typing import List
+import logging
+
+_LOG = logging.getLogger(__name__)
 
 def _clean_col(name: str) -> str:
     """Normalize column names (remove angle brackets, whitespace)."""
@@ -70,8 +73,8 @@ def read_workspace_csvs(workspace_dir: str = "workspace") -> pd.DataFrame:
                 df["source_file"] = str(csv_path)
                 dfs.append(df)
             except Exception as e:
-                # keep function robust: skip problematic files but log to console
-                print(f"Warning: failed to read {csv_path}: {e}")
+                # keep function robust: skip problematic files but log
+                _LOG.warning("Failed to read %s: %s", csv_path, e)
 
     if not dfs:
         return pd.DataFrame()
