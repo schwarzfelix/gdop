@@ -184,6 +184,23 @@ class TrilatPlot(QObject):
                 bigger_circle.set_visible(False)
                 smaller_circle.set_visible(False)
 
+        # Update GDOP bar chart if visible
+        if self.display_config.showGDOP:
+            try:
+                self.ax_gdop.clear()
+                tags = self.scenario.get_tag_list()
+                gdop_values = [tag.dilution_of_precision() for tag in tags]
+                x_pos = range(len(gdop_values))
+                self.ax_gdop.bar(x_pos, gdop_values, color="orange")
+                self.ax_gdop.set_ylim(0, 12)
+                self.ax_gdop.set_xticks(x_pos)
+                self.ax_gdop.set_xticklabels([tag.name() for tag in tags], rotation=90)
+                for i, gdop in enumerate(gdop_values):
+                    self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
+            except Exception:
+                # best-effort: ignore plotting errors
+                pass
+
         # Update or create reusable line/text artists for anchor-anchor pairs
         num_anchor_pairs = max(0, len(anchor_positions) * (len(anchor_positions) - 1) // 2)
         # ensure enough line artists
