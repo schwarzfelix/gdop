@@ -123,17 +123,18 @@ class DataTab(BaseTab):
         self.csv_import_button.clicked.connect(self.import_csv_measurements)
         layout.addWidget(self.csv_import_button)
         
+        # Streaming section
+        self.streaming_tree = QTreeWidget()
+        self.streaming_tree.setHeaderHidden(True)
+        # Streaming mode radio buttons (off / MQTT / SSE)
+        root_node = QTreeWidgetItem(self.streaming_tree)
+
         # URL input
         url_node = QTreeWidgetItem(self.streaming_tree)
         self.url_input = QLineEdit()
         self.url_input.setPlaceholderText("Enter streaming URL")
         self.streaming_tree.setItemWidget(url_node, 0, self.url_input)
 
-        # Streaming section
-        self.streaming_tree = QTreeWidget()
-        self.streaming_tree.setHeaderHidden(True)
-        # Streaming mode radio buttons (off / MQTT / SSE)
-        root_node = QTreeWidgetItem(self.streaming_tree)
         # container widget is just the radio buttons; we use a button group to manage them
         self.stream_mode_off = QRadioButton("Turn off streaming")
         self.stream_mode_mqtt = QRadioButton("Stream from MQTT")
