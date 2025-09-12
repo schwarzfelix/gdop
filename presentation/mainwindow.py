@@ -33,6 +33,10 @@ class MainWindow(QMainWindow):
         self.scenario = gdop_scenario
         self.display_config = presentation.DisplayConfig()
         self.plot = presentation.TrilatPlot(self)
+        # Connect plot signals to selective update slots
+        self.plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
+        self.plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
+        self.plot.measurements_changed.connect(lambda: self.update_all(anchors=False, tags=False, measurements=True))
 
         self.setWindowTitle(MainWindow.WINDOW_TITLE)
 
@@ -90,41 +94,15 @@ class MainWindow(QMainWindow):
                 tab.update_sigma()
         #TODO remove old sigma_tab support later
 
-    def update_all(self):
-        """Update UI components.
-
-        Args:
-            anchors (bool): anchor list/positions changed.
-            tags (bool): tag positions/estimates changed.
-            measurements (bool): measurement relations changed.
-
-        If called without args, a full update is performed (backwards compatible).
-        """
-        # Backwards compatible signature: allow being called with no args.
-        # Consumers may pass named flags when available.
-        anchors = True
-        tags = True
-        measurements = True
-
-        # If caller used the new API, they'll have set temporary attributes
-        # on the plot (we use these when called by TrilatPlot._on_refresh_timer).
-        if hasattr(self, '_requested_update_flags'):
-            flags = self._requested_update_flags
-            anchors = flags.get('anchors', True)
-            tags = flags.get('tags', True)
-            measurements = flags.get('measurements', True)
-            # reset after use
-            delattr(self, '_requested_update_flags')
-
+    def update_all(self, anchors=True, tags=True, measurements=True):
+        """Update UI components selectively based on change flags."""
         # Plot updates: anchors may require updating artist lists. Prefer
         # the lighter-weight update_data/redraw API when available.
         if hasattr(self, "plot") and self.plot is not None:
             if hasattr(self.plot, 'update_data') and hasattr(self.plot, 'redraw'):
-                # Use the newer API
                 self.plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
                 self.plot.redraw()
             else:
-                # Fallback to original API
                 if anchors:
                     self.plot.update_anchors()
                 if tags or measurements:

@@ -3,18 +3,22 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 import matplotlib.gridspec as gridspec
 
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, pyqtSignal, QObject
 
 from simulation import station
 
 
-class TrilatPlot:
+class TrilatPlot(QObject):
+    anchors_changed = pyqtSignal()
+    tags_changed = pyqtSignal()
+    measurements_changed = pyqtSignal()
 
     STATION_DOT_SIZE = 100
     STATION_COLOR = 'blue'
     CIRCLE_LINESTYLE = 'dotted'
 
     def __init__(self, window):
+        super().__init__()
         self.window = window
         self.scenario = self.window.scenario
         self.display_config = self.window.display_config
@@ -350,13 +354,12 @@ class TrilatPlot:
     def add_anchor(self, x, y):
         anchor_name = f"Anchor {len(self.scenario.get_anchor_list()) + 1}"
         self.scenario.stations.append(station.Anchor([x, y], anchor_name))
-        # Anchor list changed — request a full UI update (tabs + plot)
-        self.window.update_all()
+        self.anchors_changed.emit()
 
     def remove_anchor(self, index):
         anchor_to_remove = self.scenario.get_anchor_list()[index]
         self.scenario.remove_station(anchor_to_remove)
-        self.window.update_all()
+        self.anchors_changed.emit()
 
     def on_mouse_press(self, event):
         if event.inaxes is None:
@@ -393,24 +396,28 @@ class TrilatPlot:
 
     def on_mouse_release(self, event):
         if self.dragging_point is not None:
-            # Finalize: full UI update (tabs + plot)
-            self.window.update_all()
+            # Finalize: emit anchors_changed if dragging anchor, tags_changed if dragging tag
+            if isinstance(self.dragging_point, station.Anchor):
+                self.anchors_changed.emit()
+            else:
+                self.tags_changed.emit()
         self.dragging_point = None
 
     def on_mouse_move(self, event):
         if self.dragging_point is None or event.inaxes is None:
             return
 
-        if not isinstance(self.dragging_point, station.Anchor):
-            return
-
-        x, y = event.xdata, event.ydata
-        self.dragging_point.update_position([x, y])
-        if self.sandbox_tag:
-            self.scenario.generate_measurements(self.sandbox_tag, self.scenario.tag_truth)
-        # During dragging, avoid full tab updates on every mouse move —
-        # coalesce frequent plot refreshes instead.
-        self.request_refresh(tags=True, measurements=True)
+        if isinstance(self.dragging_point, station.Anchor):
+            x, y = event.xdata, event.ydata
+            self.dragging_point.update_position([x, y])
+            self.anchors_changed.emit()
+        elif self.dragging_point is not None:
+            # If dragging tag truth
+            x, y = event.xdata, event.ydata
+            self.dragging_point.update_position([x, y])
+            if self.sandbox_tag:
+                self.scenario.generate_measurements(self.sandbox_tag, self.scenario.tag_truth)
+            self.tags_changed.emit()
 
     def request_refresh(self, anchors=False, tags=False, measurements=False):
         """Request a coalesced refresh. Multiple calls within
@@ -427,14 +434,10 @@ class TrilatPlot:
         # reset pending flags
         self._pending_refresh = {"anchors": False, "tags": False, "measurements": False}
 
-        # Request selective update on the main window so tabs update only when needed
-        try:
-            # Attach temporary flags on the window for MainWindow.update_all to consume
-            self.window._requested_update_flags = flags
-            self.window.update_all()
-        finally:
-            if hasattr(self.window, '_requested_update_flags'):
-                try:
-                    delattr(self.window, '_requested_update_flags')
-                except Exception:
-                    pass
+        # Emit signals for each changed type
+        if flags.get("anchors"):
+            self.anchors_changed.emit()
+        if flags.get("tags"):
+            self.tags_changed.emit()
+        if flags.get("measurements"):
+            self.measurements_changed.emit()
