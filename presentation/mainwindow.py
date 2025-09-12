@@ -25,6 +25,7 @@ class MainWindow(QMainWindow):
     SIGMA_SLIDER_MAX = 5
     SIGMA_SLIDER_RESOLUTION = 100
     SIGMA_INPUT_STEP = 0.1
+    PERIODIC_UPDATE_INTERVAL_MS = 1000
 
     def __init__(self, gdop_scenario):
         super().__init__()
@@ -107,4 +108,8 @@ class MainWindow(QMainWindow):
         """Start the periodic update timer."""
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.update_all)
-        #TODO instead of periodically, update when new streaming data received
+        # Start the periodic update timer with a conservative default interval.
+        # The codebase prefers event-driven updates for streaming, but having
+        # a running timer keeps the UI responsive in absence of events.
+        self.update_timer.setInterval(MainWindow.PERIODIC_UPDATE_INTERVAL_MS)
+        self.update_timer.start()

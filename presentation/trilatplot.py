@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 import matplotlib.gridspec as gridspec
 
+from PyQt5.QtCore import QTimer
+
 from simulation import station
 
 
@@ -44,6 +46,16 @@ class TrilatPlot:
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
         self.fig.canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
+
+        # A short single-shot timer to coalesce frequent refresh requests
+        # (e.g. during dragging or streaming) so we don't redraw the plot
+        # on every event. Requests set flags and the timer triggers a single
+        # update for the accumulated changes.
+        self._refresh_timer = QTimer()
+        self._refresh_timer.setSingleShot(True)
+        self._refresh_timer.timeout.connect(self._on_refresh_timer)
+        self._refresh_interval_ms = 40  # ~25 FPS refresh cap
+        self._pending_refresh = {"anchors": False, "tags": False, "measurements": False}
 
 
     def update_anchors(self):
@@ -180,6 +192,7 @@ class TrilatPlot:
     def add_anchor(self, x, y):
         anchor_name = f"Anchor {len(self.scenario.get_anchor_list()) + 1}"
         self.scenario.stations.append(station.Anchor([x, y], anchor_name))
+        # Anchor list changed — request a full UI update (tabs + plot)
         self.window.update_all()
 
     def remove_anchor(self, index):
@@ -213,6 +226,7 @@ class TrilatPlot:
 
     def on_mouse_release(self, event):
         if self.dragging_point is not None:
+            # Finalize: full UI update (tabs + plot)
             self.window.update_all()
         self.dragging_point = None
 
@@ -227,4 +241,35 @@ class TrilatPlot:
         self.dragging_point.update_position([x, y])
         if self.sandbox_tag:
             self.scenario.generate_measurements(self.sandbox_tag, self.scenario.tag_truth)
-        self.window.update_all()
+        # During dragging, avoid full tab updates on every mouse move —
+        # coalesce frequent plot refreshes instead.
+        self.request_refresh(tags=True, measurements=True)
+
+    def request_refresh(self, anchors=False, tags=False, measurements=False):
+        """Request a coalesced refresh. Multiple calls within
+        _refresh_interval_ms will be merged into a single update.
+        """
+        self._pending_refresh["anchors"] = self._pending_refresh["anchors"] or anchors
+        self._pending_refresh["tags"] = self._pending_refresh["tags"] or tags
+        self._pending_refresh["measurements"] = self._pending_refresh["measurements"] or measurements
+        if not self._refresh_timer.isActive():
+            self._refresh_timer.start(self._refresh_interval_ms)
+
+    def _on_refresh_timer(self):
+        flags = self._pending_refresh.copy()
+        # reset pending flags
+        self._pending_refresh = {"anchors": False, "tags": False, "measurements": False}
+
+        # If anchors changed, ensure the anchor artists are rebuilt/updated
+        if flags.get("anchors"):
+            try:
+                self.update_anchors()
+            except Exception:
+                # best-effort: keep UI responsive even if anchor update fails
+                pass
+
+        # Update the rest of the plot (tag estimates, lines, labels, circles)
+        try:
+            self.update_plot()
+        except Exception:
+            pass
