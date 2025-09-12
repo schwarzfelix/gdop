@@ -3,8 +3,8 @@ Data tab for the GDOP application.
 """
 
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QLineEdit, QPushButton, QVBoxLayout, QWidget,
-    QDialog, QListWidget, QListWidgetItem, QMessageBox, QDialogButtonBox,
+    QLineEdit, QPushButton, QVBoxLayout, QWidget,
+    QDialog, QListWidget, QListWidgetItem, QDialogButtonBox,
     QLabel, QRadioButton, QButtonGroup
 )
 from .base_tab import BaseTab
@@ -98,7 +98,8 @@ class DataTab(BaseTab):
     
     def __init__(self, main_window):
         super().__init__(main_window)
-        self.streaming_tree = None
+        # container widget for streaming controls (replaces previous QTreeWidget)
+        self.streaming_container = None
         # radio buttons for streaming mode: off, mqtt, sse
         self.stream_mode_group = None
         self.stream_mode_off = None
@@ -123,17 +124,14 @@ class DataTab(BaseTab):
         self.csv_import_button.clicked.connect(self.import_csv_measurements)
         layout.addWidget(self.csv_import_button)
         
-        # Streaming section
-        self.streaming_tree = QTreeWidget()
-        self.streaming_tree.setHeaderHidden(True)
-        # Streaming mode radio buttons (off / MQTT / SSE)
-        root_node = QTreeWidgetItem(self.streaming_tree)
+        # Streaming section (direct widgets, no list container)
+        self.streaming_container = QWidget()
+        streaming_layout = QVBoxLayout(self.streaming_container)
 
         # URL input
-        url_node = QTreeWidgetItem(self.streaming_tree)
         self.url_input = QLineEdit()
         self.url_input.setPlaceholderText("Enter streaming URL")
-        self.streaming_tree.setItemWidget(url_node, 0, self.url_input)
+        streaming_layout.addWidget(self.url_input)
 
         # container widget is just the radio buttons; we use a button group to manage them
         self.stream_mode_off = QRadioButton("Turn off streaming")
@@ -142,25 +140,21 @@ class DataTab(BaseTab):
         # default to off
         self.stream_mode_off.setChecked(True)
 
-        self.stream_mode_group = QButtonGroup(self.streaming_tree)
+        self.stream_mode_group = QButtonGroup(self.streaming_container)
         self.stream_mode_group.addButton(self.stream_mode_off, 0)
         self.stream_mode_group.addButton(self.stream_mode_mqtt, 1)
         self.stream_mode_group.addButton(self.stream_mode_sse, 2)
         # connect change
         self.stream_mode_group.buttonClicked.connect(self.update_streaming_config)
 
-        # Place the radio buttons under the root node using setItemWidget on separate child items
-        off_node = QTreeWidgetItem(self.streaming_tree)
-        self.streaming_tree.setItemWidget(off_node, 0, self.stream_mode_off)
-        mqtt_node = QTreeWidgetItem(self.streaming_tree)
-        self.streaming_tree.setItemWidget(mqtt_node, 0, self.stream_mode_mqtt)
-        sse_node = QTreeWidgetItem(self.streaming_tree)
-        self.streaming_tree.setItemWidget(sse_node, 0, self.stream_mode_sse)
+        streaming_layout.addWidget(self.stream_mode_off)
+        streaming_layout.addWidget(self.stream_mode_mqtt)
+        streaming_layout.addWidget(self.stream_mode_sse)
 
         # Periodic update checkbox
     # Periodic update controls removed (streaming signals handle updates)
 
-        layout.addWidget(self.streaming_tree)
+        layout.addWidget(self.streaming_container)
         return main_widget
 
     def import_csv_measurements(self):
