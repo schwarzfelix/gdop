@@ -91,18 +91,48 @@ class MainWindow(QMainWindow):
         #TODO remove old sigma_tab support later
 
     def update_all(self):
-        """Update all UI components."""
+        """Update UI components.
+
+        Args:
+            anchors (bool): anchor list/positions changed.
+            tags (bool): tag positions/estimates changed.
+            measurements (bool): measurement relations changed.
+
+        If called without args, a full update is performed (backwards compatible).
+        """
+        # Backwards compatible signature: allow being called with no args.
+        # Consumers may pass named flags when available.
+        anchors = True
+        tags = True
+        measurements = True
+
+        # If caller used the new API, they'll have set temporary attributes
+        # on the plot (we use these when called by TrilatPlot._on_refresh_timer).
+        if hasattr(self, '_requested_update_flags'):
+            flags = self._requested_update_flags
+            anchors = flags.get('anchors', True)
+            tags = flags.get('tags', True)
+            measurements = flags.get('measurements', True)
+            # reset after use
+            delattr(self, '_requested_update_flags')
+
+        # Plot updates: anchors may require updating artist lists
         if hasattr(self, "plot") and self.plot is not None:
-            self.plot.update_anchors()
-            self.plot.update_plot()
-        
-        # Update individual tabs
-        if hasattr(self, 'stations_tab'):
+            if anchors:
+                self.plot.update_anchors()
+            # update_plot covers tags/lines/labels; measurements affect distances
+            if tags or measurements:
+                self.plot.update_plot()
+
+        # Update individual tabs selectively
+        if anchors and hasattr(self, 'stations_tab'):
             self.stations_tab.update()
-        if hasattr(self, 'measurements_tab'):
+        if measurements and hasattr(self, 'measurements_tab'):
             self.measurements_tab.update()
-        
-        self.update_sandbox()
+
+        # Sandbox (tags controls) depends on tags/measurements
+        if (tags or measurements):
+            self.update_sandbox()
 
     def start_periodic_update(self):
         """Start the periodic update timer."""

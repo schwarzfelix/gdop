@@ -388,16 +388,14 @@ class TrilatPlot:
         # reset pending flags
         self._pending_refresh = {"anchors": False, "tags": False, "measurements": False}
 
-        # If anchors changed, ensure the anchor artists are rebuilt/updated
-        if flags.get("anchors"):
-            try:
-                self.update_anchors()
-            except Exception:
-                # best-effort: keep UI responsive even if anchor update fails
-                pass
-
-        # Update the rest of the plot (tag estimates, lines, labels, circles)
+        # Request selective update on the main window so tabs update only when needed
         try:
-            self.update_plot()
-        except Exception:
-            pass
+            # Attach temporary flags on the window for MainWindow.update_all to consume
+            self.window._requested_update_flags = flags
+            self.window.update_all()
+        finally:
+            if hasattr(self.window, '_requested_update_flags'):
+                try:
+                    delattr(self.window, '_requested_update_flags')
+                except Exception:
+                    pass
