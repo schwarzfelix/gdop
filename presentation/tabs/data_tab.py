@@ -102,8 +102,7 @@ class DataTab(BaseTab):
         self.streaming_tree = None
         self.stream_enabled_checkbox = None
         self.url_input = None
-        self.periodic_update_checkbox = None
-        self.interval_input = None
+        # periodic update controls removed - updates come from streamer signals
         self.csv_import_button = None
     
     @property
@@ -139,20 +138,7 @@ class DataTab(BaseTab):
         self.streaming_tree.setItemWidget(url_node, 0, self.url_input)
 
         # Periodic update checkbox
-        periodic_node = QTreeWidgetItem(self.streaming_tree)
-        self.periodic_update_checkbox = QCheckBox("Enable Periodic Update")
-        self.periodic_update_checkbox.setChecked(False)
-        self.periodic_update_checkbox.stateChanged.connect(self.update_periodic_config)
-        self.streaming_tree.setItemWidget(periodic_node, 0, self.periodic_update_checkbox)
-
-        # Interval input
-        interval_node = QTreeWidgetItem(self.streaming_tree)
-        self.interval_input = QSpinBox()
-        self.interval_input.setRange(100, 10000)
-        self.interval_input.setValue(2000)
-        self.interval_input.setSuffix(" ms")
-        self.interval_input.valueChanged.connect(self.update_periodic_interval)
-        self.streaming_tree.setItemWidget(interval_node, 0, self.interval_input)
+    # Periodic update controls removed (streaming signals handle updates)
 
         layout.addWidget(self.streaming_tree)
         return main_widget
@@ -241,15 +227,3 @@ class DataTab(BaseTab):
             self.scenario.stop_streaming()
             print("Streaming stopped.")
 
-    def update_periodic_config(self):
-        """Update periodic update configuration."""
-        is_enabled = self.periodic_update_checkbox.isChecked()
-        if is_enabled:
-            self.main_window.update_timer.start(self.interval_input.value())
-        else:
-            self.main_window.update_timer.stop()
-
-    def update_periodic_interval(self):
-        """Update periodic update interval."""
-        if self.periodic_update_checkbox.isChecked():
-            self.main_window.update_timer.setInterval(self.interval_input.value())

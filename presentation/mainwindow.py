@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QMainWindow,
     QTabWidget,
@@ -25,7 +25,6 @@ class MainWindow(QMainWindow):
     SIGMA_SLIDER_MAX = 5
     SIGMA_SLIDER_RESOLUTION = 100
     SIGMA_INPUT_STEP = 0.1
-    # PERIODIC_UPDATE_INTERVAL_MS = 1000
 
     def __init__(self, gdop_scenario):
         super().__init__()
