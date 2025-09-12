@@ -6,11 +6,9 @@ Pure data processing - no UI components.
 
 import pandas as pd
 from typing import List, Optional, Tuple
-import os
 
 from data.import_measurements import read_workspace_csvs
 from data.import_scenario import load_scenario_from_json
-from simulation import measurements
 
 
 def get_available_scenarios(workspace_dir: str = "workspace") -> Tuple[List[str], Optional[str]]:

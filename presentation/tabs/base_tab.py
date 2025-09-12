@@ -3,7 +3,6 @@ Base tab class for GDOP application tabs.
 """
 
 from abc import ABC, abstractmethod
-from PyQt5.QtWidgets import QWidget
 
 
 class BaseTab(ABC):

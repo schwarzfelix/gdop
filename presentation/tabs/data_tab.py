@@ -4,7 +4,7 @@ Data tab for the GDOP application.
 
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QCheckBox, 
-    QLineEdit, QSpinBox, QPushButton, QVBoxLayout, QWidget,
+    QLineEdit, QPushButton, QVBoxLayout, QWidget,
     QDialog, QListWidget, QListWidgetItem, QMessageBox, QDialogButtonBox,
     QLabel
 )

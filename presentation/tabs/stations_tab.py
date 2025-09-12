@@ -4,10 +4,9 @@ Stations tab for the GDOP application.
 
 from PyQt5.QtWidgets import (
     QTreeWidget, QTreeWidgetItem, QWidget, QHBoxLayout, 
-    QLabel, QPushButton, QInputDialog, QDialog, QFormLayout,
+    QLabel, QPushButton, QDialog, QFormLayout,
     QLineEdit, QVBoxLayout, QDialogButtonBox
 )
-from PyQt5.QtCore import Qt
 from .base_tab import BaseTab
 from simulation.station import Anchor
 

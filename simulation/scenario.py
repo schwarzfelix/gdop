@@ -1,6 +1,6 @@
 import numpy as np
 
-from simulation import measurements, station, geometry
+from simulation import measurements, station
 from data.streaming import Streamer
 import data.importer as importer
 
