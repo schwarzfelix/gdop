@@ -168,35 +168,26 @@ class DataTab(BaseTab):
         # Validate scenario first
         is_valid, validation_error = validate_scenario_for_import(self.scenario)
         if not is_valid:
-            QMessageBox.warning(
-                self.main_window,
-                "Validation Error",
-                validation_error
-            )
+            try:
+                self.main_window.statusBar().showMessage(f"Validation Error: {validation_error}", 5000)
+            except Exception:
+                pass
             return
         
         # Get available scenarios
         scenarios, error_message = get_available_scenarios("workspace")
         
         if error_message:
-            if "No CSV measurement files found" in error_message:
-                QMessageBox.information(
-                    self.main_window,
-                    "No Data Found",
-                    f"No CSV measurement files found in 'workspace' directory."
-                )
-            elif "No scenario data found" in error_message:
-                QMessageBox.warning(
-                    self.main_window,
-                    "No Scenarios Found",
-                    "No scenario data found in CSV files."
-                )
-            else:
-                QMessageBox.critical(
-                    self.main_window,
-                    "Error",
-                    error_message
-                )
+            try:
+                if "No CSV measurement files found" in error_message:
+                    self.main_window.statusBar().showMessage("No CSV measurement files found in 'workspace' directory.", 5000)
+                elif "No scenario data found" in error_message:
+                    self.main_window.statusBar().showMessage("No scenario data found in CSV files.", 5000)
+                else:
+                    # critical/errors stay until next message (timeout=0)
+                    self.main_window.statusBar().showMessage(f"Error: {error_message}", 0)
+            except Exception:
+                pass
             return
         
         # Show scenario selection dialog
@@ -228,11 +219,11 @@ class DataTab(BaseTab):
                 # If main_window lacks a statusBar or call fails, silently ignore
                 pass
         else:
-            QMessageBox.critical(
-                self.main_window,
-                "Import Error",
-                message
-            )
+            try:
+                # critical/errors stay until next message (timeout=0)
+                self.main_window.statusBar().showMessage(f"Import Error: {message}", 0)
+            except Exception:
+                pass
 
     def update_streaming_config(self):
         """Update streaming configuration based on checkbox state."""
@@ -246,7 +237,10 @@ class DataTab(BaseTab):
             # MQTT selected - not implemented yet
             # TODO: Implement MQTT streaming hookup: connect to broker, subscribe to topic, parse messages,
             # and call scenario.update_relation / scenario.process_stream_message as needed.
-            QMessageBox.information(self.main_window, "MQTT", "MQTT streaming is not implemented yet. TODO added.")
+            try:
+                self.main_window.statusBar().showMessage("MQTT streaming is not implemented yet. TODO added.", 5000)
+            except Exception:
+                pass
             # Revert selection to off to avoid leaving user in a non-functional state
             self.stream_mode_off.setChecked(True)
         elif selected_id == 2:
@@ -257,7 +251,10 @@ class DataTab(BaseTab):
             else:
                 # revert to off and notify
                 self.stream_mode_off.setChecked(True)
-                QMessageBox.warning(self.main_window, "Invalid URL", "Please enter a valid Streaming URL for SSE.")
+                try:
+                    self.main_window.statusBar().showMessage("Please enter a valid Streaming URL for SSE.", 5000)
+                except Exception:
+                    pass
         else:
             # No selection or unknown id - treat as off
             self.scenario.stop_streaming()

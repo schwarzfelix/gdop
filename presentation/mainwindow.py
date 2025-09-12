@@ -41,6 +41,14 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
+        # Ensure a status bar exists from the start so status messages appear consistently
+        try:
+            sb = self.statusBar()
+            sb.showMessage("")
+        except Exception:
+            # If statusBar cannot be created for some reason, ignore and continue
+            pass
+
         layout = QVBoxLayout()
         central_widget.setLayout(layout)
 
