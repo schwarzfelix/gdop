@@ -98,8 +98,10 @@ class TrilatPlot(QObject):
         # Ensure there are circle pairs for each anchor; create if missing
         if len(self.circle_pairs) < len(anchor_positions):
             for i in range(len(self.circle_pairs), len(anchor_positions)):
-                c1 = Circle((0, 0), 0, color=self.STATION_COLOR, fill=False, linestyle=self.CIRCLE_LINESTYLE)
-                c2 = Circle((0, 0), 0, color=self.STATION_COLOR, fill=False, linestyle=self.CIRCLE_LINESTYLE)
+                c1 = Circle((0, 0), 0, edgecolor=self.STATION_COLOR, facecolor='none', fill=False, linestyle=self.CIRCLE_LINESTYLE, linewidth=1.0, zorder=1)
+                c2 = Circle((0, 0), 0, edgecolor=self.STATION_COLOR, facecolor='none', fill=False, linestyle=self.CIRCLE_LINESTYLE, linewidth=1.0, zorder=1)
+                c1.set_visible(False)
+                c2.set_visible(False)
                 self.ax_trilat.add_patch(c1)
                 self.ax_trilat.add_patch(c2)
                 self.circle_pairs.append((c1, c2))
@@ -148,20 +150,23 @@ class TrilatPlot(QObject):
         if self.tag_truth_plot:
             self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
 
+        # Update anchor circles: control visibility and radius explicitly. Use visibility toggling
         if self.display_config.showAnchorCircles:
             for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
                 if i < len(anchor_positions):
+                    bigger_circle.set_visible(True)
+                    smaller_circle.set_visible(True)
                     bigger_circle.set_center(anchor_positions[i])
                     bigger_circle.set_radius(distances_truth[i] + self.scenario.sigma)
                     smaller_circle.set_center(anchor_positions[i])
                     smaller_circle.set_radius(max(0.0, distances_truth[i] - self.scenario.sigma))
                 else:
-                    bigger_circle.set_radius(0)
-                    smaller_circle.set_radius(0)
+                    bigger_circle.set_visible(False)
+                    smaller_circle.set_visible(False)
         else:
             for (bigger_circle, smaller_circle) in self.circle_pairs:
-                bigger_circle.set_radius(0)
-                smaller_circle.set_radius(0)
+                bigger_circle.set_visible(False)
+                smaller_circle.set_visible(False)
 
         # Update or create reusable line/text artists for anchor-anchor pairs
         num_anchor_pairs = max(0, len(anchor_positions) * (len(anchor_positions) - 1) // 2)

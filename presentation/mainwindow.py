@@ -99,6 +99,9 @@ class MainWindow(QMainWindow):
         # the lighter-weight update_data/redraw API when available.
         if hasattr(self, "plot") and self.plot is not None:
             if hasattr(self.plot, 'update_data') and hasattr(self.plot, 'redraw'):
+                # ensure anchor artists (circle_pairs) are created/updated before update_data
+                if anchors and hasattr(self.plot, 'update_anchors'):
+                    self.plot.update_anchors()
                 self.plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
                 self.plot.redraw()
             else:

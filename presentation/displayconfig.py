@@ -1,7 +1,7 @@
 class DisplayConfig():
     def __init__(self):
 
-        self.showAnchorCircles = False
+        self.showAnchorCircles = True
         self.showAnchorLabels = True
 
         self.showTagAnchorLabels = False
@@ -10,8 +10,8 @@ class DisplayConfig():
         self.showBetweenAnchorsLabels = False
         self.showBetweenAnchorsLines = False
 
-        self.rightClickAnchors = False
+        self.rightClickAnchors = True
         self.showGDOP = True
 
         self.showTagLabels = True
-        self.dragAnchors = False
+        self.dragAnchors = True
