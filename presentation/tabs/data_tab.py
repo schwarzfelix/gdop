@@ -3,10 +3,9 @@ Data tab for the GDOP application.
 """
 
 from PyQt5.QtWidgets import (
-    QTreeWidget, QTreeWidgetItem, QCheckBox, 
-    QLineEdit, QPushButton, QVBoxLayout, QWidget,
+    QTreeWidget, QTreeWidgetItem, QLineEdit, QPushButton, QVBoxLayout, QWidget,
     QDialog, QListWidget, QListWidgetItem, QMessageBox, QDialogButtonBox,
-    QLabel
+    QLabel, QRadioButton, QButtonGroup
 )
 from .base_tab import BaseTab
 from data.importer import get_available_scenarios, validate_scenario_for_import
@@ -100,7 +99,11 @@ class DataTab(BaseTab):
     def __init__(self, main_window):
         super().__init__(main_window)
         self.streaming_tree = None
-        self.stream_enabled_checkbox = None
+        # radio buttons for streaming mode: off, mqtt, sse
+        self.stream_mode_group = None
+        self.stream_mode_off = None
+        self.stream_mode_mqtt = None
+        self.stream_mode_sse = None
         self.url_input = None
         # periodic update controls removed - updates come from streamer signals
         self.csv_import_button = None
@@ -120,22 +123,38 @@ class DataTab(BaseTab):
         self.csv_import_button.clicked.connect(self.import_csv_measurements)
         layout.addWidget(self.csv_import_button)
         
-        # Streaming section
-        self.streaming_tree = QTreeWidget()
-        self.streaming_tree.setHeaderHidden(True)
-
-        # Stream enabled checkbox
-        root_node = QTreeWidgetItem(self.streaming_tree)
-        self.stream_enabled_checkbox = QCheckBox("Stream Measurements")
-        self.stream_enabled_checkbox.setChecked(False)
-        self.stream_enabled_checkbox.stateChanged.connect(self.update_streaming_config)
-        self.streaming_tree.setItemWidget(root_node, 0, self.stream_enabled_checkbox)
-
         # URL input
         url_node = QTreeWidgetItem(self.streaming_tree)
         self.url_input = QLineEdit()
-        self.url_input.setPlaceholderText("Enter Streaming URL")
+        self.url_input.setPlaceholderText("Enter streaming URL")
         self.streaming_tree.setItemWidget(url_node, 0, self.url_input)
+
+        # Streaming section
+        self.streaming_tree = QTreeWidget()
+        self.streaming_tree.setHeaderHidden(True)
+        # Streaming mode radio buttons (off / MQTT / SSE)
+        root_node = QTreeWidgetItem(self.streaming_tree)
+        # container widget is just the radio buttons; we use a button group to manage them
+        self.stream_mode_off = QRadioButton("Turn off streaming")
+        self.stream_mode_mqtt = QRadioButton("Stream from MQTT")
+        self.stream_mode_sse = QRadioButton("Stream from SSE")
+        # default to off
+        self.stream_mode_off.setChecked(True)
+
+        self.stream_mode_group = QButtonGroup(self.streaming_tree)
+        self.stream_mode_group.addButton(self.stream_mode_off, 0)
+        self.stream_mode_group.addButton(self.stream_mode_mqtt, 1)
+        self.stream_mode_group.addButton(self.stream_mode_sse, 2)
+        # connect change
+        self.stream_mode_group.buttonClicked.connect(self.update_streaming_config)
+
+        # Place the radio buttons under the root node using setItemWidget on separate child items
+        off_node = QTreeWidgetItem(self.streaming_tree)
+        self.streaming_tree.setItemWidget(off_node, 0, self.stream_mode_off)
+        mqtt_node = QTreeWidgetItem(self.streaming_tree)
+        self.streaming_tree.setItemWidget(mqtt_node, 0, self.stream_mode_mqtt)
+        sse_node = QTreeWidgetItem(self.streaming_tree)
+        self.streaming_tree.setItemWidget(sse_node, 0, self.stream_mode_sse)
 
         # Periodic update checkbox
     # Periodic update controls removed (streaming signals handle updates)
@@ -215,15 +234,30 @@ class DataTab(BaseTab):
 
     def update_streaming_config(self):
         """Update streaming configuration based on checkbox state."""
-        is_enabled = self.stream_enabled_checkbox.isChecked()
-        if is_enabled:
+        # Determine which radio is selected: 0=off,1=mqtt,2=sse
+        selected_id = self.stream_mode_group.checkedId()
+        if selected_id == 0:
+            # Turn off streaming
+            self.scenario.stop_streaming()
+            print("Streaming turned off.")
+        elif selected_id == 1:
+            # MQTT selected - not implemented yet
+            # TODO: Implement MQTT streaming hookup: connect to broker, subscribe to topic, parse messages,
+            # and call scenario.update_relation / scenario.process_stream_message as needed.
+            QMessageBox.information(self.main_window, "MQTT", "MQTT streaming is not implemented yet. TODO added.")
+            # Revert selection to off to avoid leaving user in a non-functional state
+            self.stream_mode_off.setChecked(True)
+        elif selected_id == 2:
+            # SSE selected - use current behavior
             url = self.url_input.text().strip()
             if url:
                 self.scenario.start_streaming(url)
             else:
-                self.stream_enabled_checkbox.setChecked(False)
-                print("Please enter a valid Streaming URL.")
+                # revert to off and notify
+                self.stream_mode_off.setChecked(True)
+                QMessageBox.warning(self.main_window, "Invalid URL", "Please enter a valid Streaming URL for SSE.")
         else:
+            # No selection or unknown id - treat as off
             self.scenario.stop_streaming()
-            print("Streaming stopped.")
+            print("Streaming turned off (unknown selection).")
 
