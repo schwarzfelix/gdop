@@ -30,7 +30,21 @@ class TrilatPlot:
         self.ax_trilat.set_ylim(-15, 15)
 
         self.anchor_plots = []
+        # single scatter for anchors (PathCollection) to update offsets efficiently
+        self.anchor_scatter = None
+        # circle patches, two per anchor
         self.circle_pairs = []
+        # single scatter for tag estimates
+        self.tag_estimate_scatter = None
+
+        # reusable line and text artist caches
+        self.anchor_pair_lines = []
+        self.anchor_pair_texts = []
+        self.tag_anchor_lines = []
+        self.tag_anchor_texts = []
+        self.tag_name_texts = []
+        self.anchor_name_texts = []
+        # fallback list for miscellaneous artists
         self.lines_plot = []
 
         self.sandbox_tag = next((tag for tag in self.scenario.get_tag_list() if tag.name() == "SANDBOX_TAG"), None)
@@ -59,117 +73,222 @@ class TrilatPlot:
 
 
     def update_anchors(self):
-
         anchor_positions = self.scenario.anchor_positions()
 
-        for plot in self.anchor_plots + self.lines_plot:
-            plot.remove()
+        # Update or create the anchor scatter
+        if self.anchor_scatter is None:
+            if len(anchor_positions) > 0:
+                offsets = np.array(anchor_positions)
+                self.anchor_scatter = self.ax_trilat.scatter(offsets[:, 0], offsets[:, 1], c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True)
+            else:
+                self.anchor_scatter = self.ax_trilat.scatter([], [], c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True)
+        else:
+            if len(anchor_positions) > 0:
+                self.anchor_scatter.set_offsets(np.array(anchor_positions))
+            else:
+                self.anchor_scatter.set_offsets([])
 
-        for circle_pair in self.circle_pairs:
-            circle_pair[0].remove()
-            circle_pair[1].remove()
-        
-        self.anchor_plots = [self.ax_trilat.scatter(x, y, c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True) for x, y in anchor_positions]
+        # Ensure there are circle pairs for each anchor; create if missing
+        if len(self.circle_pairs) < len(anchor_positions):
+            for i in range(len(self.circle_pairs), len(anchor_positions)):
+                c1 = Circle((0, 0), 0, color=self.STATION_COLOR, fill=False, linestyle=self.CIRCLE_LINESTYLE)
+                c2 = Circle((0, 0), 0, color=self.STATION_COLOR, fill=False, linestyle=self.CIRCLE_LINESTYLE)
+                self.ax_trilat.add_patch(c1)
+                self.ax_trilat.add_patch(c2)
+                self.circle_pairs.append((c1, c2))
 
-        self.circle_pairs = [
-            (
-                self.ax_trilat.add_patch(Circle((x, y), 0, color=self.STATION_COLOR, fill=False, linestyle=self.CIRCLE_LINESTYLE)),
-                self.ax_trilat.add_patch(Circle((x, y), 0, color=self.STATION_COLOR, fill=False, linestyle=self.CIRCLE_LINESTYLE)),
-            )
-            for x, y in anchor_positions
-        ]
+        # If there are more circle_pairs than anchors (after removals), hide extras
+        for idx, (c1, c2) in enumerate(self.circle_pairs):
+            if idx < len(anchor_positions):
+                c1.set_visible(True)
+                c2.set_visible(True)
+                c1.set_center(anchor_positions[idx])
+                c2.set_center(anchor_positions[idx])
+            else:
+                c1.set_visible(False)
+                c2.set_visible(False)
 
     def update_plot(self):
-
-        for plot in self.tag_estimate_plots:
-            plot.remove()
-        self.tag_estimate_plots = []
-        for _ in self.scenario.get_tag_list():
-            plot, = self.ax_trilat.plot([], [], 'rx', markersize=10)
-            self.tag_estimate_plots.append(plot)
-
-
         anchor_positions = self.scenario.anchor_positions()
         distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
-
         tag_positions = self.scenario.tag_positions()
 
+        # Update tag estimate scatter: use a single scatter for all tags
+        if self.tag_estimate_scatter is None:
+            if len(tag_positions) > 0:
+                arr = np.array(tag_positions)
+                self.tag_estimate_scatter = self.ax_trilat.scatter(arr[:, 0], arr[:, 1], c='red', marker='x')
+            else:
+                self.tag_estimate_scatter = self.ax_trilat.scatter([], [], c='red', marker='x')
+        else:
+            if len(tag_positions) > 0:
+                self.tag_estimate_scatter.set_offsets(np.array(tag_positions))
+            else:
+                self.tag_estimate_scatter.set_offsets([])
 
-        for i, plot in enumerate(self.tag_estimate_plots):
-            plot.set_xdata([tag_positions[i][0]])
-            plot.set_ydata([tag_positions[i][1]])
+        # Update anchor scatter offsets (if using anchor_scatter)
+        if self.anchor_scatter is not None and len(anchor_positions) > 0:
+            self.anchor_scatter.set_offsets(np.array(anchor_positions))
+        elif self.anchor_scatter is not None:
+            self.anchor_scatter.set_offsets([])
 
-        for i, plot in enumerate(self.anchor_plots):
-            plot.set_offsets([anchor_positions[i]])
         if self.tag_truth_plot:
             self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
 
         if self.display_config.showAnchorCircles:
             for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
-                bigger_circle.set_center(anchor_positions[i])
-                bigger_circle.set_radius(distances_truth[i] + self.scenario.sigma)
-
-                smaller_circle.set_center(anchor_positions[i])
-                smaller_circle.set_radius(distances_truth[i] - self.scenario.sigma)
+                if i < len(anchor_positions):
+                    bigger_circle.set_center(anchor_positions[i])
+                    bigger_circle.set_radius(distances_truth[i] + self.scenario.sigma)
+                    smaller_circle.set_center(anchor_positions[i])
+                    smaller_circle.set_radius(max(0.0, distances_truth[i] - self.scenario.sigma))
+                else:
+                    bigger_circle.set_radius(0)
+                    smaller_circle.set_radius(0)
         else:
-            for i, (bigger_circle, smaller_circle) in enumerate(self.circle_pairs):
+            for (bigger_circle, smaller_circle) in self.circle_pairs:
                 bigger_circle.set_radius(0)
                 smaller_circle.set_radius(0)
 
-        for line in self.lines_plot:
-            try:
-                line.remove()
-            except:
-                pass
-        self.lines_plot = []
+        # Update or create reusable line/text artists for anchor-anchor pairs
+        num_anchor_pairs = max(0, len(anchor_positions) * (len(anchor_positions) - 1) // 2)
+        # ensure enough line artists
+        while len(self.anchor_pair_lines) < num_anchor_pairs:
+            l, = self.ax_trilat.plot([], [], 'b--', alpha=0.5)
+            self.anchor_pair_lines.append(l)
+            t = self.ax_trilat.text(0, 0, '', ha='center', va='center')
+            t.set_visible(False)
+            self.anchor_pair_texts.append(t)
 
+        pair_idx = 0
         for i in range(len(anchor_positions)):
             for j in range(i + 1, len(anchor_positions)):
                 if self.display_config.showBetweenAnchorsLines:
-                    line, = self.ax_trilat.plot(
-                        [anchor_positions[i][0], anchor_positions[j][0]],
-                        [anchor_positions[i][1], anchor_positions[j][1]],
-                        'b--', alpha=0.5
-                    )
-                    self.lines_plot.append(line)
-
+                    xdata = [anchor_positions[i][0], anchor_positions[j][0]]
+                    ydata = [anchor_positions[i][1], anchor_positions[j][1]]
+                    line = self.anchor_pair_lines[pair_idx]
+                    line.set_xdata(xdata)
+                    line.set_ydata(ydata)
+                    line.set_visible(True)
+                else:
+                    self.anchor_pair_lines[pair_idx].set_visible(False)
 
                 xm = (anchor_positions[i][0] + anchor_positions[j][0]) / 2
                 ym = (anchor_positions[i][1] + anchor_positions[j][1]) / 2
                 distance = np.linalg.norm(anchor_positions[i] - anchor_positions[j])
 
                 if self.display_config.showBetweenAnchorsLabels:
-                    t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
-                    self.lines_plot.append(t)
+                    t = self.anchor_pair_texts[pair_idx]
+                    t.set_text(f"{distance:.2f}")
+                    t.set_position((xm, ym))
+                    t.set_visible(True)
+                else:
+                    self.anchor_pair_texts[pair_idx].set_visible(False)
 
-        for tag_position in tag_positions:
-            for anchor_position in anchor_positions:
+                pair_idx += 1
+
+        # Hide any leftover anchor-pair artists that are no longer needed
+        for idx in range(pair_idx, len(self.anchor_pair_lines)):
+            try:
+                self.anchor_pair_lines[idx].set_visible(False)
+            except Exception:
+                pass
+        for idx in range(pair_idx, len(self.anchor_pair_texts)):
+            try:
+                self.anchor_pair_texts[idx].set_visible(False)
+            except Exception:
+                pass
+
+        # Update or create reusable tag-anchor line/text artists
+        needed_tag_anchor = len(tag_positions) * len(anchor_positions)
+        while len(self.tag_anchor_lines) < needed_tag_anchor:
+            l, = self.ax_trilat.plot([], [], 'r--', alpha=0.5)
+            self.tag_anchor_lines.append(l)
+            t = self.ax_trilat.text(0, 0, '', ha='center', va='center')
+            t.set_visible(False)
+            self.tag_anchor_texts.append(t)
+
+        ta_idx = 0
+        for ti, tag_position in enumerate(tag_positions):
+            for ai, anchor_position in enumerate(anchor_positions):
                 if self.display_config.showTagAnchorLines:
-                    line, = self.ax_trilat.plot(
-                        [anchor_position[0], tag_position[0]],
-                        [anchor_position[1], tag_position[1]],
-                        'r--', alpha=0.5
-                    )
-                    self.lines_plot.append(line)
+                    xdata = [anchor_position[0], tag_position[0]]
+                    ydata = [anchor_position[1], tag_position[1]]
+                    line = self.tag_anchor_lines[ta_idx]
+                    line.set_xdata(xdata)
+                    line.set_ydata(ydata)
+                    line.set_visible(True)
+                else:
+                    self.tag_anchor_lines[ta_idx].set_visible(False)
 
                 if self.display_config.showTagAnchorLabels:
                     xm = (anchor_position[0] + tag_position[0]) / 2
                     ym = (anchor_position[1] + tag_position[1]) / 2
                     distance = np.linalg.norm(anchor_position - tag_position)
-                    t = self.ax_trilat.text(xm, ym, f"{distance:.2f}", ha='center', va='center')
-                    self.lines_plot.append(t)
+                    t = self.tag_anchor_texts[ta_idx]
+                    t.set_text(f"{distance:.2f}")
+                    t.set_position((xm, ym))
+                    t.set_visible(True)
+                else:
+                    self.tag_anchor_texts[ta_idx].set_visible(False)
 
-        if self.display_config.showTagLabels:
-            tag_list = self.scenario.get_tag_list()
-            for i, tag in enumerate(tag_list):
-                tag_pos = tag_positions[i]
-                name = self.ax_trilat.text(tag_pos[0], tag_pos[1], tag.name(), ha='center', va='bottom', color='red')
-                self.lines_plot.append(name)
+                ta_idx += 1
 
-        if self.display_config.showAnchorLabels:
-            for i in range(len(self.scenario.get_anchor_list())):
-                name = self.ax_trilat.text(anchor_positions[i][0], anchor_positions[i][1], self.scenario.get_anchor_list()[i].name(), ha='center', va='center')
-                self.lines_plot.append(name)
+        # Hide any leftover tag-anchor artists that are no longer needed
+        for idx in range(ta_idx, len(self.tag_anchor_lines)):
+            try:
+                self.tag_anchor_lines[idx].set_visible(False)
+            except Exception:
+                pass
+        for idx in range(ta_idx, len(self.tag_anchor_texts)):
+            try:
+                self.tag_anchor_texts[idx].set_visible(False)
+            except Exception:
+                pass
+
+        # Update/create tag name texts
+        while len(self.tag_name_texts) < len(tag_positions):
+            t = self.ax_trilat.text(0, 0, '', ha='center', va='bottom', color='red')
+            t.set_visible(False)
+            self.tag_name_texts.append(t)
+
+        for i, tag_pos in enumerate(tag_positions):
+            if self.display_config.showTagLabels:
+                t = self.tag_name_texts[i]
+                t.set_text(self.scenario.get_tag_list()[i].name())
+                t.set_position((tag_pos[0], tag_pos[1]))
+                t.set_visible(True)
+            else:
+                self.tag_name_texts[i].set_visible(False)
+
+        # Hide any extra tag name texts beyond current tags
+        for idx in range(len(tag_positions), len(self.tag_name_texts)):
+            try:
+                self.tag_name_texts[idx].set_visible(False)
+            except Exception:
+                pass
+
+        # Update/create anchor name texts
+        while len(self.anchor_name_texts) < len(anchor_positions):
+            t = self.ax_trilat.text(0, 0, '', ha='center', va='center')
+            t.set_visible(False)
+            self.anchor_name_texts.append(t)
+
+        for i in range(len(anchor_positions)):
+            if self.display_config.showAnchorLabels:
+                t = self.anchor_name_texts[i]
+                t.set_text(self.scenario.get_anchor_list()[i].name())
+                t.set_position((anchor_positions[i][0], anchor_positions[i][1]))
+                t.set_visible(True)
+            else:
+                self.anchor_name_texts[i].set_visible(False)
+
+        # Hide any extra anchor name texts beyond current anchors
+        for idx in range(len(anchor_positions), len(self.anchor_name_texts)):
+            try:
+                self.anchor_name_texts[idx].set_visible(False)
+            except Exception:
+                pass
 
         if self.display_config.showGDOP:
             self.ax_gdop.clear()
@@ -205,20 +324,29 @@ class TrilatPlot:
             return
 
         if event.button == 3 and self.display_config.rightClickAnchors:
-            for i, plot in enumerate(self.anchor_plots):
-                contains, _ = plot.contains(event)
+            # Check hit on anchor scatter (reused artist)
+            if self.anchor_scatter is not None:
+                contains, info = self.anchor_scatter.contains(event)
                 if contains:
-                    self.remove_anchor(i)
-                    return
+                    inds = info.get('ind', [])
+                    if len(inds) > 0:
+                        i = int(inds[0])
+                        self.remove_anchor(i)
+                        return
+            # If no anchor hit, add a new one
             self.add_anchor(event.xdata, event.ydata)
             return
 
-        for i, plot in enumerate(self.anchor_plots):
-            contains, _ = plot.contains(event)
+        # Check for anchor hit to start dragging
+        if self.anchor_scatter is not None:
+            contains, info = self.anchor_scatter.contains(event)
             if contains:
-                if self.display_config.dragAnchors:
-                    self.dragging_point = self.scenario.get_anchor_list()[i]
-                return
+                inds = info.get('ind', [])
+                if len(inds) > 0:
+                    i = int(inds[0])
+                    if self.display_config.dragAnchors:
+                        self.dragging_point = self.scenario.get_anchor_list()[i]
+                    return
         if self.tag_truth_plot:
             contains, _ = self.tag_truth_plot.contains(event)
             if contains:
