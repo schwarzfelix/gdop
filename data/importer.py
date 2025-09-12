@@ -107,12 +107,18 @@ def validate_scenario_for_import(scenario_obj) -> Tuple[bool, str]:
     Returns:
         Tuple of (is_valid, error_message)
     """
-    existing_anchors = scenario_obj.get_anchor_list()
-    existing_tags = scenario_obj.get_tag_list()
-    
-    if not existing_tags and len(existing_anchors) < 2:
-        return False, "Scenario must have at least 2 anchor stations or 1 tag to import measurements"
-    
+    # It's not required that the current scenario already contains anchors or tags.
+    # The JSON scenario descriptor in the workspace should provide the station definitions
+    # that will be loaded during import. Keep this check permissive but return a
+    # helpful message if the scenario object is malformed (missing expected API).
+    try:
+        _ = scenario_obj.get_anchor_list()
+        _ = scenario_obj.get_tag_list()
+    except Exception:
+        return False, "Scenario object does not implement required station accessors"
+
+    # Allow import to proceed; the importer will warn if the CSV data or JSON config
+    # lacks required information at processing time.
     return True, ""
 
 

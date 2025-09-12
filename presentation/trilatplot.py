@@ -88,12 +88,15 @@ class TrilatPlot(QObject):
                 offsets = np.array(anchor_positions)
                 self.anchor_scatter = self.ax_trilat.scatter(offsets[:, 0], offsets[:, 1], c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True)
             else:
+                # create an empty 2D offsets array to avoid matplotlib IndexError
+                empty_offsets = np.empty((0, 2))
                 self.anchor_scatter = self.ax_trilat.scatter([], [], c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True)
         else:
             if len(anchor_positions) > 0:
                 self.anchor_scatter.set_offsets(np.array(anchor_positions))
             else:
-                self.anchor_scatter.set_offsets([])
+                # matplotlib expects a (N,2) array; provide empty shape to avoid indexing errors
+                self.anchor_scatter.set_offsets(np.empty((0, 2)))
 
         # Ensure there are circle pairs for each anchor; create if missing
         if len(self.circle_pairs) < len(anchor_positions):
@@ -154,14 +157,14 @@ class TrilatPlot(QObject):
             if len(tag_positions) > 0:
                 self.tag_estimate_scatter.set_offsets(np.array(tag_positions))
             else:
-                self.tag_estimate_scatter.set_offsets([])
+                self.tag_estimate_scatter.set_offsets(np.empty((0, 2)))
 
         # Update anchor scatter offsets
         if self.anchor_scatter is not None:
             if len(anchor_positions) > 0:
                 self.anchor_scatter.set_offsets(np.array(anchor_positions))
             else:
-                self.anchor_scatter.set_offsets([])
+                self.anchor_scatter.set_offsets(np.empty((0, 2)))
 
         if self.tag_truth_plot:
             self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
