@@ -71,6 +71,9 @@ class TrilatPlot:
         self._refresh_interval_ms = 40  # ~25 FPS refresh cap
         self._pending_refresh = {"anchors": False, "tags": False, "measurements": False}
 
+        # Initialize reusable artists
+        self.init_artists()
+
 
     def update_anchors(self):
         anchor_positions = self.scenario.anchor_positions()
@@ -108,29 +111,35 @@ class TrilatPlot:
                 c1.set_visible(False)
                 c2.set_visible(False)
 
-    def update_plot(self):
+        # Keep anchor name texts in sync (hide extras)
+        for idx in range(len(anchor_positions), len(self.anchor_name_texts)):
+            try:
+                self.anchor_name_texts[idx].set_visible(False)
+            except Exception:
+                pass
+
+    def update_data(self, anchors=False, tags=False, measurements=False):
+        """Update artist data for the given change flags. Does not redraw.
+
+        Call `redraw()` after this to trigger a canvas update.
+        """
         anchor_positions = self.scenario.anchor_positions()
         distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
         tag_positions = self.scenario.tag_positions()
 
-        # Update tag estimate scatter: use a single scatter for all tags
-        if self.tag_estimate_scatter is None:
-            if len(tag_positions) > 0:
-                arr = np.array(tag_positions)
-                self.tag_estimate_scatter = self.ax_trilat.scatter(arr[:, 0], arr[:, 1], c='red', marker='x')
-            else:
-                self.tag_estimate_scatter = self.ax_trilat.scatter([], [], c='red', marker='x')
-        else:
+        # Update tag estimate scatter offsets
+        if self.tag_estimate_scatter is not None:
             if len(tag_positions) > 0:
                 self.tag_estimate_scatter.set_offsets(np.array(tag_positions))
             else:
                 self.tag_estimate_scatter.set_offsets([])
 
-        # Update anchor scatter offsets (if using anchor_scatter)
-        if self.anchor_scatter is not None and len(anchor_positions) > 0:
-            self.anchor_scatter.set_offsets(np.array(anchor_positions))
-        elif self.anchor_scatter is not None:
-            self.anchor_scatter.set_offsets([])
+        # Update anchor scatter offsets
+        if self.anchor_scatter is not None:
+            if len(anchor_positions) > 0:
+                self.anchor_scatter.set_offsets(np.array(anchor_positions))
+            else:
+                self.anchor_scatter.set_offsets([])
 
         if self.tag_truth_plot:
             self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
@@ -289,6 +298,36 @@ class TrilatPlot:
                 self.anchor_name_texts[idx].set_visible(False)
             except Exception:
                 pass
+
+    def redraw(self):
+        """Trigger a canvas redraw."""
+        try:
+            self.fig.canvas.draw_idle()
+        except Exception:
+            # best-effort
+            pass
+
+    def init_artists(self):
+        """Create the initial reusable artists used by the plot.
+
+        This prepares empty artists that are updated in-place by update_data().
+        """
+        # Anchor scatter (empty)
+        if self.anchor_scatter is None:
+            self.anchor_scatter = self.ax_trilat.scatter([], [], c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True)
+
+        # Tag estimate scatter
+        if self.tag_estimate_scatter is None:
+            self.tag_estimate_scatter = self.ax_trilat.scatter([], [], c='red', marker='x')
+
+        # Prepare a reasonable initial pool of circle pairs (0) - grown lazily
+        # Prepare empty caches for texts/lines
+        self.anchor_pair_lines = []
+        self.anchor_pair_texts = []
+        self.tag_anchor_lines = []
+        self.tag_anchor_texts = []
+        self.tag_name_texts = []
+        self.anchor_name_texts = []
 
         if self.display_config.showGDOP:
             self.ax_gdop.clear()

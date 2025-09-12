@@ -116,13 +116,19 @@ class MainWindow(QMainWindow):
             # reset after use
             delattr(self, '_requested_update_flags')
 
-        # Plot updates: anchors may require updating artist lists
+        # Plot updates: anchors may require updating artist lists. Prefer
+        # the lighter-weight update_data/redraw API when available.
         if hasattr(self, "plot") and self.plot is not None:
-            if anchors:
-                self.plot.update_anchors()
-            # update_plot covers tags/lines/labels; measurements affect distances
-            if tags or measurements:
-                self.plot.update_plot()
+            if hasattr(self.plot, 'update_data') and hasattr(self.plot, 'redraw'):
+                # Use the newer API
+                self.plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
+                self.plot.redraw()
+            else:
+                # Fallback to original API
+                if anchors:
+                    self.plot.update_anchors()
+                if tags or measurements:
+                    self.plot.update_plot()
 
         # Update individual tabs selectively
         if anchors and hasattr(self, 'stations_tab'):
