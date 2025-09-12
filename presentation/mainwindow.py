@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
     SIGMA_SLIDER_MAX = 5
     SIGMA_SLIDER_RESOLUTION = 100
     SIGMA_INPUT_STEP = 0.1
-    PERIODIC_UPDATE_INTERVAL_MS = 1000
+    # PERIODIC_UPDATE_INTERVAL_MS = 1000
 
     def __init__(self, gdop_scenario):
         super().__init__()
@@ -57,7 +57,6 @@ class MainWindow(QMainWindow):
         self.create_tabs()
         layout.addWidget(self.tab_widget)
 
-        self.start_periodic_update()
         self.update_all()
 
     def create_tabs(self):
@@ -117,13 +116,3 @@ class MainWindow(QMainWindow):
         # Sandbox (tags controls) depends on tags/measurements
         if (tags or measurements):
             self.update_sandbox()
-
-    def start_periodic_update(self):
-        """Start the periodic update timer."""
-        self.update_timer = QTimer()
-        self.update_timer.timeout.connect(self.update_all)
-        # Start the periodic update timer with a conservative default interval.
-        # The codebase prefers event-driven updates for streaming, but having
-        # a running timer keeps the UI responsive in absence of events.
-        self.update_timer.setInterval(MainWindow.PERIODIC_UPDATE_INTERVAL_MS)
-        self.update_timer.start()

@@ -37,6 +37,9 @@ def process_data(data, scenario):
     destination_station = scenario.get_station_by_name(str(data["destination_id"]))
     raw_distance = data["raw_distance"]
     scenario.measurements.update_relation(frozenset([source_station, destination_station]), raw_distance)
+    # Emit measurements_changed signal if available
+    if hasattr(scenario, 'window') and hasattr(scenario.window, 'plot'):
+        scenario.window.plot.measurements_changed.emit()
 
 def fetch_streaming_data(url, scenario):
     streaming_data = StreamingData()
