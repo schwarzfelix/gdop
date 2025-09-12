@@ -1,7 +1,7 @@
 import numpy as np
 
 from simulation import measurements, station
-from data.streaming import Streamer
+from data.sse_streamer import SSEStreamer
 import data.importer as importer
 
 class Scenario:
@@ -51,11 +51,15 @@ class Scenario:
         return [s for s in self.stations if isinstance(s, station.Anchor)]
 
     def start_streaming(self, url):
-        self.streamer = Streamer(url, self)
+        self.streamer = SSEStreamer(url, self)
 
     def stop_streaming(self):
         if self.streamer:
-            self.streamer.stop_streaming()
+            # SSEStreamer exposes stop_streaming(); keep same call to remain compatible
+            try:
+                self.streamer.stop_streaming()
+            except Exception:
+                pass
             self.streamer = None
 
     def remove_station(self, station):

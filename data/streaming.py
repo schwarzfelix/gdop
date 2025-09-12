@@ -1,3 +1,30 @@
+"""
+Compatibility shim for streaming API.
+
+Historically this package provided `Streamer`, `StreamingData`, and related
+functions in `data.streaming`. Streaming was SSE-specific. Now that we have
+both SSE and MQTT streamers, the SSE implementation lives in
+`data.sse_streamer`. This module keeps the old import path working by
+re-exporting the SSE-specific names and including a deprecation note.
+"""
+
+from data.sse_streamer import SSEStreamer, fetch_sse_streaming_data, SSEStreamingData, SSEUpdate
+
+
+# Backwards-compatible names
+Streamer = SSEStreamer
+fetch_streaming_data = fetch_sse_streaming_data
+StreamingData = SSEStreamingData
+Update = SSEUpdate
+
+
+def _deprecated_note():
+    # Intended for debugging; no-op in normal operation.
+    try:
+        import warnings
+        warnings.warn("data.streaming is deprecated; use data.sse_streamer or data.mqtt_streamer instead", DeprecationWarning)
+    except Exception:
+        pass
 import threading
 
 import requests

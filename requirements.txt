@@ -4,3 +4,4 @@ pyqt5~=5.15.11
 requests==2.32.4
 sseclient-py~=1.7.2
 pandas~=2.2.3
+paho-mqtt~=1.6.4

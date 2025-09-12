@@ -10,6 +10,8 @@ from PyQt5.QtWidgets import (
 from .base_tab import BaseTab
 from data.importer import get_available_scenarios, validate_scenario_for_import
 from PyQt5.QtWidgets import QComboBox, QFormLayout
+from data.mqtt_streamer import MQTTStreamer
+from typing import Optional
 
 
 class ScenarioSelectionDialog(QDialog):
@@ -106,6 +108,8 @@ class DataTab(BaseTab):
         self.stream_mode_mqtt = None
         self.stream_mode_sse = None
         self.url_input = None
+        # MQTT streamer instance (optional, created lazily)
+        self._mqtt_streamer: Optional[MQTTStreamer] = None
         # periodic update controls removed - updates come from streamer signals
         self.csv_import_button = None
     
@@ -225,18 +229,76 @@ class DataTab(BaseTab):
         selected_id = self.stream_mode_group.checkedId()
         if selected_id == 0:
             # Turn off streaming
-            self.scenario.stop_streaming()
+            # stop SSE streamer if running
+            try:
+                self.scenario.stop_streaming()
+            except Exception:
+                pass
+            # stop MQTT streamer if running
+            try:
+                if getattr(self, '_mqtt_streamer', None):
+                    self._mqtt_streamer.stop()
+                    self._mqtt_streamer = None
+            except Exception:
+                pass
             print("Streaming turned off.")
         elif selected_id == 1:
             # MQTT selected - not implemented yet
-            # TODO: Implement MQTT streaming hookup: connect to broker, subscribe to topic, parse messages,
-            # and call scenario.update_relation / scenario.process_stream_message as needed.
+            # Try to start a minimal MQTT streamer using the URL as broker/topic
+            # URL format expected: mqtt://host:port[/topic] or host[:port][/topic]
+            broker_spec = self.url_input.text().strip()
+            if not broker_spec:
+                try:
+                    self.main_window.statusBar().showMessage("Please enter an MQTT broker URL/topic.", 5000)
+                except Exception:
+                    pass
+                self.stream_mode_off.setChecked(True)
+                return
+
+            # parse broker_spec
+            host = broker_spec
+            port = 1883
+            topic = '#'
             try:
-                self.main_window.statusBar().showMessage("MQTT streaming is not implemented yet. TODO added.", 5000)
+                if host.startswith('mqtt://'):
+                    host = host[len('mqtt://'):]
+                if '/' in host:
+                    host, topic = host.split('/', 1)
+                if ':' in host:
+                    host, port_s = host.split(':', 1)
+                    port = int(port_s)
             except Exception:
-                pass
-            # Revert selection to off to avoid leaving user in a non-functional state
-            self.stream_mode_off.setChecked(True)
+                # fall back to treating whole string as host
+                host = broker_spec
+
+            # create streamer and start
+            try:
+                def _on_mqtt_message(topic_in, payload):
+                    # minimal handler: attempt to decode payload as utf-8 text and print
+                    try:
+                        text = payload.decode('utf-8')
+                    except Exception:
+                        text = str(payload)
+                    # TODO: parse payload and call scenario.update_relation as needed
+                    print(f"MQTT message on {topic_in}: {text}")
+
+                # stop existing streamer first
+                if getattr(self, '_mqtt_streamer', None):
+                    self._mqtt_streamer.stop()
+
+                self._mqtt_streamer = MQTTStreamer(_on_mqtt_message)
+                self._mqtt_streamer.start(host, port=port, topic=topic)
+                try:
+                    self.main_window.statusBar().showMessage(f"Connected to MQTT {host}:{port} topic={topic}", 5000)
+                except Exception:
+                    pass
+            except Exception:
+                try:
+                    self.main_window.statusBar().showMessage("Failed to start MQTT streamer.", 0)
+                except Exception:
+                    pass
+                # revert to off
+                self.stream_mode_off.setChecked(True)
         elif selected_id == 2:
             # SSE selected - use current behavior
             url = self.url_input.text().strip()
