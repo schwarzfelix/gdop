@@ -5,9 +5,10 @@ from data.sse_streamer import SSEStreamer
 import data.importer as importer
 
 class Scenario:
-    def __init__(self):
-        self.measurements = measurements.Measurements()
-        self.stations = [
+    def __init__(self, name: str = 'sandbox'):
+        self._name = str(name)
+        self._measurements = measurements.Measurements()
+        self._stations = [
             station.Anchor([0.5, 0.5], 'Anchor A'),
             station.Anchor([10.0, 0.0], 'Anchor B'),
             station.Anchor([5.0, 8.66], 'Anchor C'),
@@ -15,10 +16,11 @@ class Scenario:
             station.Tag(self, 'β'),
             #station.Tag(self, 'SANDBOX_TAG')
         ]
-        self.tag_truth = station.Anchor([5.0, 4.0], scenario=self)
-        self.sigma = 0.0
 
-        self.streamer = None
+        self._tag_truth = station.Anchor([5.0, 4.0], scenario=self)
+        self._sigma = 0.0
+
+        self._streamer = None
 
         # Generate measurements for all tags
         for tag in self.get_tag_list():
@@ -76,6 +78,61 @@ class Scenario:
         """
         try:
             ok, msg = importer.import_scenario_data(self, scenario_name, workspace_dir=workspace_dir, agg_method=agg_method)
+            if ok:
+                # set the scenario name to the imported scenario so UI reflects selection
+                try:
+                    self.name = scenario_name
+                except Exception:
+                    # be tolerant if setter misbehaves
+                    pass
             return ok, msg
         except Exception as e:
             return False, f"Importer raised exception: {e}"
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = str(value)
+
+    @property
+    def measurements(self):
+        return self._measurements
+
+    @measurements.setter
+    def measurements(self, value):
+        self._measurements = value
+
+    @property
+    def stations(self):
+        return self._stations
+
+    @stations.setter
+    def stations(self, value):
+        self._stations = value
+
+    @property
+    def tag_truth(self):
+        return self._tag_truth
+
+    @tag_truth.setter
+    def tag_truth(self, value):
+        self._tag_truth = value
+
+    @property
+    def sigma(self):
+        return self._sigma
+
+    @sigma.setter
+    def sigma(self, value):
+        self._sigma = float(value)
+
+    @property
+    def streamer(self):
+        return self._streamer
+
+    @streamer.setter
+    def streamer(self, value):
+        self._streamer = value
