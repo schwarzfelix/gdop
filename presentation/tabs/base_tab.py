@@ -16,9 +16,22 @@ class BaseTab(ABC):
             main_window: Reference to the main window instance
         """
         self.main_window = main_window
-        self.scenario = main_window.scenario
+        # Reference to application container (holds all scenarios)
+        self.app = getattr(main_window, 'app', None)
         self.display_config = main_window.display_config
         self.widget = None
+
+    @property
+    def scenario(self):
+        """Return the currently shown scenario from the main window's plot.
+
+        The TrilatPlot owns which scenario is currently shown; tabs should
+        access that via this property for consistency.
+        """
+        plot = getattr(self.main_window, 'plot', None)
+        if plot is None:
+            return None
+        return getattr(plot, 'scenario', None)
         
     @abstractmethod
     def create_widget(self):

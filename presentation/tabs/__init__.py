@@ -9,6 +9,7 @@ from .stations_tab import StationsTab
 from .display_tab import DisplayTab
 from .data_tab import DataTab
 from .measurements_tab import MeasurementsTab
+from .scenarios_tab import ScenariosTab
 
 __all__ = [
     'BaseTab',
@@ -17,5 +18,6 @@ __all__ = [
     'StationsTab',
     'DisplayTab',
     'DataTab',
-    'MeasurementsTab'
+    'MeasurementsTab',
+    'ScenariosTab'
 ]

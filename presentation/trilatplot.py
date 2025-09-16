@@ -20,7 +20,23 @@ class TrilatPlot(QObject):
     def __init__(self, window):
         super().__init__()
         self.window = window
-        self.scenario = self.window.scenario
+        # Determine which scenario to show: prefer a window.scenario (convenience),
+        # otherwise use the first scenario from the application container if available,
+        # otherwise create a fresh default Scenario.
+        self.scenario = getattr(self.window, 'scenario', None)
+        if self.scenario is None:
+            app = getattr(self.window, 'app', None)
+            if app and getattr(app, 'scenarios', None):
+                try:
+                    self.scenario = app.scenarios[0]
+                except Exception:
+                    self.scenario = None
+        if self.scenario is None:
+            try:
+                from simulation.scenario import Scenario as ScenarioClass
+                self.scenario = ScenarioClass()
+            except Exception:
+                self.scenario = None
         self.display_config = self.window.display_config
 
         self.dragging_point = None

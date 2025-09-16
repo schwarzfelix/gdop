@@ -86,8 +86,16 @@ class StationsTab(BaseTab):
             return
             
         self.stations_tree.clear()
+        # Aggregate stations from all scenarios if an app container is available
+        app = getattr(self, 'app', None) or getattr(self.main_window, 'app', None)
+        if app and getattr(app, 'scenarios', None):
+            # merge stations from all scenarios (keep duplicates if separate objects)
+            all_stations = []
+            for scen in app.scenarios:
+                all_stations.extend(getattr(scen, 'stations', []))
+        else:
+            all_stations = self.scenario.stations
 
-        all_stations = self.scenario.stations
         station_positions = {station: station.position() for station in all_stations}
 
         for station in all_stations:

@@ -207,21 +207,59 @@ class DataTab(BaseTab):
 
         agg_method = agg_dialog.get_method()
 
-        # Ask the Scenario instance to import the selected scenario (delegates to data.importer)
-        success, message = self.scenario.import_scenario(selected_scenario, workspace_dir="workspace", agg_method=agg_method)
+        # Create a fresh Scenario and import into it, so we add a second scenario
+        try:
+            from simulation.scenario import Scenario as ScenarioClass
+            new_scenario = ScenarioClass(name=selected_scenario)
+        except Exception:
+            # fallback: try the simulation package attribute
+            try:
+                new_scenario = __import__('simulation').Scenario(name=selected_scenario)
+            except Exception as e:
+                try:
+                    self.main_window.statusBar().showMessage(f"Failed to create new Scenario: {e}", 0)
+                except Exception:
+                    pass
+                return
+
+        # Import data into the new scenario
+        success, message = new_scenario.import_scenario(selected_scenario, workspace_dir="workspace", agg_method=agg_method)
 
         if success:
-            # Update the UI to reflect the imported data (silent success)
+            # Append the newly imported scenario to the application-level list
+            app = getattr(self.main_window, 'app', None)
+            if app is not None:
+                app.scenarios.append(new_scenario)
+            # Set the plot to show the new scenario
+            try:
+                plot = getattr(self.main_window, 'plot', None)
+                if plot is not None:
+                    plot.scenario = new_scenario
+                    try:
+                        plot.sandbox_tag = next((tag for tag in plot.scenario.get_tag_list() if tag.name() == "SANDBOX_TAG"), None)
+                    except Exception:
+                        plot.sandbox_tag = None
+                    try:
+                        plot.init_artists()
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+            # Refresh UI to reflect the additional scenario
+            # Refresh the scenarios tab list if present
+            try:
+                if hasattr(self.main_window, 'scenarios_tab') and self.main_window.scenarios_tab:
+                    self.main_window.scenarios_tab.update()
+            except Exception:
+                pass
             self.main_window.update_all()
-            # Show a non-modal transient message in the main window's status bar (5s)
             try:
                 self.main_window.statusBar().showMessage(f"Imported scenario '{selected_scenario}' ({agg_method})", 5000)
             except Exception:
-                # If main_window lacks a statusBar or call fails, silently ignore
                 pass
         else:
             try:
-                # critical/errors stay until next message (timeout=0)
                 self.main_window.statusBar().showMessage(f"Import Error: {message}", 0)
             except Exception:
                 pass

@@ -13,7 +13,8 @@ from presentation.tabs import (
     StationsTab,
     DisplayTab,
     DataTab,
-    MeasurementsTab
+    MeasurementsTab,
+    ScenariosTab
 )
 
 
@@ -25,10 +26,15 @@ class MainWindow(QMainWindow):
     SIGMA_SLIDER_RESOLUTION = 100
     SIGMA_INPUT_STEP = 0.1
 
-    def __init__(self, gdop_scenario):
-        super().__init__()
+    def __init__(self, app):
+        """Initialize MainWindow with an application container.
 
-        self.scenario = gdop_scenario
+        The `app` object must provide `scenarios` (list).
+        """
+        super().__init__()
+        self.app = app
+        # main window no longer tracks an active scenario; TrilatPlot does
+        self.scenario = None
         self.display_config = presentation.DisplayConfig()
         self.plot = presentation.TrilatPlot(self)
         # Connect plot signals to selective update slots
@@ -58,7 +64,7 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self.canvas)
 
-        # Create tab widget and all tabs
+    # Create tab widget and all tabs
         self.tab_widget = QTabWidget()
         self.create_tabs()
         layout.addWidget(self.tab_widget)
@@ -71,6 +77,7 @@ class MainWindow(QMainWindow):
         self.plot_tab = PlotTab(self)
         self.sandbox_tab = SandboxTab(self)
         self.stations_tab = StationsTab(self)
+        self.scenarios_tab = ScenariosTab(self)
         self.display_tab = DisplayTab(self)
         self.data_tab = DataTab(self)
         self.measurements_tab = MeasurementsTab(self)
@@ -79,6 +86,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(self.plot_tab.get_widget(), self.plot_tab.tab_name)
         self.tab_widget.addTab(self.sandbox_tab.get_widget(), self.sandbox_tab.tab_name)
         self.tab_widget.addTab(self.stations_tab.get_widget(), self.stations_tab.tab_name)
+        self.tab_widget.addTab(self.scenarios_tab.get_widget(), self.scenarios_tab.tab_name)
         self.tab_widget.addTab(self.display_tab.get_widget(), self.display_tab.tab_name)
         self.tab_widget.addTab(self.data_tab.get_widget(), self.data_tab.tab_name)
         self.tab_widget.addTab(self.measurements_tab.get_widget(), self.measurements_tab.tab_name)
