@@ -18,6 +18,13 @@ def distance_between(station1, station2, measurements=None):
     return calculated_distance
 
 class Station(ABC):
+    def __init__(self, scenario=None, name=None):
+        self._scenario = scenario
+        self._name = name
+
+    @property
+    def scenario(self):
+        return self._scenario
 
     @abstractmethod
     def position(self):
@@ -31,9 +38,8 @@ class Station(ABC):
     def distances(self):
         pass
 
-    @abstractmethod
     def name(self):
-        pass
+        return self._name
 
     def __str__(self):
         return self.name()
@@ -44,12 +50,11 @@ class Station(ABC):
 class Anchor(Station):
 
     def __init__(self, position, name='FixedDevice', scenario=None):
+        super().__init__(scenario, name)
         self._position = np.array(position)
-        self._name = name
-        self.scenario = scenario
 
     def position(self, exclude=None):
-        return self._position
+        return self._position.copy()
 
     def update_position(self, position):
         self._position = np.array(position)
@@ -67,15 +72,15 @@ class Anchor(Station):
 
         return geometry.euclidean_distances(scenario.anchor_positions(), self.position())
 
-    def name(self):
-        return self._name
-
 class Tag(Station):
 
     def __init__(self, scenario, name='LocalizedDevice'):
-        self.scenario = scenario
-        self.measurements = self.scenario.measurements
-        self._name = name
+        super().__init__(scenario, name)
+        self._measurements = self.scenario.measurements
+
+    @property
+    def measurements(self):
+        return getattr(self, '_measurements', None) or self.scenario.measurements
 
     def position(self, exclude=None):
         
@@ -134,6 +139,3 @@ class Tag(Station):
 
     def dilution_of_precision(self):
         return geometry.dilution_of_precision(self.scenario.anchor_positions(), self.position(), self.distances())
-
-    def name(self):
-        return self._name
