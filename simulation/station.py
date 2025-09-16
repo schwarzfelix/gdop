@@ -4,10 +4,11 @@ import numpy as np
 from simulation import geometry
 
 def distance_between(station1, station2, measurements=None):
-    if measurements is None and isinstance(station1, Tag):
-        measurements = station1.measurements
-    if measurements is None and isinstance(station2, Tag):
-        measurements = station2.measurements
+    if measurements is None:
+        if isinstance(station1, Tag) and station1.scenario is not None:
+            measurements = station1.scenario.measurements
+        elif isinstance(station2, Tag) and station2.scenario is not None:
+            measurements = station2.scenario.measurements
 
     if measurements is not None:
         measured_distance = measurements.find_relation_pair_distance(frozenset({station1, station2}))
@@ -76,11 +77,6 @@ class Tag(Station):
 
     def __init__(self, scenario, name='LocalizedDevice'):
         super().__init__(scenario, name)
-        self._measurements = self.scenario.measurements
-
-    @property
-    def measurements(self):
-        return getattr(self, '_measurements', None) or self.scenario.measurements
 
     def position(self, exclude=None):
         
@@ -98,8 +94,7 @@ class Tag(Station):
         if exclude is None:
             exclude = {self}
         exclude |= {self}
-
-        relation_subset = self.measurements.find_relation_single(self)
+        relation_subset = self.scenario.measurements.find_relation_single(self)
 
         anchor_count = 0
         partner_count = 0
@@ -128,7 +123,7 @@ class Tag(Station):
         return geometry.trilateration(np.array(station_positions), np.array(distances))
 
     def distance_to(self, other: Station):
-        return distance_between(self, other, self.measurements)
+        return distance_between(self, other, self.scenario.measurements)
 
     def distances(self):
         anchors = self.scenario.anchor_positions()
