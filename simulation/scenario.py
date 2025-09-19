@@ -67,10 +67,18 @@ class Scenario:
     @property
     def measurements(self):
         return self._measurements
+    
+    @measurements.setter
+    def measurements(self, value):
+        self._measurements = value
 
     @property
     def stations(self):
         return self._stations
+    
+    @stations.setter
+    def stations(self, value):
+        self._stations = list(value)
 
     @property
     def sigma(self):

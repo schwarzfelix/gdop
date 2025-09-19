@@ -86,17 +86,13 @@ class Tag(Station):
         relation_subset = self.scenario.measurements.find_relation_single(self)
 
         anchor_count = 0
-        partner_count = 0
         for measurement in relation_subset:
             partner = next(iter(measurement[0].copy() - {self}))
-            if partner in exclude:
+            if partner in exclude or not isinstance(partner, Anchor):
                 continue
-            partner_count += 1
-            if isinstance(partner, Anchor):
-                anchor_count += 1
-        # TODO check if anchors are distinct
+            anchor_count += 1
 
-        if partner_count < 1:
+        if anchor_count < 1:
             return [0, 0]
 
         station_positions = []
@@ -116,7 +112,6 @@ class Tag(Station):
 
     def distances(self):
         anchors = self.scenario.anchor_positions()
-        # if no anchors available => return empty distances
         if anchors is None or anchors.size == 0:
             return np.array([])
         return geometry.euclidean_distances(anchors, self.position())

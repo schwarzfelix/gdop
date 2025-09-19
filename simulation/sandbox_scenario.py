@@ -23,6 +23,7 @@ class SandboxScenario(Scenario):
 
     def generate_measurements(self, tag_estimate, tag_truth):
         for anchor in self.get_anchor_list():
+            # TODO this ignores the TAG_TRUTH as an Anchor. Make sure it is never used for positioning or GDOP calculation
             if np.array_equal(anchor.position(), tag_truth.position()):
                 continue
             distance = np.random.normal(anchor.distance_to(tag_truth) + self.sigma, self.sigma)
