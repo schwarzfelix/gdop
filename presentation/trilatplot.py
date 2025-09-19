@@ -20,23 +20,7 @@ class TrilatPlot(QObject):
     def __init__(self, window):
         super().__init__()
         self.window = window
-        # Determine which scenario to show: prefer a window.scenario (convenience),
-        # otherwise use the first scenario from the application container if available,
-        # otherwise create a fresh default Scenario.
-        self.scenario = getattr(self.window, 'scenario', None)
-        if self.scenario is None:
-            app = getattr(self.window, 'app', None)
-            if app and getattr(app, 'scenarios', None):
-                try:
-                    self.scenario = app.scenarios[0]
-                except Exception:
-                    self.scenario = None
-        if self.scenario is None:
-            try:
-                from simulation.scenario import Scenario as ScenarioClass
-                self.scenario = ScenarioClass()
-            except Exception:
-                self.scenario = None
+        self.scenario = window.scenario
         self.display_config = self.window.display_config
 
         self.dragging_point = None
@@ -50,21 +34,17 @@ class TrilatPlot(QObject):
         self.ax_trilat.set_ylim(-15, 15)
 
         self.anchor_plots = []
-        # single scatter for anchors (PathCollection) to update offsets efficiently
         self.anchor_scatter = None
-        # circle patches, two per anchor
         self.circle_pairs = []
-        # single scatter for tag estimates
         self.tag_estimate_scatter = None
 
-        # reusable line and text artist caches
         self.anchor_pair_lines = []
         self.anchor_pair_texts = []
         self.tag_anchor_lines = []
         self.tag_anchor_texts = []
         self.tag_name_texts = []
         self.anchor_name_texts = []
-        # fallback list for miscellaneous artists
+
         self.lines_plot = []
 
         self.sandbox_tag = next((tag for tag in self.scenario.get_tag_list() if tag.name() == "SANDBOX_TAG"), None)
@@ -80,20 +60,9 @@ class TrilatPlot(QObject):
         self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
         self.fig.canvas.mpl_connect('button_release_event', self.on_mouse_release)
         self.fig.canvas.mpl_connect('motion_notify_event', self.on_mouse_move)
-        # Keep trilat plot XY-proportional on window resize
+
         self.fig.canvas.mpl_connect('resize_event', self._on_resize)
 
-        # A short single-shot timer to coalesce frequent refresh requests
-        # (e.g. during dragging or streaming) so we don't redraw the plot
-        # on every event. Requests set flags and the timer triggers a single
-        # update for the accumulated changes.
-        self._refresh_timer = QTimer()
-        self._refresh_timer.setSingleShot(True)
-        self._refresh_timer.timeout.connect(self._on_refresh_timer)
-        self._refresh_interval_ms = 40  # ~25 FPS refresh cap
-        self._pending_refresh = {"anchors": False, "tags": False, "measurements": False}
-
-        # Initialize reusable artists
         self.init_artists()
 
 
@@ -166,9 +135,9 @@ class TrilatPlot(QObject):
             try:
                 distances_truth = reference_tag.distances()
             except Exception:
-                distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
+                distances_truth = self.scenario.tag_truth.distances()
         else:
-            distances_truth = self.scenario.tag_truth.distances(scenario=self.scenario)
+            distances_truth = self.scenario.tag_truth.distances()
 
         # Update tag estimate scatter offsets
         if self.tag_estimate_scatter is not None:
@@ -389,20 +358,13 @@ class TrilatPlot(QObject):
             pass
 
     def init_artists(self):
-        """Create the initial reusable artists used by the plot.
 
-        This prepares empty artists that are updated in-place by update_data().
-        """
-        # Anchor scatter (empty)
         if self.anchor_scatter is None:
             self.anchor_scatter = self.ax_trilat.scatter([], [], c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True)
 
-        # Tag estimate scatter
         if self.tag_estimate_scatter is None:
             self.tag_estimate_scatter = self.ax_trilat.scatter([], [], c='red', marker='x')
 
-        # Prepare a reasonable initial pool of circle pairs (0) - grown lazily
-        # Prepare empty caches for texts/lines
         self.anchor_pair_lines = []
         self.anchor_pair_texts = []
         self.tag_anchor_lines = []
@@ -411,11 +373,7 @@ class TrilatPlot(QObject):
         self.anchor_name_texts = []
 
         if self.display_config.showGDOP:
-            try:
-                # make sure axis is visible when enabling
-                self.ax_gdop.set_visible(True)
-            except Exception:
-                pass
+            self.ax_gdop.set_visible(True)
             self.ax_gdop.clear()
             tags = self.scenario.get_tag_list()
             gdop_values = [tag.dilution_of_precision() for tag in tags]
@@ -427,20 +385,12 @@ class TrilatPlot(QObject):
             for i, gdop in enumerate(gdop_values):
                 self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
         else:
-            # When GDOP is disabled at init, clear and hide the axis
             self.ax_gdop.clear()
-            try:
-                self.ax_gdop.set_visible(False)
-            except Exception:
-                pass
+            self.ax_gdop.set_visible(False)
 
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
-        # Adjust aspect for initial layout and request draw
-        try:
-            self._adjust_trilat_aspect()
-        except Exception:
-            pass
+        self._adjust_trilat_aspect()
 
         self.fig.canvas.draw_idle()
 

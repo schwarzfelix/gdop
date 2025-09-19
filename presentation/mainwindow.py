@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.app = app
         # main window no longer tracks an active scenario; TrilatPlot does
-        self.scenario = None
+        self.scenario = app.scenarios[0] if app.scenarios else None
         self.display_config = presentation.DisplayConfig()
         self.plot = presentation.TrilatPlot(self)
         # Connect plot signals to selective update slots

@@ -5,19 +5,20 @@ from data.sse_streamer import SSEStreamer
 import data.importer as importer
 
 class Scenario:
-    def __init__(self, name: str = 'sandbox'):
+    def __init__(self, name):
         self._name = str(name)
         self._measurements = measurements.Measurements()
-        self._stations = [
-            station.Anchor([0.5, 0.5], 'Anchor A'),
-            station.Anchor([10.0, 0.0], 'Anchor B'),
-            station.Anchor([5.0, 8.66], 'Anchor C'),
-            station.Tag(self, '⍺'),
-            station.Tag(self, 'β'),
-            #station.Tag(self, 'SANDBOX_TAG')
-        ]
+        self._stations = []
 
-        self._tag_truth = station.Anchor([5.0, 4.0], scenario=self)
+        if self._name == "Sandbox":
+            self._stations = [
+                station.Anchor([0.5, 0.5], 'Anchor A'),
+                station.Anchor([10.0, 0.0], 'Anchor B'),
+                station.Anchor([5.0, 8.66], 'Anchor C'),
+                station.Anchor([5.0, 4.0], 'TAG_TRUTH'),
+                station.Tag(self, 'TAG_ESTIMATE')
+            ]
+
         self._sigma = 0.0
 
         self._streamer = None
@@ -115,11 +116,7 @@ class Scenario:
 
     @property
     def tag_truth(self):
-        return self._tag_truth
-
-    @tag_truth.setter
-    def tag_truth(self, value):
-        self._tag_truth = value
+        return self.get_station_by_name("TAG_TRUTH")
 
     @property
     def sigma(self):
