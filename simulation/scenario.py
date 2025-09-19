@@ -5,39 +5,17 @@ from data.sse_streamer import SSEStreamer
 import data.importer as importer
 
 class Scenario:
-    def __init__(self, name):
+    def __init__(self, name = "New"):
         self._name = str(name)
         self._measurements = measurements.Measurements()
         self._stations = []
-
-        if self._name == "Sandbox":
-            self._stations = [
-                station.Anchor([0.5, 0.5], 'Anchor A'),
-                station.Anchor([10.0, 0.0], 'Anchor B'),
-                station.Anchor([5.0, 8.66], 'Anchor C'),
-                station.Anchor([5.0, 4.0], 'TAG_TRUTH'),
-                station.Tag(self, 'TAG_ESTIMATE')
-            ]
-
         self._sigma = 0.0
-
-        self._streamer = None
-
-        # Generate measurements for all tags
-        for tag in self.get_tag_list():
-            self.generate_measurements(tag, self.tag_truth)
 
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.get_anchor_list()])
 
     def tag_positions(self):
         return np.array([tag.position() for tag in self.get_tag_list()])
-
-    def generate_measurements(self, tag_estimate, tag_truth):
-        for anchor in self.get_anchor_list():
-            distance = np.random.normal(anchor.distance_to(tag_truth) + self.sigma, self.sigma)
-            # Removed clear_unused to preserve all measurements
-            self.measurements.update_relation(frozenset([anchor, tag_estimate]), distance)
 
     def get_station_by_name(self, name):
         for s in self.stations:
@@ -54,16 +32,12 @@ class Scenario:
         return [s for s in self.stations if isinstance(s, station.Anchor)]
 
     def start_streaming(self, url):
-        self.streamer = SSEStreamer(url, self)
+        # TODO implement streaming
+        pass
 
     def stop_streaming(self):
-        if self.streamer:
-            # SSEStreamer exposes stop_streaming(); keep same call to remain compatible
-            try:
-                self.streamer.stop_streaming()
-            except Exception:
-                pass
-            self.streamer = None
+        #TODO implement streaming
+        pass
 
     def remove_station(self, station):
         if station in self.stations:
@@ -71,20 +45,12 @@ class Scenario:
             self.stations.remove(station)
 
     def import_scenario(self, scenario_name, workspace_dir='workspace', agg_method='lowest'):
-        """
-        Trigger importing CSV scenario data into this Scenario instance.
-
-        Returns:
-            (success: bool, message: str)
-        """
         try:
             ok, msg = importer.import_scenario_data(self, scenario_name, workspace_dir=workspace_dir, agg_method=agg_method)
             if ok:
-                # set the scenario name to the imported scenario so UI reflects selection
                 try:
                     self.name = scenario_name
                 except Exception:
-                    # be tolerant if setter misbehaves
                     pass
             return ok, msg
         except Exception as e:
@@ -113,10 +79,6 @@ class Scenario:
     @stations.setter
     def stations(self, value):
         self._stations = value
-
-    @property
-    def tag_truth(self):
-        return self.get_station_by_name("TAG_TRUTH")
 
     @property
     def sigma(self):

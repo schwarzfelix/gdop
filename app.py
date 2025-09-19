@@ -7,11 +7,15 @@ import simulation
 
 class GDOPApp:
     def __init__(self, scenarios=None):
-        self.scenarios = scenarios or []
+        self._scenarios = scenarios or []
+
+    @property
+    def scenarios(self):
+        return self._scenarios
 
 
 if __name__ == "__main__":
-    scenario = simulation.Scenario("Sandbox")
+    scenario = simulation.SandboxScenario("Sandbox")
     gdop_app = GDOPApp([scenario])
     qt_app = QApplication(sys.argv)
     window = presentation.MainWindow(gdop_app)

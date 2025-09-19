@@ -3,9 +3,10 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 import matplotlib.gridspec as gridspec
 
-from PyQt5.QtCore import QTimer, pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal, QObject
 
 from simulation import station
+from simulation import SandboxScenario
 
 
 class TrilatPlot(QObject):
@@ -153,7 +154,8 @@ class TrilatPlot(QObject):
             else:
                 self.anchor_scatter.set_offsets(np.empty((0, 2)))
 
-        if self.tag_truth_plot:
+        # check if the scenario is a sandbox scenario with tag_truth
+        if isinstance(self.scenario, SandboxScenario) and self.scenario.tag_truth:
             self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
 
         # Update anchor circles: control visibility and radius explicitly. Use visibility toggling
