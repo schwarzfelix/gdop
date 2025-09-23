@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         # main window no longer tracks an active scenario; TrilatPlot does
         self.scenario = app.scenarios[0] if app.scenarios else None
         self.display_config = presentation.DisplayConfig()
-        self.plot = presentation.TrilatPlot(self)
+        self.plot = presentation.TrilatPlot(self, self.scenario)
         # Connect plot signals to selective update slots
         self.plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
         self.plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
@@ -90,6 +90,11 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(self.display_tab.get_widget(), self.display_tab.tab_name)
         self.tab_widget.addTab(self.data_tab.get_widget(), self.data_tab.tab_name)
         self.tab_widget.addTab(self.measurements_tab.get_widget(), self.measurements_tab.tab_name)
+
+    def replace_scenario(self, new_scenario):
+        self.scenario = new_scenario
+        self.update_all()
+        self.scenarios_tab.update_scenarios()
 
     def update_sandbox(self):
         """Update sandbox controls with current scenario values."""

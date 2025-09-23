@@ -18,10 +18,10 @@ class TrilatPlot(QObject):
     STATION_COLOR = 'blue'
     CIRCLE_LINESTYLE = 'dotted'
 
-    def __init__(self, window):
+    def __init__(self, window, scenario):
         super().__init__()
         self.window = window
-        self.scenario = window.scenario
+        self.scenario = scenario
         self.display_config = self.window.display_config
 
         self.dragging_point = None

@@ -97,30 +97,7 @@ class ScenariosTab(BaseTab):
                 break
 
     def _select_scenario(self, scen):
-        """Button handler: set the given scenario active and refresh UI."""
-        plot = getattr(self.main_window, 'plot', None)
-        if plot is None:
-            return
-        plot.scenario = scen
-        # recompute sandbox_tag and other cached references
-        try:
-            plot.sandbox_tag = next((tag for tag in plot.scenario.get_tag_list() if tag.name() == "SANDBOX_TAG"), None)
-        except Exception:
-            plot.sandbox_tag = None
-        # reinitialize artists to match new scenario's data shape
-        try:
-            plot.init_artists()
-        except Exception:
-            pass
-
-        # refresh the scenarios list so the active item is selected
-        try:
-            self.update_scenarios()
-        except Exception:
-            pass
-
-        # refresh UI / redraw
-        self.main_window.update_all()
+        self.main_window.replace_scenario(scen)
 
     def update(self):
         self.update_scenarios()
