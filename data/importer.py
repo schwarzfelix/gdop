@@ -100,6 +100,31 @@ def import_scenario_data(scenario_obj, scenario_name: str, workspace_dir: str = 
         return False, f"An error occurred while importing CSV data: {str(e)}"
 
 
+def import_scenario(scenario_name: str, workspace_dir: str = "workspace", agg_method: str = "lowest") -> Tuple[bool, str, Optional[object]]:
+    """
+    Create a new Scenario instance, populate it from workspace data, and return it.
+
+    Returns: (success: bool, message: str, scenario: Scenario|None)
+    """
+    try:
+        # Importer needs to create a Scenario object. Import here to avoid
+        # a module-level circular import.
+        from simulation.scenario import Scenario as ScenarioClass
+
+        new_scenario = ScenarioClass(name=scenario_name)
+        ok, msg = import_scenario_data(new_scenario, scenario_name, workspace_dir=workspace_dir, agg_method=agg_method)
+        if ok:
+            try:
+                new_scenario.name = scenario_name
+            except Exception:
+                pass
+            return True, msg, new_scenario
+        else:
+            return False, msg, None
+    except Exception as e:
+        return False, f"Importer raised exception: {e}", None
+
+
 def validate_scenario_for_import(scenario_obj) -> Tuple[bool, str]:
     """
     Validate that a scenario object is ready for import.

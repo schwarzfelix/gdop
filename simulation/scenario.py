@@ -1,8 +1,6 @@
 import numpy as np
 
 from simulation import measurements, station
-from data.sse_streamer import SSEStreamer
-import data.importer as importer
 
 class Scenario:
     def __init__(self, name = "New"):
@@ -43,30 +41,6 @@ class Scenario:
         if station in self.stations:
             self.measurements.remove_station(station)
             self.stations.remove(station)
-
-    @staticmethod
-    def import_scenario(scenario_name, workspace_dir='workspace', agg_method='lowest'):
-        """
-        Static helper that imports a scenario from workspace and returns a new Scenario
-        instance populated from the imported data.
-
-        Returns: (success: bool, message: str, scenario: Scenario|None)
-        """
-        try:
-            # Create a fresh Scenario to receive the imported configuration and measurements
-            new_scenario = Scenario(name=scenario_name)
-
-            ok, msg = importer.import_scenario_data(new_scenario, scenario_name, workspace_dir=workspace_dir, agg_method=agg_method)
-            if ok:
-                try:
-                    new_scenario.name = scenario_name
-                except Exception:
-                    pass
-                return True, msg, new_scenario
-            else:
-                return False, msg, None
-        except Exception as e:
-            return False, f"Importer raised exception: {e}", None
 
     @property
     def name(self):

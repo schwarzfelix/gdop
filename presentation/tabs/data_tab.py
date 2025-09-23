@@ -207,24 +207,10 @@ class DataTab(BaseTab):
 
         agg_method = agg_dialog.get_method()
 
-        # Create a fresh Scenario and import into it, so we add a second scenario
+        # Ask the importer to create and return a populated Scenario
         try:
-            from simulation.scenario import Scenario as ScenarioClass
-            new_scenario = ScenarioClass(name=selected_scenario)
-        except Exception:
-            # fallback: try the simulation package attribute
-            try:
-                new_scenario = __import__('simulation').Scenario(name=selected_scenario)
-            except Exception as e:
-                try:
-                    self.main_window.statusBar().showMessage(f"Failed to create new Scenario: {e}", 0)
-                except Exception:
-                    pass
-                return
-
-        # Import data into a newly created scenario via the static method
-        try:
-            success, message, imported_scenario = ScenarioClass.import_scenario(selected_scenario, workspace_dir="workspace", agg_method=agg_method)
+            from data import importer as importer_module
+            success, message, imported_scenario = importer_module.import_scenario(selected_scenario, workspace_dir="workspace", agg_method=agg_method)
         except Exception as e:
             success = False
             message = f"Import raised exception: {e}"
