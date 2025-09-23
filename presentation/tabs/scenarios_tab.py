@@ -2,7 +2,7 @@
 Scenarios management tab - lists available scenarios.
 """
 
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QWidget, QHBoxLayout, QLabel
 from .base_tab import BaseTab
 
 
@@ -36,19 +36,12 @@ class ScenariosTab(BaseTab):
         for scen in app.scenarios:
             node = QTreeWidgetItem(self.scenarios_tree)
 
-            # Create a small widget row with a Show button and a label
+
             row_widget = QWidget()
             row_layout = QHBoxLayout()
             row_layout.setContentsMargins(0, 0, 0, 0)
 
-            show_btn = QPushButton("Show")
-            show_btn.setToolTip(f"Show scenario '{scen.name}' in plot")
-            # Use default arg to bind scenario
-            show_btn.clicked.connect(lambda checked, s=scen: self._select_scenario(s))
-
             name_label = QLabel(scen.name)
-
-            row_layout.addWidget(show_btn)
             row_layout.addWidget(name_label)
             row_layout.addStretch()
             row_widget.setLayout(row_layout)
@@ -60,14 +53,11 @@ class ScenariosTab(BaseTab):
                 self.scenarios_tree.setCurrentItem(node)
 
     def _on_item_clicked(self, item, col):
-        # Switch active scenario in the app and inform main window to update
-        app = getattr(self.main_window, 'app', None)
-        if not app:
-            return
-        # retain previous behavior if clicking the item directly
+        
+        app = self.main_window.app
+
         try:
             widget = self.scenarios_tree.itemWidget(item, 0)
-            # Try to read label text if available
             if widget is not None:
                 label = widget.findChild(QLabel)
                 if label:
@@ -81,8 +71,8 @@ class ScenariosTab(BaseTab):
 
         for scen in app.scenarios:
             if scen.name == name:
-                # set the plot's scenario to the selected scenario
-                plot = getattr(self.main_window, 'plot', None)
+
+                plot = self.main_window.plot
                 if plot is not None:
                     plot.scenario = scen
                     try:
@@ -95,9 +85,6 @@ class ScenariosTab(BaseTab):
                         pass
                 self.main_window.update_all()
                 break
-
-    def _select_scenario(self, scen):
-        self.main_window.replace_scenario(scen)
 
     def update(self):
         self.update_scenarios()
