@@ -222,19 +222,24 @@ class DataTab(BaseTab):
                     pass
                 return
 
-        # Import data into the new scenario
-        success, message = new_scenario.import_scenario(selected_scenario, workspace_dir="workspace", agg_method=agg_method)
+        # Import data into a newly created scenario via the static method
+        try:
+            success, message, imported_scenario = ScenarioClass.import_scenario(selected_scenario, workspace_dir="workspace", agg_method=agg_method)
+        except Exception as e:
+            success = False
+            message = f"Import raised exception: {e}"
+            imported_scenario = None
 
-        if success:
+        if success and imported_scenario is not None:
             # Append the newly imported scenario to the application-level list
             app = getattr(self.main_window, 'app', None)
             if app is not None:
-                app.scenarios.append(new_scenario)
+                app.scenarios.append(imported_scenario)
             # Set the plot to show the new scenario
             try:
                 plot = getattr(self.main_window, 'plot', None)
                 if plot is not None:
-                    plot.scenario = new_scenario
+                    plot.scenario = imported_scenario
                     try:
                         plot.sandbox_tag = next((tag for tag in plot.scenario.get_tag_list() if tag.name() == "SANDBOX_TAG"), None)
                     except Exception:

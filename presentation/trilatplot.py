@@ -116,13 +116,10 @@ class TrilatPlot(QObject):
                 pass
 
     def update_data(self, anchors=False, tags=False, measurements=False):
-        """Update artist data for the given change flags. Does not redraw.
 
-        Call `redraw()` after this to trigger a canvas update.
-        """
         anchor_positions = self.scenario.anchor_positions()
-        # Choose a reference tag for anchor circles. Prefer sandbox tag (interactive)
-        # otherwise use the first tag estimate, fallback to tag_truth.
+        title = self.scenario.name
+
         tag_positions = self.scenario.tag_positions()
         reference_tag = None
         if self.sandbox_tag is not None:
@@ -392,6 +389,7 @@ class TrilatPlot(QObject):
 
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
+        self.ax_trilat.set_title(self.scenario.name)
         self._adjust_trilat_aspect()
 
         self.fig.canvas.draw_idle()
