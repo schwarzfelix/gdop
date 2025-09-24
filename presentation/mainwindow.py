@@ -5,10 +5,10 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 import presentation
 from presentation.tabs import (
-    PlotTab,
     SandboxTab,
     StationsTab,
     DisplayTab,
@@ -70,14 +70,27 @@ class MainWindow(QMainWindow):
 
         # Add trilat canvas first
         layout.addWidget(self.canvas)
+        # Navigation toolbar for trilat plot (standard matplotlib controls)
+        try:
+            self.toolbar = NavigationToolbar(self.canvas, self)
+            layout.addWidget(self.toolbar)
+        except Exception:
+            # best-effort: ignore toolbar creation errors
+            pass
 
         # Comparison plot canvas below/after trilat plot
         self.comp_figure = self.comparison_plot.fig
         self.comp_figure.set_dpi(self.FIGURE_DPI)
         self.comp_canvas = FigureCanvas(self.comp_figure)
         layout.addWidget(self.comp_canvas)
+        # Navigation toolbar for comparison plot
+        try:
+            self.comp_toolbar = NavigationToolbar(self.comp_canvas, self)
+            layout.addWidget(self.comp_toolbar)
+        except Exception:
+            pass
 
-    # Create tab widget and all tabs
+        # Create tab widget and all tabs
         self.tab_widget = QTabWidget()
         self.create_tabs()
         layout.addWidget(self.tab_widget)
@@ -87,16 +100,14 @@ class MainWindow(QMainWindow):
     def create_tabs(self):
         """Create all tabs using the new tab classes."""
         # Create tab instances
-        self.plot_tab = PlotTab(self)
         self.sandbox_tab = SandboxTab(self)
         self.stations_tab = StationsTab(self)
         self.scenarios_tab = ScenariosTab(self)
         self.display_tab = DisplayTab(self)
         self.data_tab = DataTab(self)
         self.measurements_tab = MeasurementsTab(self)
-        
-        # Add tabs to tab widget
-        self.tab_widget.addTab(self.plot_tab.get_widget(), self.plot_tab.tab_name)
+
+        # Add tabs to tab widget (no Plot tab — toolbars are shown under each plot)
         self.tab_widget.addTab(self.sandbox_tab.get_widget(), self.sandbox_tab.tab_name)
         self.tab_widget.addTab(self.stations_tab.get_widget(), self.stations_tab.tab_name)
         self.tab_widget.addTab(self.scenarios_tab.get_widget(), self.scenarios_tab.tab_name)
