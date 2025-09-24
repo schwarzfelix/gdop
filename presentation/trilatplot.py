@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
-import matplotlib.gridspec as gridspec
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
@@ -25,11 +24,7 @@ class TrilatPlot(QObject):
         self.display_config = self.window.display_config
 
         self.dragging_point = None
-
-        self.fig = plt.figure(figsize=(6, 4))
-        gs = gridspec.GridSpec(1, 2, width_ratios=[4, 1])
-        self.ax_trilat = plt.subplot(gs[0])
-        self.ax_gdop = plt.subplot(gs[1])
+        self.fig, self.ax_trilat = plt.subplots(figsize=(6, 4))
 
         self.ax_trilat.set_xlim(-15, 15)
         self.ax_trilat.set_ylim(-15, 15)
@@ -172,35 +167,6 @@ class TrilatPlot(QObject):
             for (bigger_circle, smaller_circle) in self.circle_pairs:
                 bigger_circle.set_visible(False)
                 smaller_circle.set_visible(False)
-
-        # Update GDOP bar chart if visible
-        if self.display_config.showGDOP:
-            try:
-                # Ensure the axis is visible when GDOP is enabled
-                try:
-                    self.ax_gdop.set_visible(True)
-                except Exception:
-                    pass
-                self.ax_gdop.clear()
-                tags = self.scenario.get_tag_list()
-                gdop_values = [tag.dilution_of_precision() for tag in tags]
-                x_pos = range(len(gdop_values))
-                self.ax_gdop.bar(x_pos, gdop_values, color="orange")
-                self.ax_gdop.set_ylim(0, 12)
-                self.ax_gdop.set_xticks(x_pos)
-                self.ax_gdop.set_xticklabels([tag.name() for tag in tags], rotation=90)
-                for i, gdop in enumerate(gdop_values):
-                    self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
-            except Exception:
-                # best-effort: ignore plotting errors
-                pass
-        else:
-            # When GDOP display is off, hide the GDOP axis so it's not visible
-            try:
-                self.ax_gdop.clear()
-                self.ax_gdop.set_visible(False)
-            except Exception:
-                pass
 
         # Update or create reusable line/text artists for anchor-anchor pairs
         num_anchor_pairs = max(0, len(anchor_positions) * (len(anchor_positions) - 1) // 2)
@@ -432,30 +398,6 @@ class TrilatPlot(QObject):
         self.tag_anchor_texts = []
         self.tag_name_texts = []
         self.anchor_name_texts = []
-
-        # (Re)build GDOP axis contents depending on display config
-        if self.display_config.showGDOP:
-            try:
-                self.ax_gdop.set_visible(True)
-                self.ax_gdop.clear()
-                tags = self.scenario.get_tag_list()
-                gdop_values = [tag.dilution_of_precision() for tag in tags]
-                x_pos = range(len(gdop_values))
-                self.ax_gdop.bar(x_pos, gdop_values, color="orange")
-                self.ax_gdop.set_ylim(0, 12)
-                self.ax_gdop.set_xticks(x_pos)
-                self.ax_gdop.set_xticklabels([tag.name() for tag in tags], rotation=90)
-                for i, gdop in enumerate(gdop_values):
-                    self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
-            except Exception:
-                # best-effort ignore
-                pass
-        else:
-            try:
-                self.ax_gdop.clear()
-                self.ax_gdop.set_visible(False)
-            except Exception:
-                pass
 
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
