@@ -19,5 +19,5 @@ if __name__ == "__main__":
     gdop_app = GDOPApp([scenario])
     qt_app = QApplication(sys.argv)
     window = presentation.MainWindow(gdop_app)
-    window.show()
+    window.showMaximized()
     sys.exit(qt_app.exec_())
