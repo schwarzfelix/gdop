@@ -357,13 +357,75 @@ class TrilatPlot(QObject):
             pass
 
     def init_artists(self):
+        # Remove any existing artists from previous scenarios so switching
+        # scenarios doesn't leave stale lines/texts/patches on the axes.
+        try:
+            # remove scatter artists
+            if getattr(self, 'anchor_scatter', None) is not None:
+                try:
+                    self.anchor_scatter.remove()
+                except Exception:
+                    pass
+                self.anchor_scatter = None
 
+            if getattr(self, 'tag_estimate_scatter', None) is not None:
+                try:
+                    self.tag_estimate_scatter.remove()
+                except Exception:
+                    pass
+                self.tag_estimate_scatter = None
+
+            if getattr(self, 'tag_truth_plot', None) is not None:
+                try:
+                    self.tag_truth_plot.remove()
+                except Exception:
+                    pass
+                self.tag_truth_plot = None
+
+            # remove line and text artists
+            for lst_name in ('anchor_pair_lines', 'anchor_pair_texts', 'tag_anchor_lines', 'tag_anchor_texts', 'tag_name_texts', 'anchor_name_texts'):
+                for art in getattr(self, lst_name, []) or []:
+                    try:
+                        art.remove()
+                    except Exception:
+                        pass
+                setattr(self, lst_name, [])
+
+            # remove circle patches
+            for pair in getattr(self, 'circle_pairs', []) or []:
+                try:
+                    pair[0].remove()
+                except Exception:
+                    pass
+                try:
+                    pair[1].remove()
+                except Exception:
+                    pass
+            self.circle_pairs = []
+        except Exception:
+            # best-effort: ignore any cleanup errors
+            pass
+
+        # Create fresh scatter artists (empty) which the rest of the code expects
         if self.anchor_scatter is None:
             self.anchor_scatter = self.ax_trilat.scatter([], [], c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True)
 
         if self.tag_estimate_scatter is None:
             self.tag_estimate_scatter = self.ax_trilat.scatter([], [], c='red', marker='x')
 
+        # If this plot has a sandbox tag (set externally when switching scenarios),
+        # create a tag_truth scatter so it can be dragged/updated.
+        if getattr(self, 'sandbox_tag', None):
+            try:
+                if getattr(self.scenario, 'tag_truth', None):
+                    pos = self.scenario.tag_truth.position()
+                    self.tag_truth_plot = self.ax_trilat.scatter(pos[0], pos[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
+                else:
+                    self.tag_truth_plot = None
+            except Exception:
+                self.tag_truth_plot = None
+
+        # Reset internal lists used to store reusable artists
         self.anchor_pair_lines = []
         self.anchor_pair_texts = []
         self.tag_anchor_lines = []
@@ -371,28 +433,40 @@ class TrilatPlot(QObject):
         self.tag_name_texts = []
         self.anchor_name_texts = []
 
+        # (Re)build GDOP axis contents depending on display config
         if self.display_config.showGDOP:
-            self.ax_gdop.set_visible(True)
-            self.ax_gdop.clear()
-            tags = self.scenario.get_tag_list()
-            gdop_values = [tag.dilution_of_precision() for tag in tags]
-            x_pos = range(len(gdop_values))
-            self.ax_gdop.bar(x_pos, gdop_values, color="orange")
-            self.ax_gdop.set_ylim(0, 12)
-            self.ax_gdop.set_xticks(x_pos)
-            self.ax_gdop.set_xticklabels([tag.name() for tag in tags], rotation=90)
-            for i, gdop in enumerate(gdop_values):
-                self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
+            try:
+                self.ax_gdop.set_visible(True)
+                self.ax_gdop.clear()
+                tags = self.scenario.get_tag_list()
+                gdop_values = [tag.dilution_of_precision() for tag in tags]
+                x_pos = range(len(gdop_values))
+                self.ax_gdop.bar(x_pos, gdop_values, color="orange")
+                self.ax_gdop.set_ylim(0, 12)
+                self.ax_gdop.set_xticks(x_pos)
+                self.ax_gdop.set_xticklabels([tag.name() for tag in tags], rotation=90)
+                for i, gdop in enumerate(gdop_values):
+                    self.ax_gdop.text(i, gdop, f"{gdop:.2f}", ha="center")
+            except Exception:
+                # best-effort ignore
+                pass
         else:
-            self.ax_gdop.clear()
-            self.ax_gdop.set_visible(False)
+            try:
+                self.ax_gdop.clear()
+                self.ax_gdop.set_visible(False)
+            except Exception:
+                pass
 
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
         self.ax_trilat.set_title(self.scenario.name)
         self._adjust_trilat_aspect()
 
-        self.fig.canvas.draw_idle()
+        # Trigger a redraw to reflect the cleared/rebuilt artists
+        try:
+            self.fig.canvas.draw_idle()
+        except Exception:
+            pass
 
     def _on_resize(self, event):
         """Matplotlib resize event handler: adjust trilat axis so x/y units stay proportional."""
