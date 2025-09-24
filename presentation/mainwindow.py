@@ -37,10 +37,16 @@ class MainWindow(QMainWindow):
         self.scenario = app.scenarios[0] if app.scenarios else None
         self.display_config = presentation.DisplayConfig()
         self.plot = presentation.TrilatPlot(self, self.scenario)
+        # Comparison plot comparing all app scenarios
+        self.comparison_plot = presentation.ComparisonPlot(self, self.app.scenarios)
         # Connect plot signals to selective update slots
         self.plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
         self.plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
         self.plot.measurements_changed.connect(lambda: self.update_all(anchors=False, tags=False, measurements=True))
+        # Connect comparison plot signals so it will update when things change
+        self.comparison_plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
+        self.comparison_plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
+        self.comparison_plot.measurements_changed.connect(lambda: self.update_all(anchors=False, tags=False, measurements=True))
 
         self.setWindowTitle(MainWindow.WINDOW_TITLE)
 
@@ -62,7 +68,14 @@ class MainWindow(QMainWindow):
         self.figure.set_dpi(self.FIGURE_DPI)
         self.canvas = FigureCanvas(self.figure)
 
+        # Add trilat canvas first
         layout.addWidget(self.canvas)
+
+        # Comparison plot canvas below/after trilat plot
+        self.comp_figure = self.comparison_plot.fig
+        self.comp_figure.set_dpi(self.FIGURE_DPI)
+        self.comp_canvas = FigureCanvas(self.comp_figure)
+        layout.addWidget(self.comp_canvas)
 
     # Create tab widget and all tabs
         self.tab_widget = QTabWidget()
@@ -128,6 +141,20 @@ class MainWindow(QMainWindow):
                     self.plot.update_anchors()
                 if tags or measurements:
                     self.plot.update_plot()
+
+        # Update comparison plot (multi-scenario) as well
+        if hasattr(self, 'comparison_plot') and self.comparison_plot is not None:
+            if hasattr(self.comparison_plot, 'update_data') and hasattr(self.comparison_plot, 'redraw'):
+                # comparison plot doesn't need anchors pre-setup but keep API consistent
+                self.comparison_plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
+                self.comparison_plot.redraw()
+            else:
+                # best-effort request refresh
+                if anchors or tags or measurements:
+                    try:
+                        self.comparison_plot.request_refresh(anchors=anchors, tags=tags, measurements=measurements)
+                    except Exception:
+                        pass
 
         # Update individual tabs selectively
         if anchors and hasattr(self, 'stations_tab'):
