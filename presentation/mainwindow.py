@@ -65,39 +65,60 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout()
         central_widget.setLayout(main_layout)
 
-        # Horizontal container to hold plots and tabs side-by-side
-        from PyQt5.QtWidgets import QHBoxLayout
-        container = QHBoxLayout()
-        main_layout.addLayout(container)
+        # Use a splitter so the user can resize the plots vs controls pane
+        from PyQt5.QtWidgets import QSplitter
+        from PyQt5.QtCore import Qt
 
         # Left column: vertical layout for plots and their toolbars
         plots_layout = QVBoxLayout()
 
+        # Top plot (trilateration)
         self.figure = self.plot.fig
         self.figure.set_dpi(self.FIGURE_DPI)
         self.canvas = FigureCanvas(self.figure)
 
-        # Add trilat canvas first
-        plots_layout.addWidget(self.canvas)
+        top_widget = QWidget()
+        top_layout = QVBoxLayout()
+        top_widget.setLayout(top_layout)
+        top_layout.addWidget(self.canvas)
         # Navigation toolbar for trilat plot (standard matplotlib controls)
         try:
             self.toolbar = NavigationToolbar(self.canvas, self)
-            plots_layout.addWidget(self.toolbar)
+            top_layout.addWidget(self.toolbar)
         except Exception:
             # best-effort: ignore toolbar creation errors
             pass
 
-        # Comparison plot canvas below/after trilat plot
+        # Bottom plot (comparison)
         self.comp_figure = self.comparison_plot.fig
         self.comp_figure.set_dpi(self.FIGURE_DPI)
         self.comp_canvas = FigureCanvas(self.comp_figure)
-        plots_layout.addWidget(self.comp_canvas)
+
+        bottom_widget = QWidget()
+        bottom_layout = QVBoxLayout()
+        bottom_widget.setLayout(bottom_layout)
+        bottom_layout.addWidget(self.comp_canvas)
         # Navigation toolbar for comparison plot
         try:
             self.comp_toolbar = NavigationToolbar(self.comp_canvas, self)
-            plots_layout.addWidget(self.comp_toolbar)
+            bottom_layout.addWidget(self.comp_toolbar)
         except Exception:
             pass
+
+        # Put top and bottom widgets into a vertical splitter so they are resizeable
+        from PyQt5.QtWidgets import QSplitter
+        from PyQt5.QtCore import Qt
+        vertical_splitter = QSplitter(Qt.Vertical)
+        vertical_splitter.addWidget(top_widget)
+        vertical_splitter.addWidget(bottom_widget)
+        try:
+            vertical_splitter.setStretchFactor(0, 3)
+            vertical_splitter.setStretchFactor(1, 1)
+        except Exception:
+            pass
+
+        # Add the splitter to the left plots layout
+        plots_layout.addWidget(vertical_splitter)
 
         # Right column: tab widget (controls)
         from PyQt5.QtWidgets import QSizePolicy
@@ -107,9 +128,24 @@ class MainWindow(QMainWindow):
         # Make sure tabs don't expand plots too small
         self.tab_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
-        # Add left (plots) and right (tabs) to container
-        container.addLayout(plots_layout, 3)  # give plots more stretch
-        container.addWidget(self.tab_widget, 1)
+        # Wrap plots_layout into a QWidget so it can be added to a QSplitter
+        left_widget = QWidget()
+        left_widget.setLayout(plots_layout)
+
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.addWidget(left_widget)
+        splitter.addWidget(self.tab_widget)
+
+        # Prefer plots to take more space initially
+        try:
+            splitter.setStretchFactor(0, 3)
+            splitter.setStretchFactor(1, 1)
+        except Exception:
+            # Some older Qt versions may not support setStretchFactor; ignore if it fails
+            pass
+
+        # Add splitter to the main layout
+        main_layout.addWidget(splitter)
 
         # Finalize
         self.update_all()
