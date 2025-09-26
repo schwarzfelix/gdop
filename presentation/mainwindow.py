@@ -149,14 +149,11 @@ class MainWindow(QMainWindow):
                 self.comparison_plot.redraw()
             else:
                 if anchors or tags or measurements:
-                    try:
-                        self.comparison_plot.request_refresh(anchors=anchors, tags=tags, measurements=measurements)
-                    except Exception:
-                        pass
+                    self.comparison_plot.request_refresh(anchors=anchors, tags=tags, measurements=measurements)
 
-        if anchors and hasattr(self, 'stations_tab'):
+        if anchors:
             self.stations_tab.update()
-        if measurements and hasattr(self, 'measurements_tab'):
+        if measurements:
             self.measurements_tab.update()
 
         if (tags or measurements):
