@@ -38,10 +38,7 @@ class TreeTab(BaseTab):
         scenarios_node = QTreeWidgetItem(self.tree, ["Scenarios"])
         scenarios_node.setExpanded(True)
 
-        try:
-            active = self.main_window.trilat_plot.scenario
-        except Exception:
-            active = None
+        active = self.main_window.trilat_plot.scenario
 
         for scen in scenarios:
             scen_node = QTreeWidgetItem(scenarios_node)
