@@ -40,9 +40,9 @@ class MainWindow(QMainWindow):
         self._trilat_plot = presentation.TrilatPlot(self, self._scenario)
         self._comparison_plot = presentation.ComparisonPlot(self, self._gdop_app.scenarios)
 
-        self.plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
-        self.plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
-        self.plot.measurements_changed.connect(lambda: self.update_all(anchors=False, tags=False, measurements=True))
+        self.trilat_plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
+        self.trilat_plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
+        self.trilat_plot.measurements_changed.connect(lambda: self.update_all(anchors=False, tags=False, measurements=True))
         self.comparison_plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
         self.comparison_plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
         self.comparison_plot.measurements_changed.connect(lambda: self.update_all(anchors=False, tags=False, measurements=True))
@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
 
 
         # Trilateration plot setup -------------------
-        self.trilat_figure = self.plot.fig
+        self.trilat_figure = self.trilat_plot.fig
         self.trilat_figure.set_dpi(self.FIGURE_DPI)
         self.trilat_canvas = FigureCanvas(self.trilat_figure)
 
@@ -128,7 +128,7 @@ class MainWindow(QMainWindow):
 
     def update_all(self, anchors=True, tags=True, measurements=True):
         if anchors:
-            self.plot.update_anchors()
+            self.trilat_plot.update_anchors()
             self.stations_tab.update()
         
         if measurements:
@@ -137,8 +137,8 @@ class MainWindow(QMainWindow):
         if (tags or measurements):
             self.sandbox_tab.update_sandbox()
 
-        self.plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
-        self.plot.redraw()
+        self.trilat_plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
+        self.trilat_plot.redraw()
 
         self.comparison_plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
         self.comparison_plot.redraw()
@@ -158,8 +158,7 @@ class MainWindow(QMainWindow):
         return self._display_config
 
     @property
-    #TODO rename to trilat_plot after streamlining all references
-    def plot(self):
+    def trilat_plot(self):
         return self._trilat_plot
 
     @property

@@ -23,7 +23,7 @@ class BaseTab(ABC):
 
     @property
     def scenario(self):
-        return self.main_window.plot.scenario
+        return self.main_window.trilat_plot.scenario
 
     @abstractmethod
     def create_widget(self):

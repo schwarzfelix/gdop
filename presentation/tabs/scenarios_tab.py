@@ -30,7 +30,7 @@ class ScenariosTab(BaseTab):
         if not app:
             return
         # active scenario is stored in the plot
-        plot = self.main_window.plot
+        plot = self.main_window.trilat_plot
         active = getattr(plot, 'scenario', None)
 
         for scen in app.scenarios:
@@ -72,7 +72,7 @@ class ScenariosTab(BaseTab):
         for scen in app.scenarios:
             if scen.name == name:
 
-                plot = self.main_window.plot
+                plot = self.main_window.trilat_plot
                 if plot is not None:
                     plot.scenario = scen
                     try:
