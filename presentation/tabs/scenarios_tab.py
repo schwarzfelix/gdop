@@ -30,7 +30,7 @@ class ScenariosTab(BaseTab):
         if not app:
             return
         # active scenario is stored in the plot
-        plot = getattr(self.main_window, 'plot', None)
+        plot = self.main_window.plot
         active = getattr(plot, 'scenario', None)
 
         for scen in app.scenarios:

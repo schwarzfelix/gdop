@@ -223,7 +223,7 @@ class DataTab(BaseTab):
                 app.scenarios.append(imported_scenario)
             # Set the plot to show the new scenario
             try:
-                plot = getattr(self.main_window, 'plot', None)
+                plot = self.main_window.plot
                 if plot is not None:
                     plot.scenario = imported_scenario
                     try:

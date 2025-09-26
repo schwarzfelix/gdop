@@ -23,16 +23,8 @@ class BaseTab(ABC):
 
     @property
     def scenario(self):
-        """Return the currently shown scenario from the main window's plot.
+        return self.main_window.plot.scenario
 
-        The TrilatPlot owns which scenario is currently shown; tabs should
-        access that via this property for consistency.
-        """
-        plot = getattr(self.main_window, 'plot', None)
-        if plot is None:
-            return None
-        return getattr(plot, 'scenario', None)
-        
     @abstractmethod
     def create_widget(self):
         """
