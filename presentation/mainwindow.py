@@ -16,7 +16,6 @@ from matplotlib.backends.backend_qt5agg import (
 import presentation
 from presentation.tabs import (
     SandboxTab,
-    StationsTab,
     DisplayTab,
     DataTab,
     TreeTab
@@ -113,20 +112,17 @@ class MainWindow(QMainWindow):
     def create_tabs(self):
         self.tree_tab = TreeTab(self)
         self.sandbox_tab = SandboxTab(self)
-        self.stations_tab = StationsTab(self)
         self.display_tab = DisplayTab(self)
         self.data_tab = DataTab(self)
 
         self.tab_widget.addTab(self.tree_tab.get_widget(), self.tree_tab.tab_name)
         self.tab_widget.addTab(self.sandbox_tab.get_widget(), self.sandbox_tab.tab_name)
-        self.tab_widget.addTab(self.stations_tab.get_widget(), self.stations_tab.tab_name)
         self.tab_widget.addTab(self.display_tab.get_widget(), self.display_tab.tab_name)
         self.tab_widget.addTab(self.data_tab.get_widget(), self.data_tab.tab_name)
 
     def update_all(self, anchors=True, tags=True, measurements=True):
         if anchors:
             self.trilat_plot.update_anchors()
-            self.stations_tab.update()
             self.tree_tab.update()
         
         if (tags or measurements):

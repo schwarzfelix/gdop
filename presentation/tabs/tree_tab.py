@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
 )
 from .base_tab import BaseTab
-from .stations_tab import StationEditDialog
+from PyQt5.QtWidgets import QInputDialog
 from simulation.station import Anchor
 
 
@@ -100,31 +100,9 @@ class TreeTab(BaseTab):
         self.update_tree()
 
     def rename_station_dialog(self, station):
-        dialog = StationEditDialog(station, self.main_window)
-        if dialog.exec_() == dialog.Accepted:
-            values = dialog.get_values()
-            if values is None:
-                from PyQt5.QtWidgets import QMessageBox
-                QMessageBox.warning(
-                    self.main_window,
-                    "Invalid Input",
-                    "Please enter valid numeric values for coordinates."
-                )
-                return
-
-            if values['name'] and values['name'] != station.name:
-                self.rename_station(station, values['name'])
-
-            try:
-                is_anchor = isinstance(station, Anchor)
-            except Exception:
-                is_anchor = False
-
-            if is_anchor and 'x' in values and 'y' in values:
-                current_pos = station.position()
-                if current_pos[0] != values['x'] or current_pos[1] != values['y']:
-                    station.update_position([values['x'], values['y']])
-                    self.main_window.update_all()
+        new_name, ok = QInputDialog.getText(self.main_window, "Rename Station", "New name:", text=station.name)
+        if ok and new_name and new_name != station.name:
+            self.rename_station(station, new_name)
 
     def rename_station(self, station, new_name):
         station.name = new_name
