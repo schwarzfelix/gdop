@@ -34,11 +34,11 @@ class MainWindow(QMainWindow):
 
     def __init__(self, app):
         super().__init__()
-        self.app = app
-        self.scenario = app.scenarios[0] if app.scenarios else None
-        self.display_config = presentation.DisplayConfig()
-        self.plot = presentation.TrilatPlot(self, self.scenario)
-        self.comparison_plot = presentation.ComparisonPlot(self, self.app.scenarios)
+        self._app = app
+        self._scenario = app.scenarios[0] if app.scenarios else None
+        self._display_config = presentation.DisplayConfig()
+        self._plot = presentation.TrilatPlot(self, self._scenario)
+        self._comparison_plot = presentation.ComparisonPlot(self, self._app.scenarios)
 
         self.plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
         self.plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
@@ -126,11 +126,6 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(self.data_tab.get_widget(), self.data_tab.tab_name)
         self.tab_widget.addTab(self.measurements_tab.get_widget(), self.measurements_tab.tab_name)
 
-    def replace_scenario(self, new_scenario):
-        self.scenario = new_scenario
-        self.update_all()
-        self.scenarios_tab.update_scenarios()
-
     def update_all(self, anchors=True, tags=True, measurements=True):
         if anchors:
             self.plot.update_anchors()
@@ -147,3 +142,24 @@ class MainWindow(QMainWindow):
 
         self.comparison_plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
         self.comparison_plot.redraw()
+
+
+    @property
+    def app(self):
+        return self._app
+
+    @property
+    def scenario(self):
+        return self._scenario
+
+    @property
+    def display_config(self):
+        return self._display_config
+
+    @property
+    def plot(self):
+        return self._plot
+
+    @property
+    def comparison_plot(self):
+        return self._comparison_plot
