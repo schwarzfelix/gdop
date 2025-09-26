@@ -130,6 +130,7 @@ class MainWindow(QMainWindow):
         self.scenarios_tab.update_scenarios()
 
     def update_all(self, anchors=True, tags=True, measurements=True):
+        #TODO refactor
         if hasattr(self, "plot") and self.plot is not None:
             if hasattr(self.plot, 'update_data') and hasattr(self.plot, 'redraw'):
                 # ensure anchor artists (circle_pairs) are created/updated before update_data
