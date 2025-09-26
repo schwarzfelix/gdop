@@ -118,7 +118,7 @@ class DataTab(BaseTab):
     
     @property
     def tab_name(self):
-        return "Data"
+        return "Import"
         
     def create_widget(self):
         """Create and return the data tab widget."""

@@ -40,6 +40,7 @@ class DisplayTab(BaseTab):
         self.anchor_circles_checkbox.stateChanged.connect(self.update_display_config)
         self.anchor_circles_item = QTreeWidgetItem(anchor_node)
         self.display_tree.setItemWidget(self.anchor_circles_item, 0, self.anchor_circles_checkbox)
+        anchor_node.setExpanded(True)
 
         self.anchor_labels_checkbox = QCheckBox("Show Anchor Labels")
         self.anchor_labels_checkbox.setChecked(self.display_config.showAnchorLabels)
@@ -54,6 +55,7 @@ class DisplayTab(BaseTab):
         self.between_anchors_lines_checkbox.stateChanged.connect(self.update_display_config)
         between_anchors_lines_item = QTreeWidgetItem(between_anchors_node)
         self.display_tree.setItemWidget(between_anchors_lines_item, 0, self.between_anchors_lines_checkbox)
+        between_anchors_node.setExpanded(True)
 
         self.between_anchors_labels_checkbox = QCheckBox("Show Labels Between Anchors")
         self.between_anchors_labels_checkbox.setChecked(self.display_config.showBetweenAnchorsLabels)
@@ -74,6 +76,7 @@ class DisplayTab(BaseTab):
         self.tag_anchor_labels_checkbox.stateChanged.connect(self.update_display_config)
         tag_anchor_labels_item = QTreeWidgetItem(tag_anchor_node)
         self.display_tree.setItemWidget(tag_anchor_labels_item, 0, self.tag_anchor_labels_checkbox)
+        tag_anchor_node.setExpanded(True)
 
         # Tag labels checkbox
         tag_labels_checkbox = QCheckBox("Show Tag Labels")
@@ -90,6 +93,7 @@ class DisplayTab(BaseTab):
         self.right_click_anchors_checkbox.stateChanged.connect(self.update_display_config)
         right_click_anchors_item = QTreeWidgetItem(interaction_node)
         self.display_tree.setItemWidget(right_click_anchors_item, 0, self.right_click_anchors_checkbox)
+        interaction_node.setExpanded(True)
 
         self.gdop_checkbox = QCheckBox("Show GDOP Calculation")
         self.gdop_checkbox.setChecked(self.display_config.showGDOP)
