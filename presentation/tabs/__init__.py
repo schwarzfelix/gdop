@@ -10,6 +10,7 @@ from .display_tab import DisplayTab
 from .data_tab import DataTab
 from .measurements_tab import MeasurementsTab
 from .scenarios_tab import ScenariosTab
+from .tree_tab import TreeTab
 
 __all__ = [
     'BaseTab',
@@ -19,5 +20,6 @@ __all__ = [
     'DisplayTab',
     'DataTab',
     'MeasurementsTab',
-    'ScenariosTab'
+    'ScenariosTab',
+    'TreeTab'
 ]
