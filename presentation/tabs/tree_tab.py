@@ -45,12 +45,13 @@ class TreeTab(BaseTab):
 
         for scen in scenarios:
             scen_node = QTreeWidgetItem(scenarios_node)
+            scen_node.setExpanded(True)
 
             row_widget = QWidget()
             row_layout = QHBoxLayout()
             row_layout.setContentsMargins(0, 0, 0, 0)
 
-            name_label = QLabel(getattr(scen, 'name', str(scen)))
+            name_label = QLabel(scen.name)
             activate_button = QPushButton("⏿")
             activate_button.setToolTip("Activate this scenario in the main plot")
             activate_button.clicked.connect(lambda checked, s=scen: self._activate_scenario(s))
@@ -62,10 +63,8 @@ class TreeTab(BaseTab):
 
             self.tree.setItemWidget(scen_node, 0, row_widget)
 
-            if active is scen or (active and getattr(active, 'name', None) == getattr(scen, 'name', None)):
+            if active is scen:
                 self.tree.setCurrentItem(scen_node)
-
-            scen_node.setExpanded(True)
 
             stations_node = QTreeWidgetItem(scen_node, ["Stations"]) 
             stations_node.setExpanded(True)
@@ -75,14 +74,7 @@ class TreeTab(BaseTab):
             measurements_node = QTreeWidgetItem(scen_node, ["Measurements"]) 
             measurements_node.setExpanded(True)
             for pair, distance in scen.measurements.relation.items():
-                try:
-                    station1, station2 = pair
-                except Exception:
-                    items = list(pair)
-                    if len(items) >= 2:
-                        station1, station2 = items[0], items[1]
-                    else:
-                        continue
+                station1, station2 = pair
 
                 label = f"{station1.name()} ↔ {station2.name()}: {distance:.2f}"
                 QTreeWidgetItem(measurements_node, [label])
@@ -97,5 +89,6 @@ class TreeTab(BaseTab):
             plot.sandbox_tag = next((tag for tag in plot.scenario.get_tag_list() if tag.name() == "SANDBOX_TAG"), None)
         except Exception:
             plot.sandbox_tag = None
+        # TODO fix SandboxTag handling
         plot.init_artists()
         self.main_window.update_all()
