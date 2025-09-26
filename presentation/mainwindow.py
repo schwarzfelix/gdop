@@ -112,17 +112,17 @@ class MainWindow(QMainWindow):
         self.update_all()
 
     def create_tabs(self):
+        self.tree_tab = TreeTab(self)
         self.sandbox_tab = SandboxTab(self)
         self.stations_tab = StationsTab(self)
         self.scenarios_tab = ScenariosTab(self)
-        self.tree_tab = TreeTab(self)
         self.display_tab = DisplayTab(self)
         self.data_tab = DataTab(self)
 
+        self.tab_widget.addTab(self.tree_tab.get_widget(), self.tree_tab.tab_name)
         self.tab_widget.addTab(self.sandbox_tab.get_widget(), self.sandbox_tab.tab_name)
         self.tab_widget.addTab(self.stations_tab.get_widget(), self.stations_tab.tab_name)
         self.tab_widget.addTab(self.scenarios_tab.get_widget(), self.scenarios_tab.tab_name)
-        self.tab_widget.addTab(self.tree_tab.get_widget(), self.tree_tab.tab_name)
         self.tab_widget.addTab(self.display_tab.get_widget(), self.display_tab.tab_name)
         self.tab_widget.addTab(self.data_tab.get_widget(), self.data_tab.tab_name)
 
