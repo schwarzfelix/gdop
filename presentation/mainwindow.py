@@ -19,7 +19,6 @@ from presentation.tabs import (
     StationsTab,
     DisplayTab,
     DataTab,
-    MeasurementsTab,
     ScenariosTab
 )
 from presentation.tabs import TreeTab
@@ -119,7 +118,6 @@ class MainWindow(QMainWindow):
         self.tree_tab = TreeTab(self)
         self.display_tab = DisplayTab(self)
         self.data_tab = DataTab(self)
-        self.measurements_tab = MeasurementsTab(self)
 
         self.tab_widget.addTab(self.sandbox_tab.get_widget(), self.sandbox_tab.tab_name)
         self.tab_widget.addTab(self.stations_tab.get_widget(), self.stations_tab.tab_name)
@@ -127,33 +125,16 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(self.tree_tab.get_widget(), self.tree_tab.tab_name)
         self.tab_widget.addTab(self.display_tab.get_widget(), self.display_tab.tab_name)
         self.tab_widget.addTab(self.data_tab.get_widget(), self.data_tab.tab_name)
-        self.tab_widget.addTab(self.measurements_tab.get_widget(), self.measurements_tab.tab_name)
 
     def update_all(self, anchors=True, tags=True, measurements=True):
         if anchors:
             self.trilat_plot.update_anchors()
             self.stations_tab.update()
-            # keep tree in sync when anchors change
-            try:
-                self.tree_tab.update()
-            except Exception:
-                pass
+            self.tree_tab.update()
         
-        if measurements:
-            self.measurements_tab.update()
-            # keep tree in sync when measurements change
-            try:
-                self.tree_tab.update()
-            except Exception:
-                pass
-
         if (tags or measurements):
             self.sandbox_tab.update_sandbox()
-            # tags can affect tree (stations/tags grouping) so update
-            try:
-                self.tree_tab.update()
-            except Exception:
-                pass
+            self.tree_tab.update()
 
         self.trilat_plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
         self.trilat_plot.redraw()

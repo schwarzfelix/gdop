@@ -28,8 +28,10 @@ class TreeTab(BaseTab):
         app = self.main_window.app
         scenarios = app.scenarios
 
+        scenarios_node = QTreeWidgetItem(self.tree, ["Scenarios"])
+        scenarios_node.setExpanded(True)
         for scen in scenarios:
-            scen_node = QTreeWidgetItem(self.tree, [scen.name])
+            scen_node = QTreeWidgetItem(scenarios_node, [scen.name])
             scen_node.setExpanded(True)
 
             stations_node = QTreeWidgetItem(scen_node, ["Stations"]) 
