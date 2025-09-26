@@ -19,9 +19,9 @@ from presentation.tabs import (
     StationsTab,
     DisplayTab,
     DataTab,
-    ScenariosTab
+    ScenariosTab,
+    TreeTab
 )
-from presentation.tabs import TreeTab
 
 
 class MainWindow(QMainWindow):
