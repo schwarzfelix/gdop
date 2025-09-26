@@ -130,32 +130,18 @@ class MainWindow(QMainWindow):
         self.scenarios_tab.update_scenarios()
 
     def update_all(self, anchors=True, tags=True, measurements=True):
-        #TODO refactor
-        if hasattr(self, "plot") and self.plot is not None:
-            if hasattr(self.plot, 'update_data') and hasattr(self.plot, 'redraw'):
-                # ensure anchor artists (circle_pairs) are created/updated before update_data
-                if anchors and hasattr(self.plot, 'update_anchors'):
-                    self.plot.update_anchors()
-                self.plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
-                self.plot.redraw()
-            else:
-                if anchors:
-                    self.plot.update_anchors()
-                if tags or measurements:
-                    self.plot.update_plot()
-
-        if hasattr(self, 'comparison_plot') and self.comparison_plot is not None:
-            if hasattr(self.comparison_plot, 'update_data') and hasattr(self.comparison_plot, 'redraw'):
-                self.comparison_plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
-                self.comparison_plot.redraw()
-            else:
-                if anchors or tags or measurements:
-                    self.comparison_plot.request_refresh(anchors=anchors, tags=tags, measurements=measurements)
-
         if anchors:
+            self.plot.update_anchors()
             self.stations_tab.update()
+        
         if measurements:
             self.measurements_tab.update()
 
         if (tags or measurements):
             self.sandbox_tab.update_sandbox()
+
+        self.plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
+        self.plot.redraw()
+
+        self.comparison_plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
+        self.comparison_plot.redraw()
