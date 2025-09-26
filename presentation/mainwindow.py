@@ -110,8 +110,6 @@ class MainWindow(QMainWindow):
         self.update_all()
 
     def create_tabs(self):
-        """Create all tabs using the new tab classes."""
-        # Create tab instances
         self.sandbox_tab = SandboxTab(self)
         self.stations_tab = StationsTab(self)
         self.scenarios_tab = ScenariosTab(self)
@@ -119,7 +117,6 @@ class MainWindow(QMainWindow):
         self.data_tab = DataTab(self)
         self.measurements_tab = MeasurementsTab(self)
 
-        # Add tabs to tab widget (no Plot tab — toolbars are shown under each plot)
         self.tab_widget.addTab(self.sandbox_tab.get_widget(), self.sandbox_tab.tab_name)
         self.tab_widget.addTab(self.stations_tab.get_widget(), self.stations_tab.tab_name)
         self.tab_widget.addTab(self.scenarios_tab.get_widget(), self.scenarios_tab.tab_name)
@@ -133,8 +130,6 @@ class MainWindow(QMainWindow):
         self.scenarios_tab.update_scenarios()
 
     def update_sandbox(self):
-        """Update sandbox controls with current scenario values."""
-        # Prefer the new attribute name `sandbox_tab`, but accept the old `sigma_tab` as well
         tab = None
         if hasattr(self, 'sandbox_tab') and self.sandbox_tab:
             tab = self.sandbox_tab
@@ -149,9 +144,6 @@ class MainWindow(QMainWindow):
         #TODO remove old sigma_tab support later
 
     def update_all(self, anchors=True, tags=True, measurements=True):
-        """Update UI components selectively based on change flags."""
-        # Plot updates: anchors may require updating artist lists. Prefer
-        # the lighter-weight update_data/redraw API when available.
         if hasattr(self, "plot") and self.plot is not None:
             if hasattr(self.plot, 'update_data') and hasattr(self.plot, 'redraw'):
                 # ensure anchor artists (circle_pairs) are created/updated before update_data
@@ -165,26 +157,21 @@ class MainWindow(QMainWindow):
                 if tags or measurements:
                     self.plot.update_plot()
 
-        # Update comparison plot (multi-scenario) as well
         if hasattr(self, 'comparison_plot') and self.comparison_plot is not None:
             if hasattr(self.comparison_plot, 'update_data') and hasattr(self.comparison_plot, 'redraw'):
-                # comparison plot doesn't need anchors pre-setup but keep API consistent
                 self.comparison_plot.update_data(anchors=anchors, tags=tags, measurements=measurements)
                 self.comparison_plot.redraw()
             else:
-                # best-effort request refresh
                 if anchors or tags or measurements:
                     try:
                         self.comparison_plot.request_refresh(anchors=anchors, tags=tags, measurements=measurements)
                     except Exception:
                         pass
 
-        # Update individual tabs selectively
         if anchors and hasattr(self, 'stations_tab'):
             self.stations_tab.update()
         if measurements and hasattr(self, 'measurements_tab'):
             self.measurements_tab.update()
 
-        # Sandbox (tags controls) depends on tags/measurements
         if (tags or measurements):
             self.update_sandbox()
