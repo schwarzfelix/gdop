@@ -7,6 +7,10 @@ from PyQt5.QtWidgets import (
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
+from PyQt5.QtWidgets import QSplitter
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QSizePolicy
+
 import presentation
 from presentation.tabs import (
     SandboxTab,
@@ -54,9 +58,6 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout()
         central_widget.setLayout(main_layout)
 
-        from PyQt5.QtWidgets import QSplitter
-        from PyQt5.QtCore import Qt
-
         plots_layout = QVBoxLayout()
 
         self.figure = self.plot.fig
@@ -89,8 +90,6 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
 
-        from PyQt5.QtWidgets import QSplitter
-        from PyQt5.QtCore import Qt
         vertical_splitter = QSplitter(Qt.Vertical)
         vertical_splitter.addWidget(top_widget)
         vertical_splitter.addWidget(bottom_widget)
@@ -102,7 +101,6 @@ class MainWindow(QMainWindow):
 
         plots_layout.addWidget(vertical_splitter)
 
-        from PyQt5.QtWidgets import QSizePolicy
         self.tab_widget = QTabWidget()
         self.create_tabs()
 
