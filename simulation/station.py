@@ -39,14 +39,19 @@ class Station(ABC):
     def distances(self):
         pass
 
+    @property
     def name(self):
         return self._name
 
+    @name.setter
+    def name(self, value):
+        self._name = value
+
     def __str__(self):
-        return self.name()
+        return self.name
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(name={self.name()})"
+        return f"{self.__class__.__name__}(name={self.name})"
 
 class Anchor(Station):
 

@@ -43,7 +43,7 @@ class TrilatPlot(QObject):
 
         self.lines_plot = []
 
-        self.sandbox_tag = next((tag for tag in self.scenario.get_tag_list() if tag.name() == "SANDBOX_TAG"), None)
+        self.sandbox_tag = next((tag for tag in self.scenario.get_tag_list() if tag.name == "SANDBOX_TAG"), None)
         if self.sandbox_tag:
             self.tag_truth_plot = self.ax_trilat.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
         else:
@@ -273,7 +273,7 @@ class TrilatPlot(QObject):
         for i, tag_pos in enumerate(tag_positions):
             if self.display_config.showTagLabels:
                 t = self.tag_name_texts[i]
-                t.set_text(self.scenario.get_tag_list()[i].name())
+                t.set_text(self.scenario.get_tag_list()[i].name)
                 t.set_position((tag_pos[0], tag_pos[1]))
                 t.set_visible(True)
             else:
@@ -295,7 +295,7 @@ class TrilatPlot(QObject):
         for i in range(len(anchor_positions)):
             if self.display_config.showAnchorLabels:
                 t = self.anchor_name_texts[i]
-                t.set_text(self.scenario.get_anchor_list()[i].name())
+                t.set_text(self.scenario.get_anchor_list()[i].name)
                 t.set_position((anchor_positions[i][0], anchor_positions[i][1]))
                 t.set_visible(True)
             else:

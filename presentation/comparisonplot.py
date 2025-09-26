@@ -41,7 +41,7 @@ class ComparisonPlot(QObject):
         gdop_values = []
 
         for s in self.scenarios:
-            scenario_names.append(getattr(s, 'name', lambda: 'unnamed')() if callable(getattr(s, 'name', None)) else getattr(s, 'name', str(s)))
+            scenario_names.append(getattr(s, 'name', str(s)))
             tags = s.get_tag_list()
             if tags and len(tags) > 0:
                 try:

@@ -227,7 +227,7 @@ class DataTab(BaseTab):
                 if plot is not None:
                     plot.scenario = imported_scenario
                     try:
-                        plot.sandbox_tag = next((tag for tag in plot.scenario.get_tag_list() if tag.name() == "SANDBOX_TAG"), None)
+                        plot.sandbox_tag = next((tag for tag in plot.scenario.get_tag_list() if tag.name == "SANDBOX_TAG"), None)
                     except Exception:
                         plot.sandbox_tag = None
                     try:

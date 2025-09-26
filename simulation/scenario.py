@@ -17,7 +17,7 @@ class Scenario:
 
     def get_station_by_name(self, name):
         for s in self.stations:
-            if str(s.name()) == str(name):
+            if str(s.name) == str(name):
                 return s
         new_station = station.Tag(self, name)
         self.stations.append(new_station)

@@ -17,7 +17,7 @@ class StationEditDialog(QDialog):
     def __init__(self, station, parent=None):
         super().__init__(parent)
         self.station = station
-        self.setWindowTitle(f"Edit Station: {station.name()}")
+        self.setWindowTitle(f"Edit Station: {station.name}")
         self.setModal(True)
         self.resize(300, 200)
         
@@ -25,7 +25,7 @@ class StationEditDialog(QDialog):
         form_layout = QFormLayout()
         
         # Name field
-        self.name_edit = QLineEdit(station.name())
+        self.name_edit = QLineEdit(station.name)
         form_layout.addRow("Name:", self.name_edit)
         
         # Coordinate fields (only for Anchor stations)
@@ -105,7 +105,7 @@ class StationsTab(BaseTab):
             layout = QHBoxLayout()
             layout.setContentsMargins(0, 0, 0, 0)
 
-            name_label = QLabel(station.name())
+            name_label = QLabel(station.name)
             rename_button = QPushButton("✎")
             rename_button.setToolTip("Edit station (name and coordinates)")
             rename_button.clicked.connect(lambda checked, s=station: self.rename_station_dialog(s))
@@ -123,7 +123,7 @@ class StationsTab(BaseTab):
             self.stations_tree.setItemWidget(station_node, 0, station_widget)
 
             other_stations = [
-                (other_station.name(), station_positions[other_station])
+                (other_station.name, station_positions[other_station])
                 for other_station in all_stations if other_station != station
             ]
 
@@ -155,7 +155,7 @@ class StationsTab(BaseTab):
                 return
             
             # Update name
-            if values['name'] and values['name'] != station.name():
+            if values['name'] and values['name'] != station.name:
                 self.rename_station(station, values['name'])
             
             # Update coordinates for Anchor stations
@@ -168,13 +168,13 @@ class StationsTab(BaseTab):
     def rename_station(self, station, new_name):
         """Rename a station."""
         # Try to set the name attribute if possible
-        if hasattr(station, '_name'):
-            station._name = new_name
-        elif hasattr(station, 'name') and callable(getattr(station, 'name', None)):
-            try:
-                station.name = lambda: new_name
-            except Exception:
-                pass
+        # Prefer using the property setter when available
+        try:
+            station.name = new_name
+        except Exception:
+            # fallback to setting the protected attribute
+            if hasattr(station, '_name'):
+                station._name = new_name
         self.main_window.update_all()
 
     def delete_station(self, station):

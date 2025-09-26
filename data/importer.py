@@ -233,7 +233,7 @@ def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenari
             anchor_station = None
             for anchor in existing_anchors:
                 try:
-                    if ap_name.lower() in anchor.name().lower() or anchor.name().lower() in ap_name.lower():
+                    if ap_name.lower() in anchor.name.lower() or anchor.name.lower() in ap_name.lower():
                         anchor_station = anchor
                         break
                 except Exception:
