@@ -1,15 +1,17 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QMainWindow,
     QTabWidget,
     QVBoxLayout,
     QWidget,
+    QSplitter,
+    QSizePolicy
 )
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from PyQt5.QtWidgets import QSplitter
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QSizePolicy
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg as FigureCanvas,
+    NavigationToolbar2QT as NavigationToolbar
+)
 
 import presentation
 from presentation.tabs import (
