@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
         self.display_config = presentation.DisplayConfig()
         self.plot = presentation.TrilatPlot(self, self.scenario)
         self.comparison_plot = presentation.ComparisonPlot(self, self.app.scenarios)
+
         self.plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
         self.plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
         self.plot.measurements_changed.connect(lambda: self.update_all(anchors=False, tags=False, measurements=True))
@@ -48,15 +49,15 @@ class MainWindow(QMainWindow):
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-
-        sb = self.statusBar()
-        sb.showMessage("")
-
         main_layout = QVBoxLayout()
         central_widget.setLayout(main_layout)
 
         plots_layout = QVBoxLayout()
+        left_widget = QWidget()
+        left_widget.setLayout(plots_layout)
 
+
+        # Trilateration plot setup -------------------
         self.figure = self.plot.fig
         self.figure.set_dpi(self.FIGURE_DPI)
         self.canvas = FigureCanvas(self.figure)
@@ -68,7 +69,9 @@ class MainWindow(QMainWindow):
 
         self.toolbar = NavigationToolbar(self.canvas, self)
         top_layout.addWidget(self.toolbar)
+        # --------------------------------------------
 
+        # Comparison plot setup ----------------------
         self.comp_figure = self.comparison_plot.fig
         self.comp_figure.set_dpi(self.FIGURE_DPI)
         self.comp_canvas = FigureCanvas(self.comp_figure)
@@ -80,31 +83,29 @@ class MainWindow(QMainWindow):
 
         self.comp_toolbar = NavigationToolbar(self.comp_canvas, self)
         bottom_layout.addWidget(self.comp_toolbar)
+        # --------------------------------------------
+
+
+        self.tab_widget = QTabWidget()
+        self.create_tabs()
+        self.tab_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
         vertical_splitter = QSplitter(Qt.Vertical)
         vertical_splitter.addWidget(top_widget)
         vertical_splitter.addWidget(bottom_widget)
         vertical_splitter.setStretchFactor(0, 3)
         vertical_splitter.setStretchFactor(1, 1)
-
         plots_layout.addWidget(vertical_splitter)
 
-        self.tab_widget = QTabWidget()
-        self.create_tabs()
+        horizontal_splitter = QSplitter(Qt.Horizontal)
+        horizontal_splitter.addWidget(left_widget)
+        horizontal_splitter.addWidget(self.tab_widget)
+        horizontal_splitter.setStretchFactor(0, 3)
+        horizontal_splitter.setStretchFactor(1, 1)
+        main_layout.addWidget(horizontal_splitter)
 
-        self.tab_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-
-        left_widget = QWidget()
-        left_widget.setLayout(plots_layout)#
-
-        splitter = QSplitter(Qt.Horizontal)
-        splitter.addWidget(left_widget)
-        splitter.addWidget(self.tab_widget)
-
-        splitter.setStretchFactor(0, 3)
-        splitter.setStretchFactor(1, 1)
-
-        main_layout.addWidget(splitter)
+        sb = self.statusBar()
+        sb.showMessage("")
 
         self.update_all()
 
