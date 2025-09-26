@@ -32,13 +32,13 @@ class MainWindow(QMainWindow):
     SIGMA_SLIDER_RESOLUTION = 100
     SIGMA_INPUT_STEP = 0.1
 
-    def __init__(self, app):
+    def __init__(self, gdop_app):
         super().__init__()
-        self._app = app
-        self._scenario = app.scenarios[0] if app.scenarios else None
+        self._gdop_app = gdop_app
+        self._scenario = gdop_app.scenarios[0] if gdop_app.scenarios else None
         self._display_config = presentation.DisplayConfig()
-        self._plot = presentation.TrilatPlot(self, self._scenario)
-        self._comparison_plot = presentation.ComparisonPlot(self, self._app.scenarios)
+        self._trilat_plot = presentation.TrilatPlot(self, self._scenario)
+        self._comparison_plot = presentation.ComparisonPlot(self, self._gdop_app.scenarios)
 
         self.plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
         self.plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
@@ -60,17 +60,17 @@ class MainWindow(QMainWindow):
 
 
         # Trilateration plot setup -------------------
-        self.figure = self.plot.fig
-        self.figure.set_dpi(self.FIGURE_DPI)
-        self.canvas = FigureCanvas(self.figure)
+        self.trilat_figure = self.plot.fig
+        self.trilat_figure.set_dpi(self.FIGURE_DPI)
+        self.trilat_canvas = FigureCanvas(self.trilat_figure)
 
         top_widget = QWidget()
         top_layout = QVBoxLayout()
         top_widget.setLayout(top_layout)
-        top_layout.addWidget(self.canvas)
+        top_layout.addWidget(self.trilat_canvas)
 
-        self.toolbar = NavigationToolbar(self.canvas, self)
-        top_layout.addWidget(self.toolbar)
+        self.trilat_toolbar = NavigationToolbar(self.trilat_canvas, self)
+        top_layout.addWidget(self.trilat_toolbar)
         # --------------------------------------------
 
         # Comparison plot setup ----------------------
@@ -106,8 +106,8 @@ class MainWindow(QMainWindow):
         horizontal_splitter.setStretchFactor(1, 1)
         main_layout.addWidget(horizontal_splitter)
 
-        sb = self.statusBar()
-        sb.showMessage("")
+        status_bar = self.statusBar()
+        status_bar.showMessage("")
 
         self.update_all()
 
@@ -145,8 +145,9 @@ class MainWindow(QMainWindow):
 
 
     @property
+    #TODO rename to trilat_plot after streamlining all references
     def app(self):
-        return self._app
+        return self._gdop_app
 
     @property
     def scenario(self):
@@ -157,8 +158,9 @@ class MainWindow(QMainWindow):
         return self._display_config
 
     @property
+    #TODO rename to trilat_plot after streamlining all references
     def plot(self):
-        return self._plot
+        return self._trilat_plot
 
     @property
     def comparison_plot(self):
