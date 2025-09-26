@@ -95,14 +95,14 @@ class MainWindow(QMainWindow):
         vertical_splitter = QSplitter(Qt.Vertical)
         vertical_splitter.addWidget(top_widget)
         vertical_splitter.addWidget(bottom_widget)
-        vertical_splitter.setStretchFactor(0, 3)
+        vertical_splitter.setStretchFactor(0, 1)
         vertical_splitter.setStretchFactor(1, 1)
         plots_layout.addWidget(vertical_splitter)
 
         horizontal_splitter = QSplitter(Qt.Horizontal)
         horizontal_splitter.addWidget(left_widget)
         horizontal_splitter.addWidget(self.tab_widget)
-        horizontal_splitter.setStretchFactor(0, 3)
+        horizontal_splitter.setStretchFactor(0, 1)
         horizontal_splitter.setStretchFactor(1, 1)
         main_layout.addWidget(horizontal_splitter)
 
