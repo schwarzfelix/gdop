@@ -61,19 +61,28 @@ class MainWindow(QMainWindow):
             # If statusBar cannot be created for some reason, ignore and continue
             pass
 
-        layout = QVBoxLayout()
-        central_widget.setLayout(layout)
+        # Create a horizontal layout: left side = plots, right side = tabs
+        main_layout = QVBoxLayout()
+        central_widget.setLayout(main_layout)
+
+        # Horizontal container to hold plots and tabs side-by-side
+        from PyQt5.QtWidgets import QHBoxLayout
+        container = QHBoxLayout()
+        main_layout.addLayout(container)
+
+        # Left column: vertical layout for plots and their toolbars
+        plots_layout = QVBoxLayout()
 
         self.figure = self.plot.fig
         self.figure.set_dpi(self.FIGURE_DPI)
         self.canvas = FigureCanvas(self.figure)
 
         # Add trilat canvas first
-        layout.addWidget(self.canvas)
+        plots_layout.addWidget(self.canvas)
         # Navigation toolbar for trilat plot (standard matplotlib controls)
         try:
             self.toolbar = NavigationToolbar(self.canvas, self)
-            layout.addWidget(self.toolbar)
+            plots_layout.addWidget(self.toolbar)
         except Exception:
             # best-effort: ignore toolbar creation errors
             pass
@@ -82,19 +91,27 @@ class MainWindow(QMainWindow):
         self.comp_figure = self.comparison_plot.fig
         self.comp_figure.set_dpi(self.FIGURE_DPI)
         self.comp_canvas = FigureCanvas(self.comp_figure)
-        layout.addWidget(self.comp_canvas)
+        plots_layout.addWidget(self.comp_canvas)
         # Navigation toolbar for comparison plot
         try:
             self.comp_toolbar = NavigationToolbar(self.comp_canvas, self)
-            layout.addWidget(self.comp_toolbar)
+            plots_layout.addWidget(self.comp_toolbar)
         except Exception:
             pass
 
-        # Create tab widget and all tabs
+        # Right column: tab widget (controls)
+        from PyQt5.QtWidgets import QSizePolicy
         self.tab_widget = QTabWidget()
         self.create_tabs()
-        layout.addWidget(self.tab_widget)
 
+        # Make sure tabs don't expand plots too small
+        self.tab_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+
+        # Add left (plots) and right (tabs) to container
+        container.addLayout(plots_layout, 3)  # give plots more stretch
+        container.addWidget(self.tab_widget, 1)
+
+        # Finalize
         self.update_all()
 
     def create_tabs(self):
