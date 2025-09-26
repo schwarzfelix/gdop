@@ -130,18 +130,7 @@ class MainWindow(QMainWindow):
         self.scenarios_tab.update_scenarios()
 
     def update_sandbox(self):
-        tab = None
-        if hasattr(self, 'sandbox_tab') and self.sandbox_tab:
-            tab = self.sandbox_tab
-        elif hasattr(self, 'sigma_tab') and self.sigma_tab:
-            tab = self.sigma_tab
-
-        if tab:
-            if hasattr(tab, 'update_sandbox'):
-                tab.update_sandbox()
-            elif hasattr(tab, 'update_sigma'):
-                tab.update_sigma()
-        #TODO remove old sigma_tab support later
+        self.sandbox_tab.update_sandbox()
 
     def update_all(self, anchors=True, tags=True, measurements=True):
         if hasattr(self, "plot") and self.plot is not None:
