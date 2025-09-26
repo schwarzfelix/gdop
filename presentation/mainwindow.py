@@ -27,23 +27,15 @@ class MainWindow(QMainWindow):
     SIGMA_INPUT_STEP = 0.1
 
     def __init__(self, app):
-        """Initialize MainWindow with an application container.
-
-        The `app` object must provide `scenarios` (list).
-        """
         super().__init__()
         self.app = app
-        # main window no longer tracks an active scenario; TrilatPlot does
         self.scenario = app.scenarios[0] if app.scenarios else None
         self.display_config = presentation.DisplayConfig()
         self.plot = presentation.TrilatPlot(self, self.scenario)
-        # Comparison plot comparing all app scenarios
         self.comparison_plot = presentation.ComparisonPlot(self, self.app.scenarios)
-        # Connect plot signals to selective update slots
         self.plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
         self.plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
         self.plot.measurements_changed.connect(lambda: self.update_all(anchors=False, tags=False, measurements=True))
-        # Connect comparison plot signals so it will update when things change
         self.comparison_plot.anchors_changed.connect(lambda: self.update_all(anchors=True, tags=False, measurements=False))
         self.comparison_plot.tags_changed.connect(lambda: self.update_all(anchors=False, tags=True, measurements=False))
         self.comparison_plot.measurements_changed.connect(lambda: self.update_all(anchors=False, tags=False, measurements=True))
@@ -53,26 +45,20 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
-        # Ensure a status bar exists from the start so status messages appear consistently
         try:
             sb = self.statusBar()
             sb.showMessage("")
         except Exception:
-            # If statusBar cannot be created for some reason, ignore and continue
             pass
 
-        # Create a horizontal layout: left side = plots, right side = tabs
         main_layout = QVBoxLayout()
         central_widget.setLayout(main_layout)
 
-        # Use a splitter so the user can resize the plots vs controls pane
         from PyQt5.QtWidgets import QSplitter
         from PyQt5.QtCore import Qt
 
-        # Left column: vertical layout for plots and their toolbars
         plots_layout = QVBoxLayout()
 
-        # Top plot (trilateration)
         self.figure = self.plot.fig
         self.figure.set_dpi(self.FIGURE_DPI)
         self.canvas = FigureCanvas(self.figure)
@@ -81,15 +67,13 @@ class MainWindow(QMainWindow):
         top_layout = QVBoxLayout()
         top_widget.setLayout(top_layout)
         top_layout.addWidget(self.canvas)
-        # Navigation toolbar for trilat plot (standard matplotlib controls)
+
         try:
             self.toolbar = NavigationToolbar(self.canvas, self)
             top_layout.addWidget(self.toolbar)
         except Exception:
-            # best-effort: ignore toolbar creation errors
             pass
 
-        # Bottom plot (comparison)
         self.comp_figure = self.comparison_plot.fig
         self.comp_figure.set_dpi(self.FIGURE_DPI)
         self.comp_canvas = FigureCanvas(self.comp_figure)
@@ -98,14 +82,13 @@ class MainWindow(QMainWindow):
         bottom_layout = QVBoxLayout()
         bottom_widget.setLayout(bottom_layout)
         bottom_layout.addWidget(self.comp_canvas)
-        # Navigation toolbar for comparison plot
+
         try:
             self.comp_toolbar = NavigationToolbar(self.comp_canvas, self)
             bottom_layout.addWidget(self.comp_toolbar)
         except Exception:
             pass
 
-        # Put top and bottom widgets into a vertical splitter so they are resizeable
         from PyQt5.QtWidgets import QSplitter
         from PyQt5.QtCore import Qt
         vertical_splitter = QSplitter(Qt.Vertical)
@@ -117,37 +100,29 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
 
-        # Add the splitter to the left plots layout
         plots_layout.addWidget(vertical_splitter)
 
-        # Right column: tab widget (controls)
         from PyQt5.QtWidgets import QSizePolicy
         self.tab_widget = QTabWidget()
         self.create_tabs()
 
-        # Make sure tabs don't expand plots too small
         self.tab_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
-        # Wrap plots_layout into a QWidget so it can be added to a QSplitter
         left_widget = QWidget()
-        left_widget.setLayout(plots_layout)
+        left_widget.setLayout(plots_layout)#
 
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(left_widget)
         splitter.addWidget(self.tab_widget)
 
-        # Prefer plots to take more space initially
         try:
             splitter.setStretchFactor(0, 3)
             splitter.setStretchFactor(1, 1)
         except Exception:
-            # Some older Qt versions may not support setStretchFactor; ignore if it fails
             pass
 
-        # Add splitter to the main layout
         main_layout.addWidget(splitter)
 
-        # Finalize
         self.update_all()
 
     def create_tabs(self):
