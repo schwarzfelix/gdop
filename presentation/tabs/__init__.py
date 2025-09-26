@@ -8,7 +8,6 @@ from .sandbox_tab import SandboxTab
 from .stations_tab import StationsTab
 from .display_tab import DisplayTab
 from .data_tab import DataTab
-from .scenarios_tab import ScenariosTab
 from .tree_tab import TreeTab
 
 __all__ = [
@@ -18,6 +17,5 @@ __all__ = [
     'StationsTab',
     'DisplayTab',
     'DataTab',
-    'ScenariosTab',
     'TreeTab'
 ]
