@@ -49,11 +49,8 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
-        try:
-            sb = self.statusBar()
-            sb.showMessage("")
-        except Exception:
-            pass
+        sb = self.statusBar()
+        sb.showMessage("")
 
         main_layout = QVBoxLayout()
         central_widget.setLayout(main_layout)
@@ -69,11 +66,8 @@ class MainWindow(QMainWindow):
         top_widget.setLayout(top_layout)
         top_layout.addWidget(self.canvas)
 
-        try:
-            self.toolbar = NavigationToolbar(self.canvas, self)
-            top_layout.addWidget(self.toolbar)
-        except Exception:
-            pass
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        top_layout.addWidget(self.toolbar)
 
         self.comp_figure = self.comparison_plot.fig
         self.comp_figure.set_dpi(self.FIGURE_DPI)
@@ -84,20 +78,14 @@ class MainWindow(QMainWindow):
         bottom_widget.setLayout(bottom_layout)
         bottom_layout.addWidget(self.comp_canvas)
 
-        try:
-            self.comp_toolbar = NavigationToolbar(self.comp_canvas, self)
-            bottom_layout.addWidget(self.comp_toolbar)
-        except Exception:
-            pass
+        self.comp_toolbar = NavigationToolbar(self.comp_canvas, self)
+        bottom_layout.addWidget(self.comp_toolbar)
 
         vertical_splitter = QSplitter(Qt.Vertical)
         vertical_splitter.addWidget(top_widget)
         vertical_splitter.addWidget(bottom_widget)
-        try:
-            vertical_splitter.setStretchFactor(0, 3)
-            vertical_splitter.setStretchFactor(1, 1)
-        except Exception:
-            pass
+        vertical_splitter.setStretchFactor(0, 3)
+        vertical_splitter.setStretchFactor(1, 1)
 
         plots_layout.addWidget(vertical_splitter)
 
@@ -113,11 +101,8 @@ class MainWindow(QMainWindow):
         splitter.addWidget(left_widget)
         splitter.addWidget(self.tab_widget)
 
-        try:
-            splitter.setStretchFactor(0, 3)
-            splitter.setStretchFactor(1, 1)
-        except Exception:
-            pass
+        splitter.setStretchFactor(0, 3)
+        splitter.setStretchFactor(1, 1)
 
         main_layout.addWidget(splitter)
 
