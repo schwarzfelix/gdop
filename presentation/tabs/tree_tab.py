@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
 from .base_tab import BaseTab
 from PyQt5.QtWidgets import QInputDialog
 from simulation.station import Anchor
+from data.importer import get_available_scenarios, validate_scenario_for_import
 
 
 class TreeTab(BaseTab):
@@ -95,6 +96,11 @@ class TreeTab(BaseTab):
 
                 label = f"{station1.name} ↔ {station2.name}: {distance:.2f}"
                 QTreeWidgetItem(measurements_node, [label])
+
+        scenario_names, error_message = get_available_scenarios()
+        for scen_name in scenario_names:
+           if scen_name not in [scen.name for scen in scenarios]:
+               QTreeWidgetItem(self.tree, [scen_name])
 
     def update(self):
         self.update_tree()
