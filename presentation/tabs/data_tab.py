@@ -8,9 +8,7 @@ from PyQt5.QtWidgets import (
     QLabel, QRadioButton, QButtonGroup
 )
 from .base_tab import BaseTab
-from data.importer import get_available_scenarios, validate_scenario_for_import
 from PyQt5.QtWidgets import QComboBox, QFormLayout
-from .tree_tab import AggregationMethodDialog
 from data.mqtt_streamer import MQTTStreamer
 from typing import Optional
 import logging
@@ -18,51 +16,7 @@ import logging
 _LOG = logging.getLogger(__name__)
 
 
-class ScenarioSelectionDialog(QDialog):
-    """Dialog for selecting which scenario to import from available CSV data."""
-    
-    def __init__(self, scenarios: list, parent=None):
-        super().__init__(parent)
-        self.scenarios = scenarios
-        
-        self.setWindowTitle("Select Scenario to Import")
-        self.setModal(True)
-        self.resize(400, 300)
-        
-        self._setup_ui()
-    
-    def _setup_ui(self):
-        """Setup the dialog UI components."""
-        layout = QVBoxLayout()
-        
-        # Instructions
-        info_label = QLabel("Select a scenario to import measurement data:")
-        layout.addWidget(info_label)
-        
-        # Scenario list
-        self.scenario_list = QListWidget()
-        for scenario in self.scenarios:
-            item = QListWidgetItem(scenario)
-            self.scenario_list.addItem(item)
-        
-        # Select first item by default
-        if self.scenarios:
-            self.scenario_list.setCurrentRow(0)
-            
-        layout.addWidget(self.scenario_list)
-        
-        # Buttons
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        button_box.accepted.connect(self.accept)
-        button_box.rejected.connect(self.reject)
-        layout.addWidget(button_box)
-        
-        self.setLayout(layout)
-    
-    def get_selected_scenario(self):
-        """Get the selected scenario name."""
-        current_item = self.scenario_list.currentItem()
-        return current_item.text() if current_item else None
+# Scenario import moved to TreeTab; DataTab no longer provides CSV import UI.
 
 
 # AggregationMethodDialog moved to `presentation/tabs/tree_tab.py`
@@ -84,23 +38,18 @@ class DataTab(BaseTab):
         # MQTT streamer instance (optional, created lazily)
         self._mqtt_streamer: Optional[MQTTStreamer] = None
         # periodic update controls removed - updates come from streamer signals
-        self.csv_import_button = None
+    # CSV import moved to TreeTab; no csv_import_button here anymore
     
     @property
     def tab_name(self):
-        return "Import"
+        return "Streaming"
         
     def create_widget(self):
         """Create and return the data tab widget."""
         # Create main widget and layout
         main_widget = QWidget()
         layout = QVBoxLayout(main_widget)
-        
-        # CSV Import section
-        self.csv_import_button = QPushButton("Import scenario from workspace")
-        self.csv_import_button.clicked.connect(self.import_csv_measurements)
-        layout.addWidget(self.csv_import_button)
-        
+        # CSV import UI removed (handled in Tree tab)
         # Streaming section (direct widgets, no list container)
         self.streaming_container = QWidget()
         streaming_layout = QVBoxLayout(self.streaming_container)
@@ -133,97 +82,6 @@ class DataTab(BaseTab):
 
         layout.addWidget(self.streaming_container)
         return main_widget
-
-    def import_csv_measurements(self):
-        """Import measurements from CSV files with scenario selection."""
-        # Validate scenario first
-        is_valid, validation_error = validate_scenario_for_import(self.scenario)
-        if not is_valid:
-            try:
-                self.main_window.statusBar().showMessage(f"Validation Error: {validation_error}", 5000)
-            except Exception:
-                pass
-            return
-        
-        # Get available scenarios
-        scenarios, error_message = get_available_scenarios("workspace")
-        
-        if error_message:
-            try:
-                if "No CSV measurement files found" in error_message:
-                    self.main_window.statusBar().showMessage("No CSV measurement files found in 'workspace' directory.", 5000)
-                elif "No scenario data found" in error_message:
-                    self.main_window.statusBar().showMessage("No scenario data found in CSV files.", 5000)
-                else:
-                    # critical/errors stay until next message (timeout=0)
-                    self.main_window.statusBar().showMessage(f"Error: {error_message}", 0)
-            except Exception:
-                pass
-            return
-        
-        # Show scenario selection dialog
-        dialog = ScenarioSelectionDialog(scenarios, self.main_window)
-        
-        if dialog.exec_() != QDialog.Accepted:
-            return  # User cancelled
-        
-        selected_scenario = dialog.get_selected_scenario()
-        if not selected_scenario:
-            return
-        # Ask for aggregation method
-        agg_dialog = AggregationMethodDialog(self.main_window)
-        if agg_dialog.exec_() != QDialog.Accepted:
-            return  # User cancelled
-
-        agg_method = agg_dialog.get_method()
-
-        # Ask the importer to create and return a populated Scenario
-        try:
-            from data import importer as importer_module
-            success, message, imported_scenario = importer_module.import_scenario(selected_scenario, workspace_dir="workspace", agg_method=agg_method)
-        except Exception as e:
-            success = False
-            message = f"Import raised exception: {e}"
-            imported_scenario = None
-
-        if success and imported_scenario is not None:
-            # Append the newly imported scenario to the application-level list
-            app = getattr(self.main_window, 'app', None)
-            if app is not None:
-                app.scenarios.append(imported_scenario)
-            # Set the plot to show the new scenario
-            try:
-                plot = self.main_window.trilat_plot
-                if plot is not None:
-                    plot.scenario = imported_scenario
-                    try:
-                        plot.sandbox_tag = next((tag for tag in plot.scenario.get_tag_list() if tag.name == "SANDBOX_TAG"), None)
-                    except Exception:
-                        plot.sandbox_tag = None
-                    try:
-                        plot.init_artists()
-                    except Exception:
-                        pass
-            except Exception:
-                pass
-
-            # Refresh UI to reflect the additional scenario
-            # Refresh the scenarios tab list if present
-            try:
-                if hasattr(self.main_window, 'scenarios_tab') and self.main_window.scenarios_tab:
-                    self.main_window.scenarios_tab.update()
-            except Exception:
-                pass
-            self.main_window.update_all()
-            try:
-                self.main_window.statusBar().showMessage(f"Imported scenario '{selected_scenario}' ({agg_method})", 5000)
-            except Exception:
-                pass
-        else:
-            try:
-                self.main_window.statusBar().showMessage(f"Import Error: {message}", 0)
-            except Exception:
-                pass
 
     def update_streaming_config(self):
         """Update streaming configuration based on checkbox state."""
