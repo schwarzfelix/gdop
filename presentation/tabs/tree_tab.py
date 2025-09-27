@@ -11,6 +11,46 @@ from .base_tab import BaseTab
 from PyQt5.QtWidgets import QInputDialog
 from simulation.station import Anchor
 from data.importer import get_available_scenarios, validate_scenario_for_import
+from data import importer as importer_module
+from PyQt5.QtWidgets import QComboBox, QFormLayout, QDialog, QVBoxLayout
+from PyQt5.QtWidgets import QLabel, QDialogButtonBox
+
+
+class AggregationMethodDialog(QDialog):
+    """Dialog to choose aggregation method for imported measurements.
+
+    Moved here from `data_tab.py` so TreeTab can reuse it without circular imports.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Select Aggregation Method")
+        self.setModal(True)
+        self.resize(300, 120)
+
+        # Build UI inside constructor only (no widgets at import time)
+        layout = QVBoxLayout()
+
+        info_label = QLabel("Choose how to aggregate measurements per AP:")
+        layout.addWidget(info_label)
+
+        form = QFormLayout()
+        self.combo = QComboBox()
+        # default 'lowest' first
+        self.combo.addItems(["lowest", "newest", "mean", "median"])
+        self.combo.setCurrentIndex(0)
+        form.addRow("Method:", self.combo)
+        layout.addLayout(form)
+
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        layout.addWidget(button_box)
+
+        self.setLayout(layout)
+
+    def get_method(self):
+        return self.combo.currentText()
 
 
 class TreeTab(BaseTab):
@@ -100,7 +140,24 @@ class TreeTab(BaseTab):
         scenario_names, error_message = get_available_scenarios()
         for scen_name in scenario_names:
            if scen_name not in [scen.name for scen in scenarios]:
-               QTreeWidgetItem(self.tree, [scen_name])
+               # create a tree node with an import button for each available workspace scenario
+               avail_node = QTreeWidgetItem(self.tree)
+
+               row_widget = QWidget()
+               row_layout = QHBoxLayout()
+               row_layout.setContentsMargins(0, 0, 0, 0)
+
+               name_label = QLabel(scen_name)
+               import_button = QPushButton("⇩")
+               import_button.setToolTip("Import this scenario from workspace")
+               import_button.clicked.connect(lambda checked, name=scen_name: self._import_scenario_from_workspace(name))
+
+               row_layout.addWidget(import_button)
+               row_layout.addWidget(name_label)
+               row_layout.addStretch()
+               row_widget.setLayout(row_layout)
+
+               self.tree.setItemWidget(avail_node, 0, row_widget)
 
     def update(self):
         self.update_tree()
@@ -134,3 +191,69 @@ class TreeTab(BaseTab):
         # TODO fix SandboxTag handling
         plot.init_artists()
         self.main_window.update_all()
+
+    def _import_scenario_from_workspace(self, scen_name: str):
+        """Import a scenario by name from the workspace directory.
+
+        Shows an aggregation method dialog (reuse from DataTab) and calls the importer.
+        On success appends the scenario to app.scenarios and activates it in the plot.
+        """
+        # Ask for aggregation method
+        try:
+            agg_dialog = AggregationMethodDialog(self.main_window)
+        except Exception:
+            # fallback: simple selection
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.information(self.main_window, "Import", "Unable to open aggregation dialog.")
+            return
+
+        if agg_dialog.exec_() != agg_dialog.Accepted:
+            return
+
+        agg_method = agg_dialog.get_method()
+
+        try:
+            success, message, imported_scenario = importer_module.import_scenario(scen_name, workspace_dir="workspace", agg_method=agg_method)
+        except Exception as e:
+            success = False
+            message = f"Import raised exception: {e}"
+            imported_scenario = None
+
+        if success and imported_scenario is not None:
+            # Append to app scenarios
+            app = getattr(self.main_window, 'app', None)
+            if app is not None:
+                app.scenarios.append(imported_scenario)
+
+            # Activate in plot
+            try:
+                plot = self.main_window.trilat_plot
+                if plot is not None:
+                    plot.scenario = imported_scenario
+                    try:
+                        plot.sandbox_tag = next((tag for tag in plot.scenario.get_tag_list() if tag.name == "SANDBOX_TAG"), None)
+                    except Exception:
+                        plot.sandbox_tag = None
+                    try:
+                        plot.init_artists()
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+            # Refresh UI
+            try:
+                if hasattr(self.main_window, 'scenarios_tab') and self.main_window.scenarios_tab:
+                    self.main_window.scenarios_tab.update()
+            except Exception:
+                pass
+            self.main_window.update_all()
+            try:
+                self.main_window.statusBar().showMessage(f"Imported scenario '{scen_name}' ({agg_method})", 5000)
+            except Exception:
+                pass
+        else:
+            try:
+                self.main_window.statusBar().showMessage(f"Import Error: {message}", 0)
+            except Exception:
+                pass

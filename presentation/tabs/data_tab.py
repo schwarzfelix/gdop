@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
 from .base_tab import BaseTab
 from data.importer import get_available_scenarios, validate_scenario_for_import
 from PyQt5.QtWidgets import QComboBox, QFormLayout
+from .tree_tab import AggregationMethodDialog
 from data.mqtt_streamer import MQTTStreamer
 from typing import Optional
 import logging
@@ -64,38 +65,7 @@ class ScenarioSelectionDialog(QDialog):
         return current_item.text() if current_item else None
 
 
-class AggregationMethodDialog(QDialog):
-    """Dialog to choose aggregation method for imported measurements."""
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Select Aggregation Method")
-        self.setModal(True)
-        self.resize(300, 120)
-
-        # Build UI inside constructor only (no widgets at import time)
-        layout = QVBoxLayout()
-
-        info_label = QLabel("Choose how to aggregate measurements per AP:")
-        layout.addWidget(info_label)
-
-        form = QFormLayout()
-        self.combo = QComboBox()
-        # default 'lowest' first
-        self.combo.addItems(["lowest", "newest", "mean", "median"])
-        self.combo.setCurrentIndex(0)
-        form.addRow("Method:", self.combo)
-        layout.addLayout(form)
-
-        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        button_box.accepted.connect(self.accept)
-        button_box.rejected.connect(self.reject)
-        layout.addWidget(button_box)
-
-        self.setLayout(layout)
-
-    def get_method(self):
-        return self.combo.currentText()
+# AggregationMethodDialog moved to `presentation/tabs/tree_tab.py`
 
 
 class DataTab(BaseTab):
