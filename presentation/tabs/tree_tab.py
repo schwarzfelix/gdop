@@ -110,6 +110,7 @@ class TreeTab(BaseTab):
 
                 if active is scen:
                     self.tree.setCurrentItem(scen_node)
+                    checkbox.setEnabled(False)  # Prevent unchecking the active scenario
 
                 stations_node = QTreeWidgetItem(scen_node, ["Stations"]) 
                 stations_node.setExpanded(True)
