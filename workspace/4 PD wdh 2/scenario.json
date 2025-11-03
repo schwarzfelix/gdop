@@ -22,7 +22,8 @@
 		},
 		{
 			"name": "N10P",
-			"type": "TAG"
+			"type": "TAG",
+			"position": [16.00, 11.00]
 		}
 	]
 }
