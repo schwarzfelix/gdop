@@ -99,6 +99,7 @@ class TreeTab(BaseTab):
 
             row_layout.addWidget(checkbox)
             row_layout.addWidget(name_label)
+            row_layout.addStretch()
 
             if is_imported:
                 scen = next(s for s in scenarios if s.name == scen_name)
@@ -132,10 +133,10 @@ class TreeTab(BaseTab):
                     delete_button.setToolTip("Delete station")
                     delete_button.clicked.connect(lambda checked, s=station: self._delete_station(s))
 
-                    layout.addWidget(delete_button)
-                    layout.addWidget(rename_button)
                     layout.addWidget(name_label)
                     layout.addStretch()
+                    layout.addWidget(rename_button)
+                    layout.addWidget(delete_button)
                     station_widget.setLayout(layout)
 
                     self.tree.setItemWidget(station_node, 0, station_widget)
@@ -147,8 +148,6 @@ class TreeTab(BaseTab):
 
                     label = f"{station1.name} ↔ {station2.name}: {distance:.2f}"
                     QTreeWidgetItem(measurements_node, [label])
-
-            row_layout.addStretch()
             row_widget.setLayout(row_layout)
 
             self.tree.setItemWidget(scen_node, 0, row_widget)
