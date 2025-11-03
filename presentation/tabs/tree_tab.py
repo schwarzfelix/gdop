@@ -84,7 +84,7 @@ class TreeTab(BaseTab):
         scenario_names, error_message = get_available_scenarios()
         for scen_name in scenario_names:
             scen_node = QTreeWidgetItem(self.tree)
-            scen_node.setExpanded(True)
+            #scen_node.setExpanded(True)
 
             row_widget = QWidget()
             row_layout = QHBoxLayout()
@@ -113,7 +113,7 @@ class TreeTab(BaseTab):
                     checkbox.setEnabled(False)  # Prevent unchecking the active scenario
 
                 stations_node = QTreeWidgetItem(scen_node, ["Stations"]) 
-                stations_node.setExpanded(True)
+                #stations_node.setExpanded(True)
                 for station in scen.stations:
                     station_node = QTreeWidgetItem(stations_node)
 
@@ -139,7 +139,7 @@ class TreeTab(BaseTab):
                     self.tree.setItemWidget(station_node, 0, station_widget)
 
                 measurements_node = QTreeWidgetItem(scen_node, ["Measurements"]) 
-                measurements_node.setExpanded(True)
+                #measurements_node.setExpanded(True)
                 for pair, distance in scen.measurements.relation.items():
                     station1, station2 = pair
 
