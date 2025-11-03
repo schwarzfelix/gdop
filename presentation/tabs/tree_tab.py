@@ -93,6 +93,11 @@ class TreeTab(BaseTab):
             activate_button.setToolTip("Activate this scenario in the main plot")
             activate_button.clicked.connect(lambda checked, s=scen: self._activate_scenario(s))
 
+            remove_button = QPushButton("␡")
+            remove_button.setToolTip("Remove this scenario")
+            remove_button.clicked.connect(lambda checked, s=scen: self._remove_scenario(s))
+
+            row_layout.addWidget(remove_button)
             row_layout.addWidget(activate_button)
             row_layout.addWidget(name_label)
             row_layout.addStretch()
@@ -190,6 +195,16 @@ class TreeTab(BaseTab):
             plot.sandbox_tag = None
         # TODO fix SandboxTag handling
         plot.init_artists()
+        self.main_window.update_all()
+
+    def _remove_scenario(self, scen):
+        app = self.main_window.app
+        app.scenarios.remove(scen)
+        plot = self.main_window.trilat_plot
+        if plot.scenario == scen:
+            plot.scenario = None
+            plot.sandbox_tag = None
+            plot.init_artists()
         self.main_window.update_all()
 
     def _import_scenario_from_workspace(self, scen_name: str):
