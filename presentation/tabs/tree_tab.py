@@ -102,11 +102,13 @@ class TreeTab(BaseTab):
 
             if is_imported:
                 scen = next(s for s in scenarios if s.name == scen_name)
-                activate_button = QPushButton("⏿")
-                activate_button.setToolTip("Activate this scenario in the main plot")
-                activate_button.clicked.connect(lambda checked, s=scen: self._activate_scenario(s))
 
-                row_layout.addWidget(activate_button)
+                if active is not scen:
+                    activate_button = QPushButton("⏿")
+                    activate_button.setToolTip("Activate this scenario in the main plot")
+                    activate_button.clicked.connect(lambda checked, s=scen: self._activate_scenario(s))
+
+                    row_layout.addWidget(activate_button)
 
                 if active is scen:
                     self.tree.setCurrentItem(scen_node)
