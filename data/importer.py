@@ -35,7 +35,7 @@ def get_available_scenarios(workspace_dir: str = "workspace") -> Tuple[List[str]
         if not scenarios:
             return [], "No scenario data found in CSV files."
         
-        return scenarios, None
+        return sorted(scenarios), None
         
     except Exception as e:
         return [], f"Error reading CSV files: {str(e)}"
