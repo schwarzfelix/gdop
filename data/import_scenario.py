@@ -53,6 +53,9 @@ def load_scenario_from_json(scenario_obj, scenario_name: str, workspace_dir: str
                 pos = st.get('position', None)
                 if pos is not None:
                     scenario_obj.tag_truth = Anchor(pos, 'TAG_TRUTH', scenario_obj)
+                else:
+                    scenario_obj.tag_truth = None
+                    
                 scenario_obj.stations.append(Tag(scenario_obj, name))
 
         return True
