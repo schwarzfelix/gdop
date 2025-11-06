@@ -16,10 +16,13 @@ from data import importer as importer_module
 from PyQt5.QtWidgets import QComboBox, QFormLayout, QDialog, QVBoxLayout
 from PyQt5.QtWidgets import QLabel, QDialogButtonBox
 import pandas as pd
+try:
+    import pandasgui as pg
+except ImportError:
+    pg = None
 import os
 from PyQt5.QtWidgets import QTableView, QAbstractItemView, QHeaderView
 from PyQt5.QtCore import QAbstractTableModel, Qt
-from PyQt5.QtGui import QFont
 
 
 class DataFrameModel(QAbstractTableModel):
@@ -174,6 +177,12 @@ class TreeTab(BaseTab):
 
                     row_layout.addWidget(pandas_button)
 
+                    viewer_button = QPushButton("📋")
+                    viewer_button.setToolTip("Open DataFrame in Table Viewer")
+                    viewer_button.clicked.connect(lambda checked, name=scen_name: self._open_dataframe_viewer(name))
+
+                    row_layout.addWidget(viewer_button)
+
                 if active is scen:
                     self.tree.setCurrentItem(scen_node)
                     checkbox.setEnabled(False)  # Prevent unchecking the active scenario
@@ -249,6 +258,32 @@ class TreeTab(BaseTab):
         self.main_window.update_all()
 
     def _open_pandasgui(self, scen_name):
+        if pg is None:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.warning(self.main_window, "PandasGUI not available", "PandasGUI is not installed. Please install it with 'pip install pandasgui'.")
+            return
+        try:
+            workspace_dir = os.path.abspath("workspace")
+            df, error = get_scenario_data(scen_name, workspace_dir=workspace_dir)
+            if error:
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.warning(self.main_window, "Data Load Error", f"Could not load data for scenario '{scen_name}': {error}")
+                return
+            if df is not None and not df.empty:
+                # Open in PandasGUI
+                try:
+                    pg.show(df, title=f"DataFrame for Scenario: {scen_name}")
+                except Exception as e:
+                    from PyQt5.QtWidgets import QMessageBox
+                    QMessageBox.critical(self.main_window, "Error opening PandasGUI", f"Failed to open PandasGUI: {str(e)}")
+            else:
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.information(self.main_window, "No Data", f"No data available for scenario '{scen_name}'.")
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open PandasGUI: {str(e)}")
+
+    def _open_dataframe_viewer(self, scen_name):
         try:
             workspace_dir = os.path.abspath("workspace")
             df, error = get_scenario_data(scen_name, workspace_dir=workspace_dir)
@@ -258,17 +293,14 @@ class TreeTab(BaseTab):
                 return
             if df is not None and not df.empty:
                 # Open in DataFrameViewer
-                self._show_dataframe_viewer(df, scen_name)
+                viewer = DataFrameViewer(df, f"DataFrame for Scenario: {scen_name}", self.main_window)
+                viewer.exec_()
             else:
                 from PyQt5.QtWidgets import QMessageBox
                 QMessageBox.information(self.main_window, "No Data", f"No data available for scenario '{scen_name}'.")
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open DataFrame viewer: {str(e)}")
-
-    def _show_dataframe_viewer(self, df, scen_name):
-        viewer = DataFrameViewer(df, f"DataFrame for Scenario: {scen_name}", self.main_window)
-        viewer.exec_()
 
     def _remove_scenario(self, scen):
         app = self.main_window.app
