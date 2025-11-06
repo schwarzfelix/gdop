@@ -30,14 +30,6 @@ class Scenario:
     def get_anchor_list(self):
         return [s for s in self.stations if isinstance(s, station.Anchor)]
 
-    def start_streaming(self, url):
-        # TODO implement streaming
-        pass
-
-    def stop_streaming(self):
-        #TODO implement streaming
-        pass
-
     def remove_station(self, station):
         if station in self.stations:
             self.measurements.remove_station(station)
@@ -74,14 +66,6 @@ class Scenario:
     @sigma.setter
     def sigma(self, value):
         self._sigma = float(value)
-
-    @property
-    def streamer(self):
-        return self._streamer
-
-    @streamer.setter
-    def streamer(self, value):
-        self._streamer = value
 
     @property
     def tag_truth(self):

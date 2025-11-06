@@ -2,7 +2,6 @@ import numpy as np
 
 from .scenario import Scenario
 from simulation import measurements, station
-from data.sse_streamer import SSEStreamer
 
 
 class SandboxScenario(Scenario):
