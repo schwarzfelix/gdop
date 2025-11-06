@@ -49,8 +49,12 @@ def load_scenario_from_json(scenario_obj, scenario_name: str, workspace_dir: str
                 scenario_obj.stations.append(Anchor(pos, name, scenario_obj))
             elif typ == 'TAG':
                 # Tags don't have fixed positions - they are calculated from measurements
+                # TODO streamline getting position from json
+                pos = st.get('position', None)
+                if pos is not None:
+                    scenario_obj.tag_truth = Anchor(pos, 'TAG_TRUTH', scenario_obj)
                 scenario_obj.stations.append(Tag(scenario_obj, name))
-        
+
         return True
         
     except Exception as e:

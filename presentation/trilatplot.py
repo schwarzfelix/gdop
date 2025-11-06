@@ -379,17 +379,11 @@ class TrilatPlot(QObject):
         if self.tag_estimate_scatter is None:
             self.tag_estimate_scatter = self.ax_trilat.scatter([], [], c='red', marker='x')
 
-        # If this plot has a sandbox tag (set externally when switching scenarios),
-        # create a tag_truth scatter so it can be dragged/updated.
-        if getattr(self, 'sandbox_tag', None):
-            try:
-                if getattr(self.scenario, 'tag_truth', None):
-                    pos = self.scenario.tag_truth.position()
-                    self.tag_truth_plot = self.ax_trilat.scatter(pos[0], pos[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
-                else:
-                    self.tag_truth_plot = None
-            except Exception:
-                self.tag_truth_plot = None
+        try:
+            pos = self.scenario.tag_truth.position()
+            self.tag_truth_plot = self.ax_trilat.scatter(pos[0], pos[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
+        except Exception:
+            self.tag_truth_plot = None
 
         # Reset internal lists used to store reusable artists
         self.anchor_pair_lines = []
