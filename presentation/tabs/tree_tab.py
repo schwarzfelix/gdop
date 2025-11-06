@@ -11,10 +11,65 @@ from PyQt5.QtWidgets import (
 from .base_tab import BaseTab
 from PyQt5.QtWidgets import QInputDialog
 from simulation.station import Anchor
-from data.importer import get_available_scenarios, validate_scenario_for_import
+from data.importer import get_available_scenarios, validate_scenario_for_import, get_scenario_data
 from data import importer as importer_module
 from PyQt5.QtWidgets import QComboBox, QFormLayout, QDialog, QVBoxLayout
 from PyQt5.QtWidgets import QLabel, QDialogButtonBox
+import pandas as pd
+import os
+from PyQt5.QtWidgets import QTableView, QAbstractItemView, QHeaderView
+from PyQt5.QtCore import QAbstractTableModel, Qt
+from PyQt5.QtGui import QFont
+
+
+class DataFrameModel(QAbstractTableModel):
+    def __init__(self, df):
+        super().__init__()
+        self.df = df
+
+    def rowCount(self, parent=None):
+        return len(self.df)
+
+    def columnCount(self, parent=None):
+        return len(self.df.columns)
+
+    def data(self, index, role=Qt.DisplayRole):
+        if role == Qt.DisplayRole:
+            value = self.df.iloc[index.row(), index.column()]
+            return str(value)
+        return None
+
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return str(self.df.columns[section])
+            elif orientation == Qt.Vertical:
+                return str(self.df.index[section])
+        return None
+
+
+class DataFrameViewer(QDialog):
+    def __init__(self, df, title, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.resize(800, 600)
+
+        layout = QVBoxLayout()
+
+        self.table = QTableView()
+        self.model = DataFrameModel(df)
+        self.table.setModel(self.model)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        layout.addWidget(self.table)
+
+        button_box = QDialogButtonBox(QDialogButtonBox.Close)
+        button_box.rejected.connect(self.reject)
+        layout.addWidget(button_box)
+
+        self.setLayout(layout)
 
 
 class AggregationMethodDialog(QDialog):
@@ -111,6 +166,14 @@ class TreeTab(BaseTab):
 
                     row_layout.addWidget(activate_button)
 
+                # Add PandasGUI button if not SandboxScenario
+                if scen.name != "SandboxScenario":
+                    pandas_button = QPushButton("📊")
+                    pandas_button.setToolTip("Open DataFrame in PandasGUI")
+                    pandas_button.clicked.connect(lambda checked, name=scen_name: self._open_pandasgui(name))
+
+                    row_layout.addWidget(pandas_button)
+
                 if active is scen:
                     self.tree.setCurrentItem(scen_node)
                     checkbox.setEnabled(False)  # Prevent unchecking the active scenario
@@ -184,6 +247,28 @@ class TreeTab(BaseTab):
         # TODO fix SandboxTag handling
         plot.init_artists()
         self.main_window.update_all()
+
+    def _open_pandasgui(self, scen_name):
+        try:
+            workspace_dir = os.path.abspath("workspace")
+            df, error = get_scenario_data(scen_name, workspace_dir=workspace_dir)
+            if error:
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.warning(self.main_window, "Data Load Error", f"Could not load data for scenario '{scen_name}': {error}")
+                return
+            if df is not None and not df.empty:
+                # Open in DataFrameViewer
+                self._show_dataframe_viewer(df, scen_name)
+            else:
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.information(self.main_window, "No Data", f"No data available for scenario '{scen_name}'.")
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open DataFrame viewer: {str(e)}")
+
+    def _show_dataframe_viewer(self, df, scen_name):
+        viewer = DataFrameViewer(df, f"DataFrame for Scenario: {scen_name}", self.main_window)
+        viewer.exec_()
 
     def _remove_scenario(self, scen):
         app = self.main_window.app
