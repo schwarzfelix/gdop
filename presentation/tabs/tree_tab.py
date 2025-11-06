@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
+    QCheckBox,
 )
 from .base_tab import BaseTab
 from PyQt5.QtWidgets import QInputDialog
@@ -80,84 +81,76 @@ class TreeTab(BaseTab):
 
         active = self.main_window.trilat_plot.scenario
 
-        for scen in scenarios:
+        scenario_names, error_message = get_available_scenarios()
+        for scen_name in scenario_names:
             scen_node = QTreeWidgetItem(self.tree)
-            scen_node.setExpanded(True)
+            #scen_node.setExpanded(True)
 
             row_widget = QWidget()
             row_layout = QHBoxLayout()
             row_layout.setContentsMargins(0, 0, 0, 0)
 
-            name_label = QLabel(scen.name)
-            activate_button = QPushButton("⏿")
-            activate_button.setToolTip("Activate this scenario in the main plot")
-            activate_button.clicked.connect(lambda checked, s=scen: self._activate_scenario(s))
+            checkbox = QCheckBox()
+            is_imported = scen_name in [s.name for s in scenarios]
+            checkbox.setChecked(is_imported)
+            checkbox.stateChanged.connect(lambda state, name=scen_name: self._toggle_scenario(name, state))
 
-            row_layout.addWidget(activate_button)
+            name_label = QLabel(scen_name)
+
+            row_layout.addWidget(checkbox)
             row_layout.addWidget(name_label)
             row_layout.addStretch()
+
+            if is_imported:
+                scen = next(s for s in scenarios if s.name == scen_name)
+
+                if active is not scen:
+                    activate_button = QPushButton("⏿")
+                    activate_button.setToolTip("Activate this scenario in the main plot")
+                    activate_button.clicked.connect(lambda checked, s=scen: self._activate_scenario(s))
+
+                    row_layout.addWidget(activate_button)
+
+                if active is scen:
+                    self.tree.setCurrentItem(scen_node)
+                    checkbox.setEnabled(False)  # Prevent unchecking the active scenario
+
+                stations_node = QTreeWidgetItem(scen_node, ["Stations"]) 
+                #stations_node.setExpanded(True)
+                for station in scen.stations:
+                    station_node = QTreeWidgetItem(stations_node)
+
+                    station_widget = QWidget()
+                    layout = QHBoxLayout()
+                    layout.setContentsMargins(0, 0, 0, 0)
+
+                    name_label = QLabel(station.name)
+                    rename_button = QPushButton("✎")
+                    rename_button.setToolTip("Edit station (name and coordinates)")
+                    rename_button.clicked.connect(lambda checked, s=station: self.rename_station_dialog(s))
+
+                    delete_button = QPushButton("␡")
+                    delete_button.setToolTip("Delete station")
+                    delete_button.clicked.connect(lambda checked, s=station: self._delete_station(s))
+
+                    layout.addWidget(name_label)
+                    layout.addStretch()
+                    layout.addWidget(rename_button)
+                    layout.addWidget(delete_button)
+                    station_widget.setLayout(layout)
+
+                    self.tree.setItemWidget(station_node, 0, station_widget)
+
+                measurements_node = QTreeWidgetItem(scen_node, ["Measurements"]) 
+                #measurements_node.setExpanded(True)
+                for pair, distance in scen.measurements.relation.items():
+                    station1, station2 = pair
+
+                    label = f"{station1.name} ↔ {station2.name}: {distance:.2f}"
+                    QTreeWidgetItem(measurements_node, [label])
             row_widget.setLayout(row_layout)
 
             self.tree.setItemWidget(scen_node, 0, row_widget)
-
-            if active is scen:
-                self.tree.setCurrentItem(scen_node)
-
-            stations_node = QTreeWidgetItem(scen_node, ["Stations"]) 
-            stations_node.setExpanded(True)
-            for station in scen.stations:
-                station_node = QTreeWidgetItem(stations_node)
-
-                station_widget = QWidget()
-                layout = QHBoxLayout()
-                layout.setContentsMargins(0, 0, 0, 0)
-
-                name_label = QLabel(station.name)
-                rename_button = QPushButton("✎")
-                rename_button.setToolTip("Edit station (name and coordinates)")
-                rename_button.clicked.connect(lambda checked, s=station: self.rename_station_dialog(s))
-
-                delete_button = QPushButton("␡")
-                delete_button.setToolTip("Delete station")
-                delete_button.clicked.connect(lambda checked, s=station: self._delete_station(s))
-
-                layout.addWidget(delete_button)
-                layout.addWidget(rename_button)
-                layout.addWidget(name_label)
-                layout.addStretch()
-                station_widget.setLayout(layout)
-
-                self.tree.setItemWidget(station_node, 0, station_widget)
-
-            measurements_node = QTreeWidgetItem(scen_node, ["Measurements"]) 
-            measurements_node.setExpanded(True)
-            for pair, distance in scen.measurements.relation.items():
-                station1, station2 = pair
-
-                label = f"{station1.name} ↔ {station2.name}: {distance:.2f}"
-                QTreeWidgetItem(measurements_node, [label])
-
-        scenario_names, error_message = get_available_scenarios()
-        for scen_name in scenario_names:
-           if scen_name not in [scen.name for scen in scenarios]:
-               # create a tree node with an import button for each available workspace scenario
-               avail_node = QTreeWidgetItem(self.tree)
-
-               row_widget = QWidget()
-               row_layout = QHBoxLayout()
-               row_layout.setContentsMargins(0, 0, 0, 0)
-
-               name_label = QLabel(scen_name)
-               import_button = QPushButton("⇩")
-               import_button.setToolTip("Import this scenario from workspace")
-               import_button.clicked.connect(lambda checked, name=scen_name: self._import_scenario_from_workspace(name))
-
-               row_layout.addWidget(import_button)
-               row_layout.addWidget(name_label)
-               row_layout.addStretch()
-               row_widget.setLayout(row_layout)
-
-               self.tree.setItemWidget(avail_node, 0, row_widget)
 
     def update(self):
         self.update_tree()
@@ -191,6 +184,30 @@ class TreeTab(BaseTab):
         # TODO fix SandboxTag handling
         plot.init_artists()
         self.main_window.update_all()
+
+    def _remove_scenario(self, scen):
+        app = self.main_window.app
+        app.scenarios.remove(scen)
+        plot = self.main_window.trilat_plot
+        if plot.scenario == scen:
+            plot.scenario = None
+            plot.sandbox_tag = None
+            plot.init_artists()
+        self.main_window.update_all()
+
+    def _toggle_scenario(self, scen_name, state):
+        from PyQt5.QtCore import Qt
+        if state == Qt.Checked:
+            # Import if not already imported
+            app = self.main_window.app
+            if scen_name not in [s.name for s in app.scenarios]:
+                self._import_scenario_from_workspace(scen_name)
+        else:
+            # Remove if imported
+            app = self.main_window.app
+            scen = next((s for s in app.scenarios if s.name == scen_name), None)
+            if scen:
+                self._remove_scenario(scen)
 
     def _import_scenario_from_workspace(self, scen_name: str):
         """Import a scenario by name from the workspace directory.

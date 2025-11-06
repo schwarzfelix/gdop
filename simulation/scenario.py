@@ -8,6 +8,7 @@ class Scenario:
         self._measurements = measurements.Measurements()
         self._stations = []
         self._sigma = 0.0
+        self._tag_truth = station.Anchor([0.0, 0.0], 'TAG_TRUTH')
 
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.get_anchor_list()])
@@ -81,3 +82,11 @@ class Scenario:
     @streamer.setter
     def streamer(self, value):
         self._streamer = value
+
+    @property
+    def tag_truth(self):
+        return self._tag_truth
+    
+    @tag_truth.setter
+    def tag_truth(self, value):
+        self._tag_truth = value
