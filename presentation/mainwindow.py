@@ -61,9 +61,9 @@ class MainWindow(QMainWindow):
         self.trilat_figure.set_dpi(self.FIGURE_DPI)
         self.trilat_canvas = FigureCanvas(self.trilat_figure)
 
-        top_widget = QWidget()
+        self.top_widget = QWidget()
         top_layout = QVBoxLayout()
-        top_widget.setLayout(top_layout)
+        self.top_widget.setLayout(top_layout)
         top_layout.addWidget(self.trilat_canvas)
 
         self.trilat_toolbar = NavigationToolbar(self.trilat_canvas, self)
@@ -75,9 +75,9 @@ class MainWindow(QMainWindow):
         self.comp_figure.set_dpi(self.FIGURE_DPI)
         self.comp_canvas = FigureCanvas(self.comp_figure)
 
-        bottom_widget = QWidget()
+        self.bottom_widget = QWidget()
         bottom_layout = QVBoxLayout()
-        bottom_widget.setLayout(bottom_layout)
+        self.bottom_widget.setLayout(bottom_layout)
         bottom_layout.addWidget(self.comp_canvas)
 
         self.comp_toolbar = NavigationToolbar(self.comp_canvas, self)
@@ -90,8 +90,8 @@ class MainWindow(QMainWindow):
         self.tab_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
         vertical_splitter = QSplitter(Qt.Vertical)
-        vertical_splitter.addWidget(top_widget)
-        vertical_splitter.addWidget(bottom_widget)
+        vertical_splitter.addWidget(self.top_widget)
+        vertical_splitter.addWidget(self.bottom_widget)
         vertical_splitter.setStretchFactor(0, 1)
         vertical_splitter.setStretchFactor(1, 1)
         plots_layout.addWidget(vertical_splitter)
@@ -118,6 +118,10 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(self.sandbox_tab.get_widget(), self.sandbox_tab.tab_name)
 
     def update_all(self, anchors=True, tags=True, measurements=True):
+        # Update plot visibility based on display config
+        self.top_widget.setVisible(self._display_config.showTrilatPlot)
+        self.bottom_widget.setVisible(self._display_config.showComparisonPlot)
+
         if anchors:
             self.trilat_plot.update_anchors()
             self.tree_tab.update()

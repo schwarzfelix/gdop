@@ -22,3 +22,7 @@ class DisplayConfig():
         # Interaction
         self.rightClickAnchors = True
         self.dragAnchors = True
+
+        # Plots
+        self.showTrilatPlot = True
+        self.showComparisonPlot = True

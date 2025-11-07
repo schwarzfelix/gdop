@@ -25,6 +25,8 @@ class DisplayTab(BaseTab):
         self.show_anchors_checkbox = None
         self.show_tag_truth_checkbox = None
         self.show_tags_checkbox = None
+        self.show_trilat_plot_checkbox = None
+        self.show_comparison_plot_checkbox = None
     
     @property
     def tab_name(self):
@@ -122,6 +124,21 @@ class DisplayTab(BaseTab):
         drag_anchors_item = QTreeWidgetItem(interaction_node)
         self.display_tree.setItemWidget(drag_anchors_item, 0, self.drag_anchors_checkbox)
 
+        # Plots section
+        plots_node = QTreeWidgetItem(self.display_tree, ["Plots"])
+        self.show_trilat_plot_checkbox = QCheckBox("Show Trilateration Plot")
+        self.show_trilat_plot_checkbox.setChecked(self.display_config.showTrilatPlot)
+        self.show_trilat_plot_checkbox.stateChanged.connect(self.update_display_config)
+        show_trilat_plot_item = QTreeWidgetItem(plots_node)
+        self.display_tree.setItemWidget(show_trilat_plot_item, 0, self.show_trilat_plot_checkbox)
+        plots_node.setExpanded(True)
+
+        self.show_comparison_plot_checkbox = QCheckBox("Show Comparison Plot")
+        self.show_comparison_plot_checkbox.setChecked(self.display_config.showComparisonPlot)
+        self.show_comparison_plot_checkbox.stateChanged.connect(self.update_display_config)
+        show_comparison_plot_item = QTreeWidgetItem(plots_node)
+        self.display_tree.setItemWidget(show_comparison_plot_item, 0, self.show_comparison_plot_checkbox)
+
         return self.display_tree
 
     def update_display_config(self):
@@ -147,5 +164,9 @@ class DisplayTab(BaseTab):
         # Interaction
         self.display_config.rightClickAnchors = self.right_click_anchors_checkbox.isChecked()
         self.display_config.dragAnchors = self.drag_anchors_checkbox.isChecked()
+
+        # Plots
+        self.display_config.showTrilatPlot = self.show_trilat_plot_checkbox.isChecked()
+        self.display_config.showComparisonPlot = self.show_comparison_plot_checkbox.isChecked()
 
         self.main_window.update_all()
