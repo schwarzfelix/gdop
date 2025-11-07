@@ -17,7 +17,8 @@ import presentation
 from presentation.tabs import (
     SandboxTab,
     DisplayTab,
-    TreeTab
+    TreeTab,
+    AnalysisTab
 )
 
 
@@ -112,10 +113,12 @@ class MainWindow(QMainWindow):
         self.tree_tab = TreeTab(self)
         self.display_tab = DisplayTab(self)
         self.sandbox_tab = SandboxTab(self)
+        self.analysis_tab = AnalysisTab(self)
 
         self.tab_widget.addTab(self.tree_tab.get_widget(), self.tree_tab.tab_name)
         self.tab_widget.addTab(self.display_tab.get_widget(), self.display_tab.tab_name)
         self.tab_widget.addTab(self.sandbox_tab.get_widget(), self.sandbox_tab.tab_name)
+        self.tab_widget.addTab(self.analysis_tab.get_widget(), self.analysis_tab.tab_name)
 
     def update_all(self, anchors=True, tags=True, measurements=True):
         # Update plot visibility based on display config
