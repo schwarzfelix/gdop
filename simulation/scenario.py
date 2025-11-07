@@ -9,6 +9,7 @@ class Scenario:
         self._stations = []
         self._sigma = 0.0
         self._tag_truth = station.Anchor([0.0, 0.0], 'TAG_TRUTH')
+        self._border_rectangle = None
 
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.get_anchor_list()])
@@ -74,3 +75,11 @@ class Scenario:
     @tag_truth.setter
     def tag_truth(self, value):
         self._tag_truth = value
+
+    @property
+    def border_rectangle(self):
+        return self._border_rectangle
+    
+    @border_rectangle.setter
+    def border_rectangle(self, value):
+        self._border_rectangle = value

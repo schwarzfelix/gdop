@@ -26,3 +26,6 @@ class DisplayConfig():
         # Plots
         self.showTrilatPlot = True
         self.showComparisonPlot = True
+
+        # Border Rectangle
+        self.showBorderRectangle = True

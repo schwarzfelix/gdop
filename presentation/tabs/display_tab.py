@@ -27,6 +27,7 @@ class DisplayTab(BaseTab):
         self.show_tags_checkbox = None
         self.show_trilat_plot_checkbox = None
         self.show_comparison_plot_checkbox = None
+        self.show_border_rectangle_checkbox = None
     
     @property
     def tab_name(self):
@@ -139,6 +140,12 @@ class DisplayTab(BaseTab):
         show_comparison_plot_item = QTreeWidgetItem(plots_node)
         self.display_tree.setItemWidget(show_comparison_plot_item, 0, self.show_comparison_plot_checkbox)
 
+        self.show_border_rectangle_checkbox = QCheckBox("Show Border Rectangle")
+        self.show_border_rectangle_checkbox.setChecked(self.display_config.showBorderRectangle)
+        self.show_border_rectangle_checkbox.stateChanged.connect(self.update_display_config)
+        show_border_rectangle_item = QTreeWidgetItem(plots_node)
+        self.display_tree.setItemWidget(show_border_rectangle_item, 0, self.show_border_rectangle_checkbox)
+
         return self.display_tree
 
     def update_display_config(self):
@@ -168,5 +175,6 @@ class DisplayTab(BaseTab):
         # Plots
         self.display_config.showTrilatPlot = self.show_trilat_plot_checkbox.isChecked()
         self.display_config.showComparisonPlot = self.show_comparison_plot_checkbox.isChecked()
+        self.display_config.showBorderRectangle = self.show_border_rectangle_checkbox.isChecked()
 
         self.main_window.update_all()

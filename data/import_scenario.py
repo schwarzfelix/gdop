@@ -58,6 +58,16 @@ def load_scenario_from_json(scenario_obj, scenario_name: str, workspace_dir: str
                     
                 scenario_obj.stations.append(Tag(scenario_obj, name))
 
+        # Load optional border rectangle
+        rectangle_data = data.get('rectangle')
+        if rectangle_data:
+            scenario_obj.border_rectangle = {
+                'min_x': rectangle_data['min_x'],
+                'max_x': rectangle_data['max_x'],
+                'min_y': rectangle_data['min_y'],
+                'max_y': rectangle_data['max_y']
+            }
+
         return True
         
     except Exception as e:

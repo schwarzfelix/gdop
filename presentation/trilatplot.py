@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle
+from matplotlib.patches import Circle, Rectangle
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
@@ -16,7 +16,7 @@ class TrilatPlot(QObject):
     STATION_DOT_SIZE = 100
     STATION_COLOR = 'blue'
     CIRCLE_LINESTYLE = 'dotted'
-    VIEWPORT_PADDING = 1.0
+    VIEWPORT_PADDING = 5.0
 
     def __init__(self, window, scenario):
         super().__init__()
@@ -40,6 +40,8 @@ class TrilatPlot(QObject):
         self.anchor_name_texts = []
 
         self.lines_plot = []
+
+        self.border_rectangle_patch = None
 
         self.sandbox_tag = next((tag for tag in self.scenario.get_tag_list() if tag.name == "SANDBOX_TAG"), None)
         if self.sandbox_tag:
@@ -316,6 +318,10 @@ class TrilatPlot(QObject):
         except Exception:
             pass
 
+        # Update border rectangle visibility
+        if self.border_rectangle_patch:
+            self.border_rectangle_patch.set_visible(self.display_config.showBorderRectangle)
+
     def update_viewport(self):
         """Update the viewport (xlim, ylim) based on all station positions with padding."""
         all_positions = [self.scenario.tag_truth.position()] + list(self.scenario.anchor_positions()) + list(self.scenario.tag_positions())
@@ -386,6 +392,14 @@ class TrilatPlot(QObject):
                 except Exception:
                     pass
             self.circle_pairs = []
+
+            # remove border rectangle patch
+            if getattr(self, 'border_rectangle_patch', None):
+                try:
+                    self.border_rectangle_patch.remove()
+                except Exception:
+                    pass
+                self.border_rectangle_patch = None
         except Exception:
             # best-effort: ignore any cleanup errors
             pass
@@ -417,6 +431,18 @@ class TrilatPlot(QObject):
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
         self.ax_trilat.set_title(self.scenario.name)
+
+        # Create border rectangle if available
+        if self.scenario.border_rectangle:
+            rect = self.scenario.border_rectangle
+            width = rect['max_x'] - rect['min_x']
+            height = rect['max_y'] - rect['min_y']
+            self.border_rectangle_patch = Rectangle((rect['min_x'], rect['min_y']), width, height,
+                                                   edgecolor='black', facecolor='none', linewidth=2, zorder=0)
+            self.ax_trilat.add_patch(self.border_rectangle_patch)
+            self.border_rectangle_patch.set_visible(self.display_config.showBorderRectangle)
+        else:
+            self.border_rectangle_patch = None
 
         self.update_viewport()
 
