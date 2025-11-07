@@ -146,8 +146,7 @@ class TrilatPlot(QObject):
             else:
                 self.anchor_scatter.set_offsets(np.empty((0, 2)))
 
-        # check if the scenario is a sandbox scenario with tag_truth
-        if isinstance(self.scenario, SandboxScenario) and self.scenario.tag_truth:
+        if self.scenario.tag_truth:
             self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
 
         # Update anchor circles: control visibility and radius explicitly. Use visibility toggling
