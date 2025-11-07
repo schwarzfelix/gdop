@@ -16,6 +16,7 @@ class TrilatPlot(QObject):
     STATION_DOT_SIZE = 100
     STATION_COLOR = 'blue'
     CIRCLE_LINESTYLE = 'dotted'
+    VIEWPORT_PADDING = 1.0
 
     def __init__(self, window, scenario):
         super().__init__()
@@ -25,9 +26,6 @@ class TrilatPlot(QObject):
 
         self.dragging_point = None
         self.fig, self.ax_trilat = plt.subplots(figsize=(6, 4))
-
-        self.ax_trilat.set_xlim(-15, 15)
-        self.ax_trilat.set_ylim(-15, 15)
 
         self.anchor_plots = []
         self.anchor_scatter = None
@@ -314,9 +312,25 @@ class TrilatPlot(QObject):
 
         # Ensure trilat plot keeps equal XY scaling (expand X-range if needed)
         try:
-            self._adjust_trilat_aspect()
+            self.update_viewport()
         except Exception:
             pass
+
+    def update_viewport(self):
+        """Update the viewport (xlim, ylim) based on all station positions with padding."""
+        all_positions = [self.scenario.tag_truth.position()] + list(self.scenario.anchor_positions()) + list(self.scenario.tag_positions())
+        if all_positions:
+            all_positions = np.array(all_positions)
+            min_x, max_x = all_positions[:, 0].min(), all_positions[:, 0].max()
+            min_y, max_y = all_positions[:, 1].min(), all_positions[:, 1].max()
+            padding = self.VIEWPORT_PADDING
+            xlim = (min_x - padding, max_x + padding)
+            ylim = (min_y - padding, max_y + padding)
+            self.ax_trilat.set_xlim(xlim)
+            self.ax_trilat.set_ylim(ylim)
+        # Ensure equal aspect ratio to prevent distortion
+        self.ax_trilat.set_aspect('equal', adjustable='box')
+        self._adjust_trilat_aspect()
 
     def redraw(self):
         """Trigger a canvas redraw."""
@@ -403,7 +417,8 @@ class TrilatPlot(QObject):
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
         self.ax_trilat.set_title(self.scenario.name)
-        self._adjust_trilat_aspect()
+
+        self.update_viewport()
 
         # Trigger a redraw to reflect the cleared/rebuilt artists
         try:
