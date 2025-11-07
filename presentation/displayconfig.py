@@ -15,3 +15,7 @@ class DisplayConfig():
 
         self.showTagLabels = True
         self.dragAnchors = True
+
+        self.showAnchors = True
+        self.showTagTruth = True
+        self.showTags = True

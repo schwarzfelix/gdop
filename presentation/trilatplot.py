@@ -46,6 +46,7 @@ class TrilatPlot(QObject):
         self.sandbox_tag = next((tag for tag in self.scenario.get_tag_list() if tag.name == "SANDBOX_TAG"), None)
         if self.sandbox_tag:
             self.tag_truth_plot = self.ax_trilat.scatter(self.scenario.tag_truth.position()[0], self.scenario.tag_truth.position()[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
+            self.tag_truth_plot.set_visible(self.display_config.showTagTruth)
         else:
             self.tag_truth_plot = None
         self.tag_estimate_plots = []
@@ -80,6 +81,7 @@ class TrilatPlot(QObject):
             else:
                 # matplotlib expects a (N,2) array; provide empty shape to avoid indexing errors
                 self.anchor_scatter.set_offsets(np.empty((0, 2)))
+        self.anchor_scatter.set_visible(self.display_config.showAnchors)
 
         # Ensure there are circle pairs for each anchor; create if missing
         if len(self.circle_pairs) < len(anchor_positions):
@@ -138,6 +140,7 @@ class TrilatPlot(QObject):
                 self.tag_estimate_scatter.set_offsets(np.array(tag_positions))
             else:
                 self.tag_estimate_scatter.set_offsets(np.empty((0, 2)))
+            self.tag_estimate_scatter.set_visible(self.display_config.showTags)
 
         # Update anchor scatter offsets
         if self.anchor_scatter is not None:
@@ -145,9 +148,11 @@ class TrilatPlot(QObject):
                 self.anchor_scatter.set_offsets(np.array(anchor_positions))
             else:
                 self.anchor_scatter.set_offsets(np.empty((0, 2)))
+            self.anchor_scatter.set_visible(self.display_config.showAnchors)
 
         if self.scenario.tag_truth:
             self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
+            self.tag_truth_plot.set_visible(self.display_config.showTagTruth)
 
         # Update anchor circles: control visibility and radius explicitly. Use visibility toggling
         if self.display_config.showAnchorCircles:
@@ -374,13 +379,16 @@ class TrilatPlot(QObject):
         # Create fresh scatter artists (empty) which the rest of the code expects
         if self.anchor_scatter is None:
             self.anchor_scatter = self.ax_trilat.scatter([], [], c=self.STATION_COLOR, s=self.STATION_DOT_SIZE, picker=True)
+            self.anchor_scatter.set_visible(self.display_config.showAnchors)
 
         if self.tag_estimate_scatter is None:
             self.tag_estimate_scatter = self.ax_trilat.scatter([], [], c='red', marker='x')
+            self.tag_estimate_scatter.set_visible(self.display_config.showTags)
 
         try:
             pos = self.scenario.tag_truth.position()
             self.tag_truth_plot = self.ax_trilat.scatter(pos[0], pos[1], c='green', s=self.STATION_DOT_SIZE, picker=True)
+            self.tag_truth_plot.set_visible(self.display_config.showTagTruth)
         except Exception:
             self.tag_truth_plot = None
 

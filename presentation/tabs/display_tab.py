@@ -23,6 +23,9 @@ class DisplayTab(BaseTab):
         self.gdop_checkbox = None
         self.tag_labels_checkbox = None
         self.drag_anchors_checkbox = None
+        self.show_anchors_checkbox = None
+        self.show_tag_truth_checkbox = None
+        self.show_tags_checkbox = None
     
     @property
     def tab_name(self):
@@ -86,6 +89,27 @@ class DisplayTab(BaseTab):
         self.display_tree.setItemWidget(tag_labels_item, 0, tag_labels_checkbox)
         self.tag_labels_checkbox = tag_labels_checkbox  # Save reference
 
+        # Stations section
+        stations_node = QTreeWidgetItem(self.display_tree, ["Stations"])
+        self.show_anchors_checkbox = QCheckBox("Show Anchors")
+        self.show_anchors_checkbox.setChecked(self.display_config.showAnchors)
+        self.show_anchors_checkbox.stateChanged.connect(self.update_display_config)
+        show_anchors_item = QTreeWidgetItem(stations_node)
+        self.display_tree.setItemWidget(show_anchors_item, 0, self.show_anchors_checkbox)
+        stations_node.setExpanded(True)
+
+        self.show_tag_truth_checkbox = QCheckBox("Show Tag Truth")
+        self.show_tag_truth_checkbox.setChecked(self.display_config.showTagTruth)
+        self.show_tag_truth_checkbox.stateChanged.connect(self.update_display_config)
+        show_tag_truth_item = QTreeWidgetItem(stations_node)
+        self.display_tree.setItemWidget(show_tag_truth_item, 0, self.show_tag_truth_checkbox)
+
+        self.show_tags_checkbox = QCheckBox("Show Tags")
+        self.show_tags_checkbox.setChecked(self.display_config.showTags)
+        self.show_tags_checkbox.stateChanged.connect(self.update_display_config)
+        show_tags_item = QTreeWidgetItem(stations_node)
+        self.display_tree.setItemWidget(show_tags_item, 0, self.show_tags_checkbox)
+
         # Interaction section
         interaction_node = QTreeWidgetItem(self.display_tree, ["Interaction"])
         self.right_click_anchors_checkbox = QCheckBox("Enable Right-Click Anchor Control")
@@ -122,5 +146,8 @@ class DisplayTab(BaseTab):
         self.display_config.showGDOP = self.gdop_checkbox.isChecked()
         self.display_config.showTagLabels = self.tag_labels_checkbox.isChecked()
         self.display_config.dragAnchors = self.drag_anchors_checkbox.isChecked()
+        self.display_config.showAnchors = self.show_anchors_checkbox.isChecked()
+        self.display_config.showTagTruth = self.show_tag_truth_checkbox.isChecked()
+        self.display_config.showTags = self.show_tags_checkbox.isChecked()
 
         self.main_window.update_all()
