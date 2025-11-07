@@ -23,6 +23,7 @@ except ImportError:
 import os
 from PyQt5.QtWidgets import QTableView, QAbstractItemView, QHeaderView
 from PyQt5.QtCore import QAbstractTableModel, Qt
+from presentation.trilatplot_window import TrilatPlotWindow
 
 
 class DataFrameModel(QAbstractTableModel):
@@ -189,6 +190,13 @@ class TreeTab(BaseTab):
 
                     row_layout.addWidget(viewer_button)
 
+                # Add TrilatPlot popup button for all imported scenarios
+                popup_button = QPushButton("📈")
+                popup_button.setToolTip("Open TrilatPlot in new window")
+                popup_button.clicked.connect(lambda checked, s=scen: self._open_trilat_popup(s))
+
+                row_layout.addWidget(popup_button)
+
                 if active is scen:
                     self.tree.setCurrentItem(scen_node)
                     checkbox.setEnabled(False)  # Prevent unchecking the active scenario
@@ -307,6 +315,15 @@ class TreeTab(BaseTab):
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open DataFrame viewer: {str(e)}")
+
+    def _open_trilat_popup(self, scen):
+        try:
+            # Create and show the TrilatPlotWindow
+            window = TrilatPlotWindow(scen, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open TrilatPlot popup: {str(e)}")
 
     def _remove_scenario(self, scen):
         app = self.main_window.app
