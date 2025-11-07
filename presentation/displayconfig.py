@@ -29,3 +29,4 @@ class DisplayConfig():
 
         # Border Rectangle
         self.showBorderRectangle = True
+        self.useBorderRectangleForViewport = False

@@ -324,16 +324,24 @@ class TrilatPlot(QObject):
 
     def update_viewport(self):
         """Update the viewport (xlim, ylim) based on all station positions with padding."""
-        all_positions = [self.scenario.tag_truth.position()] + list(self.scenario.anchor_positions()) + list(self.scenario.tag_positions())
-        if all_positions:
-            all_positions = np.array(all_positions)
-            min_x, max_x = all_positions[:, 0].min(), all_positions[:, 0].max()
-            min_y, max_y = all_positions[:, 1].min(), all_positions[:, 1].max()
+        if self.display_config.useBorderRectangleForViewport and self.scenario.border_rectangle:
+            # Use border rectangle for viewport
+            rect = self.scenario.border_rectangle
             padding = self.VIEWPORT_PADDING
-            xlim = (min_x - padding, max_x + padding)
-            ylim = (min_y - padding, max_y + padding)
-            self.ax_trilat.set_xlim(xlim)
-            self.ax_trilat.set_ylim(ylim)
+            xlim = (rect['min_x'] - padding, rect['max_x'] + padding)
+            ylim = (rect['min_y'] - padding, rect['max_y'] + padding)
+        else:
+            # Use extrema of positions
+            all_positions = [self.scenario.tag_truth.position()] + list(self.scenario.anchor_positions()) + list(self.scenario.tag_positions())
+            if all_positions:
+                all_positions = np.array(all_positions)
+                min_x, max_x = all_positions[:, 0].min(), all_positions[:, 0].max()
+                min_y, max_y = all_positions[:, 1].min(), all_positions[:, 1].max()
+                padding = self.VIEWPORT_PADDING
+                xlim = (min_x - padding, max_x + padding)
+                ylim = (min_y - padding, max_y + padding)
+        self.ax_trilat.set_xlim(xlim)
+        self.ax_trilat.set_ylim(ylim)
         # Ensure equal aspect ratio to prevent distortion
         self.ax_trilat.set_aspect('equal', adjustable='box')
         self._adjust_trilat_aspect()
