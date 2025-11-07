@@ -140,7 +140,10 @@ class TreeTab(BaseTab):
         active = self.main_window.trilat_plot.scenario
 
         scenario_names, error_message = get_available_scenarios()
-        for scen_name in scenario_names:
+        loaded_scenario_names = {s.name for s in scenarios}
+        all_scenario_names = set(scenario_names) | loaded_scenario_names
+
+        for scen_name in sorted(all_scenario_names):
             scen_node = QTreeWidgetItem(self.tree)
             #scen_node.setExpanded(True)
 
@@ -149,9 +152,12 @@ class TreeTab(BaseTab):
             row_layout.setContentsMargins(0, 0, 0, 0)
 
             checkbox = QCheckBox()
-            is_imported = scen_name in [s.name for s in scenarios]
+            is_imported = scen_name in loaded_scenario_names
+            is_from_workspace = scen_name in scenario_names
             checkbox.setChecked(is_imported)
-            checkbox.stateChanged.connect(lambda state, name=scen_name: self._toggle_scenario(name, state))
+            checkbox.setEnabled(is_from_workspace)  # Only enable checkbox for workspace scenarios
+            if is_from_workspace:
+                checkbox.stateChanged.connect(lambda state, name=scen_name: self._toggle_scenario(name, state))
 
             name_label = QLabel(scen_name)
 
@@ -169,8 +175,8 @@ class TreeTab(BaseTab):
 
                     row_layout.addWidget(activate_button)
 
-                # Add PandasGUI button if not SandboxScenario
-                if scen.name != "SandboxScenario":
+                # Add PandasGUI and Viewer buttons only if from workspace and not SandboxScenario
+                if is_from_workspace and scen.name != "SandboxScenario":
                     pandas_button = QPushButton("📊")
                     pandas_button.setToolTip("Open DataFrame in PandasGUI")
                     pandas_button.clicked.connect(lambda checked, name=scen_name: self._open_pandasgui(name))
