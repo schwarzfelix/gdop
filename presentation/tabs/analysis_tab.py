@@ -6,6 +6,7 @@ Shows a list of available plots and analysis options that can be opened in separ
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QVBoxLayout, QWidget, QLabel
 from .base_tab import BaseTab
 from presentation.comparisonplot_window import ComparisonPlotWindow
+from presentation.multi_trilatplot_window import MultiTrilatPlotWindow
 
 class AnalysisTab(BaseTab):
     """Tab for analysis options and plots that can be opened in separate windows."""
@@ -47,6 +48,12 @@ class AnalysisTab(BaseTab):
         comparison_item.setData(1, "comparison_plot")  # Store identifier
         self.analysis_list.addItem(comparison_item)
 
+        # Multi-Scenario Trilateration Plot
+        multi_trilat_item = QListWidgetItem("📈 Multi-Scenario Trilateration Plot")
+        multi_trilat_item.setToolTip("Open a plot showing all loaded scenarios simultaneously in subplots")
+        multi_trilat_item.setData(1, "multi_trilat_plot")  # Store identifier
+        self.analysis_list.addItem(multi_trilat_item)
+
         # Future analyses can be added here
         # trilat_item = QListWidgetItem("📈 Trilateration Plot")
         # trilat_item.setData(1, "trilat_plot")
@@ -58,6 +65,8 @@ class AnalysisTab(BaseTab):
 
         if analysis_type == "comparison_plot":
             self._open_comparison_plot()
+        elif analysis_type == "multi_trilat_plot":
+            self._open_multi_trilat_plot()
         # elif analysis_type == "trilat_plot":
         #     self._open_trilat_plot()
         else:
@@ -73,6 +82,16 @@ class AnalysisTab(BaseTab):
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open Comparison Plot: {str(e)}")
+
+    def _open_multi_trilat_plot(self):
+        """Open the multi-scenario trilateration plot in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = MultiTrilatPlotWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Multi-Scenario Trilateration Plot: {str(e)}")
 
     # def _open_trilat_plot(self):
     #     """Open the trilateration plot in a new window (placeholder for future)."""
