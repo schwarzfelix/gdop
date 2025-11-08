@@ -24,6 +24,8 @@ import os
 from PyQt5.QtWidgets import QTableView, QAbstractItemView, QHeaderView
 from PyQt5.QtCore import QAbstractTableModel, Qt
 from presentation.trilatplot_window import TrilatPlotWindow
+from simulation import station as station_module
+import numpy as np
 
 
 class DataFrameModel(QAbstractTableModel):
@@ -226,6 +228,15 @@ class TreeTab(BaseTab):
 
                     self.tree.setItemWidget(station_node, 0, station_widget)
 
+                    # Add GDOP for Tags
+                    if isinstance(station, station_module.Tag):
+                        try:
+                            gdop = station.dilution_of_precision()
+                            gdop_text = f"GDOP: {gdop:.2f}" if np.isfinite(gdop) else "GDOP: ∞"
+                            QTreeWidgetItem(station_node, [gdop_text])
+                        except Exception as e:
+                            QTreeWidgetItem(station_node, ["GDOP: N/A"])
+
                 measurements_node = QTreeWidgetItem(scen_node, ["Measurements"]) 
                 #measurements_node.setExpanded(True)
                 for pair, distance in scen.measurements.relation.items():
@@ -233,6 +244,15 @@ class TreeTab(BaseTab):
 
                     label = f"{station1.name} ↔ {station2.name}: {distance:.2f}"
                     QTreeWidgetItem(measurements_node, [label])
+
+                # Add Tag Truth GDOP if exists
+                tag_truth_node = QTreeWidgetItem(scen_node, ["Tag Truth"])
+                try:
+                    gdop = scen.get_tag_truth_gdop()
+                    gdop_text = f"GDOP: {gdop:.2f}" if np.isfinite(gdop) else "GDOP: ∞"
+                    QTreeWidgetItem(tag_truth_node, [gdop_text])
+                except Exception as e:
+                    QTreeWidgetItem(tag_truth_node, ["GDOP: N/A"])
             row_widget.setLayout(row_layout)
 
             self.tree.setItemWidget(scen_node, 0, row_widget)

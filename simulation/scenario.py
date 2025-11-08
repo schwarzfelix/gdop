@@ -1,6 +1,6 @@
 import numpy as np
 
-from simulation import measurements, station
+from simulation import measurements, station, geometry
 
 class Scenario:
     def __init__(self, name = "New"):
@@ -35,6 +35,12 @@ class Scenario:
         if station in self.stations:
             self.measurements.remove_station(station)
             self.stations.remove(station)
+
+    def get_gdop_for_position(self, position):
+        return geometry.dilution_of_precision(self.anchor_positions(), position)
+
+    def get_tag_truth_gdop(self):
+        return self.get_gdop_for_position(self.tag_truth.position())
 
     @property
     def name(self):
