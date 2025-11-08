@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QVBoxLayout, QWidget, 
 from .base_tab import BaseTab
 from presentation.comparisonplot_window import ComparisonPlotWindow
 from presentation.multi_trilatplot_window import MultiTrilatPlotWindow
+from presentation.positionerrorplot_window import PositionErrorPlotWindow
 
 class AnalysisTab(BaseTab):
     """Tab for analysis options and plots that can be opened in separate windows."""
@@ -54,10 +55,11 @@ class AnalysisTab(BaseTab):
         multi_trilat_item.setData(1, "multi_trilat_plot")  # Store identifier
         self.analysis_list.addItem(multi_trilat_item)
 
-        # Future analyses can be added here
-        # trilat_item = QListWidgetItem("📈 Trilateration Plot")
-        # trilat_item.setData(1, "trilat_plot")
-        # self.analysis_list.addItem(trilat_item)
+        # Position Error Plot
+        position_error_item = QListWidgetItem("� Position Error Plot - Position Error per Scenario")
+        position_error_item.setToolTip("Open a bar chart showing position error values for the first tag in each scenario")
+        position_error_item.setData(1, "position_error_plot")  # Store identifier
+        self.analysis_list.addItem(position_error_item)
 
     def _open_analysis(self, item):
         """Open the selected analysis in a new window."""
@@ -67,6 +69,8 @@ class AnalysisTab(BaseTab):
             self._open_comparison_plot()
         elif analysis_type == "multi_trilat_plot":
             self._open_multi_trilat_plot()
+        elif analysis_type == "position_error_plot":
+            self._open_position_error_plot()
         # elif analysis_type == "trilat_plot":
         #     self._open_trilat_plot()
         else:
@@ -93,10 +97,15 @@ class AnalysisTab(BaseTab):
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open Multi-Scenario Trilateration Plot: {str(e)}")
 
-    # def _open_trilat_plot(self):
-    #     """Open the trilateration plot in a new window (placeholder for future)."""
-    #     # This could be implemented later if needed
-    #     pass
+    def _open_position_error_plot(self):
+        """Open the position error plot in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = PositionErrorPlotWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Position Error Plot: {str(e)}")
 
     def update(self):
         """Update the analysis tab if needed."""
