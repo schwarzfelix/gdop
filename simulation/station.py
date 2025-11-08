@@ -123,3 +123,8 @@ class Tag(Station):
 
     def dilution_of_precision(self):
         return geometry.dilution_of_precision(self.scenario.anchor_positions(), self.position(), self.distances())
+
+    def position_error(self):
+        if self.scenario and self.scenario.tag_truth:
+            return geometry.distance_between(self.position(), self.scenario.tag_truth.position())
+        return None

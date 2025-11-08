@@ -237,6 +237,17 @@ class TreeTab(BaseTab):
                         except Exception as e:
                             QTreeWidgetItem(station_node, ["GDOP: N/A"])
 
+                        # Add Position Error
+                        try:
+                            error = station.position_error()
+                            if error is not None:
+                                error_text = f"Position Error: {error:.2f}"
+                                QTreeWidgetItem(station_node, [error_text])
+                            else:
+                                QTreeWidgetItem(station_node, ["Position Error: N/A"])
+                        except Exception as e:
+                            QTreeWidgetItem(station_node, ["Position Error: N/A"])
+
                 measurements_node = QTreeWidgetItem(scen_node, ["Measurements"]) 
                 #measurements_node.setExpanded(True)
                 for pair, distance in scen.measurements.relation.items():
