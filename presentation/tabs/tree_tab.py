@@ -156,9 +156,8 @@ class TreeTab(BaseTab):
             is_imported = scen_name in loaded_scenario_names
             is_from_workspace = scen_name in scenario_names
             checkbox.setChecked(is_imported)
-            checkbox.setEnabled(is_from_workspace)  # Only enable checkbox for workspace scenarios
-            if is_from_workspace:
-                checkbox.stateChanged.connect(lambda state, name=scen_name: self._toggle_scenario(name, state))
+            checkbox.setEnabled(True)
+            checkbox.stateChanged.connect(lambda state, name=scen_name: self._toggle_scenario(name, state))
 
             name_label = QLabel(scen_name)
 
