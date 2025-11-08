@@ -10,6 +10,7 @@ class DisplayConfig():
         self.showTagTruth = True
         self.showTags = True
         self.showTagLabels = True
+        self.showPositionErrorLines = True
 
         # Between Anchors and Tags
         self.showTagAnchorLabels = False

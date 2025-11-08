@@ -29,6 +29,7 @@ class DisplayTab(BaseTab):
         self.show_comparison_plot_checkbox = None
         self.show_border_rectangle_checkbox = None
         self.use_border_rectangle_for_viewport_checkbox = None
+        self.show_position_error_lines_checkbox = None
     
     @property
     def tab_name(self):
@@ -80,6 +81,12 @@ class DisplayTab(BaseTab):
         self.tag_labels_checkbox.stateChanged.connect(self.update_display_config)
         tag_labels_item = QTreeWidgetItem(tags_node)
         self.display_tree.setItemWidget(tag_labels_item, 0, self.tag_labels_checkbox)
+
+        self.show_position_error_lines_checkbox = QCheckBox("Show Position Error Lines")
+        self.show_position_error_lines_checkbox.setChecked(self.display_config.showPositionErrorLines)
+        self.show_position_error_lines_checkbox.stateChanged.connect(self.update_display_config)
+        show_position_error_lines_item = QTreeWidgetItem(tags_node)
+        self.display_tree.setItemWidget(show_position_error_lines_item, 0, self.show_position_error_lines_checkbox)
 
         # Between Anchors and Tags section
         between_anchors_tags_node = QTreeWidgetItem(self.display_tree, ["Between Anchors and Tags"])
@@ -166,6 +173,7 @@ class DisplayTab(BaseTab):
         self.display_config.showTagTruth = self.show_tag_truth_checkbox.isChecked()
         self.display_config.showTags = self.show_tags_checkbox.isChecked()
         self.display_config.showTagLabels = self.tag_labels_checkbox.isChecked()
+        self.display_config.showPositionErrorLines = self.show_position_error_lines_checkbox.isChecked()
 
         # Between Anchors and Tags
         self.display_config.showTagAnchorLabels = self.tag_anchor_labels_checkbox.isChecked()

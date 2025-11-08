@@ -38,6 +38,7 @@ class TrilatPlot(QObject):
         self.tag_anchor_texts = []
         self.tag_name_texts = []
         self.anchor_name_texts = []
+        self.position_error_lines = []
 
         self.lines_plot = []
 
@@ -312,6 +313,29 @@ class TrilatPlot(QObject):
             except Exception:
                 pass
 
+        # Update position error lines
+        while len(self.position_error_lines) < len(tag_positions):
+            l, = self.ax_trilat.plot([], [], 'r-', linewidth=2)
+            self.position_error_lines.append(l)
+
+        for i, tag_pos in enumerate(tag_positions):
+            if self.display_config.showPositionErrorLines and self.scenario.tag_truth:
+                truth_pos = self.scenario.tag_truth.position()
+                xdata = [truth_pos[0], tag_pos[0]]
+                ydata = [truth_pos[1], tag_pos[1]]
+                self.position_error_lines[i].set_xdata(xdata)
+                self.position_error_lines[i].set_ydata(ydata)
+                self.position_error_lines[i].set_visible(True)
+            else:
+                self.position_error_lines[i].set_visible(False)
+
+        # Hide extras
+        for idx in range(len(tag_positions), len(self.position_error_lines)):
+            try:
+                self.position_error_lines[idx].set_visible(False)
+            except Exception:
+                pass
+
         # Ensure trilat plot keeps equal XY scaling (expand X-range if needed)
         try:
             self.update_viewport()
@@ -381,7 +405,7 @@ class TrilatPlot(QObject):
                 self.tag_truth_plot = None
 
             # remove line and text artists
-            for lst_name in ('anchor_pair_lines', 'anchor_pair_texts', 'tag_anchor_lines', 'tag_anchor_texts', 'tag_name_texts', 'anchor_name_texts'):
+            for lst_name in ('anchor_pair_lines', 'anchor_pair_texts', 'tag_anchor_lines', 'tag_anchor_texts', 'tag_name_texts', 'anchor_name_texts', 'position_error_lines'):
                 for art in getattr(self, lst_name, []) or []:
                     try:
                         art.remove()
@@ -435,6 +459,7 @@ class TrilatPlot(QObject):
         self.tag_anchor_texts = []
         self.tag_name_texts = []
         self.anchor_name_texts = []
+        self.position_error_lines = []
 
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 

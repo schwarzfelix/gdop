@@ -37,6 +37,7 @@ class MultiTrilatPlot(QObject):
         self.tag_anchor_texts_list = []
         self.tag_name_texts_list = []
         self.anchor_name_texts_list = []
+        self.position_error_lines_list = []
         self.border_patches = []
 
         linestyles = ['solid', 'dashed', 'dashdot', 'dotted']
@@ -63,6 +64,7 @@ class MultiTrilatPlot(QObject):
             self.tag_anchor_texts_list.append([])
             self.tag_name_texts_list.append([])
             self.anchor_name_texts_list.append([])
+            self.position_error_lines_list.append([])
 
             # Border rectangle black, as in TrilatPlot
             if scenario.border_rectangle:
@@ -246,6 +248,27 @@ class MultiTrilatPlot(QObject):
 
             for idx in range(len(anchor_positions), len(anchor_name_texts)):
                 anchor_name_texts[idx].set_visible(False)
+
+            # Update position error lines
+            position_error_lines = self.position_error_lines_list[i]
+            while len(position_error_lines) < len(tag_positions):
+                l, = self.ax.plot([], [], 'r-', linewidth=2)
+                position_error_lines.append(l)
+
+            for j, tag_pos in enumerate(tag_positions):
+                if self.display_config.showPositionErrorLines and scenario.tag_truth:
+                    truth_pos = scenario.tag_truth.position()
+                    xdata = [truth_pos[0], tag_pos[0]]
+                    ydata = [truth_pos[1], tag_pos[1]]
+                    position_error_lines[j].set_xdata(xdata)
+                    position_error_lines[j].set_ydata(ydata)
+                    position_error_lines[j].set_visible(True)
+                else:
+                    position_error_lines[j].set_visible(False)
+
+            # Hide extras
+            for idx in range(len(tag_positions), len(position_error_lines)):
+                position_error_lines[idx].set_visible(False)
 
             # Border
             if self.border_patches[i]:
