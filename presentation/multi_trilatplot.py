@@ -255,24 +255,59 @@ class MultiTrilatPlot(QObject):
         self._update_viewport()
 
     def _update_viewport(self):
-        """Update viewport based on all positions from all scenarios."""
-        all_positions = []
-        for scenario in self.scenarios:
-            all_positions.extend(scenario.anchor_positions())
-            all_positions.extend(scenario.tag_positions())
-            if scenario.tag_truth:
-                all_positions.append(scenario.tag_truth.position())
-
-        if all_positions:
-            all_positions = np.array(all_positions)
-            min_x, max_x = all_positions[:, 0].min(), all_positions[:, 0].max()
-            min_y, max_y = all_positions[:, 1].min(), all_positions[:, 1].max()
-            padding = self.VIEWPORT_PADDING
-            xlim = (min_x - padding, max_x + padding)
-            ylim = (min_y - padding, max_y + padding)
+        """Update viewport based on all positions from all scenarios or border rectangles if option is set."""
+        if self.display_config.useBorderRectangleForViewport:
+            # Use union of all border rectangles
+            min_x, max_x, min_y, max_y = float('inf'), float('-inf'), float('inf'), float('-inf')
+            has_border = False
+            for scenario in self.scenarios:
+                if scenario.border_rectangle:
+                    rect = scenario.border_rectangle
+                    min_x = min(min_x, rect['min_x'])
+                    max_x = max(max_x, rect['max_x'])
+                    min_y = min(min_y, rect['min_y'])
+                    max_y = max(max_y, rect['max_y'])
+                    has_border = True
+            if has_border:
+                padding = self.VIEWPORT_PADDING
+                xlim = (min_x - padding, max_x + padding)
+                ylim = (min_y - padding, max_y + padding)
+            else:
+                # Fallback to positions
+                all_positions = []
+                for scenario in self.scenarios:
+                    all_positions.extend(scenario.anchor_positions())
+                    all_positions.extend(scenario.tag_positions())
+                    if scenario.tag_truth:
+                        all_positions.append(scenario.tag_truth.position())
+                if all_positions:
+                    all_positions = np.array(all_positions)
+                    min_x, max_x = all_positions[:, 0].min(), all_positions[:, 0].max()
+                    min_y, max_y = all_positions[:, 1].min(), all_positions[:, 1].max()
+                    padding = self.VIEWPORT_PADDING
+                    xlim = (min_x - padding, max_x + padding)
+                    ylim = (min_y - padding, max_y + padding)
+                else:
+                    xlim = (-10, 10)
+                    ylim = (-10, 10)
         else:
-            xlim = (-10, 10)
-            ylim = (-10, 10)
+            # Use extrema of all positions
+            all_positions = []
+            for scenario in self.scenarios:
+                all_positions.extend(scenario.anchor_positions())
+                all_positions.extend(scenario.tag_positions())
+                if scenario.tag_truth:
+                    all_positions.append(scenario.tag_truth.position())
+            if all_positions:
+                all_positions = np.array(all_positions)
+                min_x, max_x = all_positions[:, 0].min(), all_positions[:, 0].max()
+                min_y, max_y = all_positions[:, 1].min(), all_positions[:, 1].max()
+                padding = self.VIEWPORT_PADDING
+                xlim = (min_x - padding, max_x + padding)
+                ylim = (min_y - padding, max_y + padding)
+            else:
+                xlim = (-10, 10)
+                ylim = (-10, 10)
         self.ax.set_xlim(xlim)
         self.ax.set_ylim(ylim)
 
