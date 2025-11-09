@@ -464,6 +464,8 @@ class TrilatPlot(QObject):
         self.ax_trilat.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
 
         self.ax_trilat.set_title(self.scenario.name)
+        self.ax_trilat.set_xlabel('x (m)')
+        self.ax_trilat.set_ylabel('y (m)')
 
         # Create border rectangle if available
         if self.scenario.border_rectangle:
