@@ -24,8 +24,8 @@ class MultiTrilatPlot(QObject):
         self.fig, self.ax = plt.subplots(figsize=(8, 6))
         self.ax.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
         self.ax.set_title("Multi-Scenario Trilateration Plot")
-        self.ax.set_xlabel('X (m)')
-        self.ax.set_ylabel('Y (m)')
+        self.ax.set_xlabel('x (m)')
+        self.ax.set_ylabel('y (m)')
         self.ax.set_aspect('equal', adjustable='box')
 
         # Initialize artists for each scenario
