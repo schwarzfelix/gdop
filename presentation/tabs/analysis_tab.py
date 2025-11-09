@@ -9,6 +9,9 @@ from presentation.comparisonplot_window import ComparisonPlotWindow
 from presentation.multi_trilatplot_window import MultiTrilatPlotWindow
 from presentation.positionerrorplot_window import PositionErrorPlotWindow
 from presentation.combinedmetricsplot_window import CombinedMetricsPlotWindow
+from presentation.combinedmetricslineplot_window import CombinedMetricsLinePlotWindow
+from presentation.combinedmetricsplot_sorted_window import CombinedMetricsPlotSortedWindow
+from presentation.combinedmetricslineplot_sorted_window import CombinedMetricsLinePlotSortedWindow
 
 class AnalysisTab(BaseTab):
     """Tab for analysis options and plots that can be opened in separate windows."""
@@ -68,6 +71,24 @@ class AnalysisTab(BaseTab):
         combined_metrics_item.setData(1, "combined_metrics_plot")  # Store identifier
         self.analysis_list.addItem(combined_metrics_item)
 
+        # Combined Metrics Line Plot
+        combined_metrics_line_item = QListWidgetItem("📈 Combined Metrics Line Plot - Position Error and Tag Truth GDOP Trends")
+        combined_metrics_line_item.setToolTip("Open a line plot showing trends of position error and tag truth GDOP across scenarios")
+        combined_metrics_line_item.setData(1, "combined_metrics_line_plot")  # Store identifier
+        self.analysis_list.addItem(combined_metrics_line_item)
+
+        # Combined Metrics Plot (Sorted)
+        combined_metrics_sorted_item = QListWidgetItem("📊 Combined Metrics Plot (Sorted) - Position Error and Tag Truth GDOP per Scenario")
+        combined_metrics_sorted_item.setToolTip("Open a grouped bar chart showing position error and tag truth GDOP for scenarios sorted by tag truth GDOP")
+        combined_metrics_sorted_item.setData(1, "combined_metrics_plot_sorted")  # Store identifier
+        self.analysis_list.addItem(combined_metrics_sorted_item)
+
+        # Combined Metrics Line Plot (Sorted)
+        combined_metrics_line_sorted_item = QListWidgetItem("📈 Combined Metrics Line Plot (Sorted) - Position Error and Tag Truth GDOP Trends")
+        combined_metrics_line_sorted_item.setToolTip("Open a line plot showing trends of position error and tag truth GDOP across scenarios sorted by tag truth GDOP")
+        combined_metrics_line_sorted_item.setData(1, "combined_metrics_line_plot_sorted")  # Store identifier
+        self.analysis_list.addItem(combined_metrics_line_sorted_item)
+
     def _open_analysis(self, item):
         """Open the selected analysis in a new window."""
         analysis_type = item.data(1)
@@ -80,6 +101,12 @@ class AnalysisTab(BaseTab):
             self._open_position_error_plot()
         elif analysis_type == "combined_metrics_plot":
             self._open_combined_metrics_plot()
+        elif analysis_type == "combined_metrics_line_plot":
+            self._open_combined_metrics_line_plot()
+        elif analysis_type == "combined_metrics_plot_sorted":
+            self._open_combined_metrics_plot_sorted()
+        elif analysis_type == "combined_metrics_line_plot_sorted":
+            self._open_combined_metrics_line_plot_sorted()
         # elif analysis_type == "trilat_plot":
         #     self._open_trilat_plot()
         else:
@@ -125,3 +152,38 @@ class AnalysisTab(BaseTab):
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open Combined Metrics Plot: {str(e)}")
+
+    def _open_combined_metrics_line_plot(self):
+        """Open the combined metrics line plot in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = CombinedMetricsLinePlotWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Combined Metrics Line Plot: {str(e)}")
+
+    def _open_combined_metrics_plot_sorted(self):
+        """Open the combined metrics plot (sorted) in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = CombinedMetricsPlotSortedWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Combined Metrics Plot (Sorted): {str(e)}")
+
+    def _open_combined_metrics_line_plot_sorted(self):
+        """Open the combined metrics line plot (sorted) in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = CombinedMetricsLinePlotSortedWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Combined Metrics Line Plot (Sorted): {str(e)}")
+
+    def update(self):
+        """Update the analysis tab if needed."""
+        # For now, no dynamic updates needed
+        pass
