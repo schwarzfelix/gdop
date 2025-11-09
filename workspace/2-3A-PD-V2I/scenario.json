@@ -11,11 +11,6 @@
         	"position": [0.00, 11.00]
 		},
 		{
-			"name": "FTM_GREEN",
-			"type": "ANCHOR",
-			"position": [12.50, 3.30]
-		},
-		{
 			"name": "FTM_ORANGE",
 			"type": "ANCHOR",
 			"position": [8.00, 5.50]

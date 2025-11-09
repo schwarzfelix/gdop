@@ -16,11 +16,6 @@
 			"position": [16.00, 0.00]
 		},
 		{
-			"name": "FTM_ORANGE",
-			"type": "ANCHOR",
-			"position": [12.50, 3.30]
-		},
-		{
 			"name": "N10P",
 			"type": "TAG",
 			"position": [8.00, 5.50]
