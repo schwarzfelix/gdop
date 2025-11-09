@@ -28,6 +28,15 @@ class MultiTrilatPlot(QObject):
         self.ax.set_ylabel('y (m)')
         self.ax.set_aspect('equal', adjustable='box')
 
+        # Create legend
+        legend_elements = []
+        legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='blue', markersize=8, label='Anchors'))
+        legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
+        legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
+        
+        if legend_elements:
+            self.ax.legend(handles=legend_elements, loc='upper right')
+
         # Initialize artists for each scenario
         self.anchor_scatters = []
         self.tag_scatters = []

@@ -467,6 +467,18 @@ class TrilatPlot(QObject):
         self.ax_trilat.set_xlabel('x (m)')
         self.ax_trilat.set_ylabel('y (m)')
 
+        # Create legend
+        legend_elements = []
+        if self.anchor_scatter:
+            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=self.STATION_COLOR, markersize=8, label='Anchors'))
+        if self.tag_estimate_scatter:
+            legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
+        if self.tag_truth_plot:
+            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
+        
+        if legend_elements:
+            self.ax_trilat.legend(handles=legend_elements, loc='upper right')
+
         # Create border rectangle if available
         if self.scenario.border_rectangle:
             rect = self.scenario.border_rectangle
