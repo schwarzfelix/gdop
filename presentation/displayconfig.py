@@ -36,3 +36,4 @@ class DisplayConfig():
         self.showLegendAnchors = True
         self.showLegendTags = True
         self.showLegendTagTruth = True
+        self.showLegendBorder = True

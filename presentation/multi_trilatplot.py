@@ -365,6 +365,8 @@ class MultiTrilatPlot(QObject):
             legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
         if self.display_config.showLegendTagTruth:
             legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
+        if self.display_config.showLegendBorder and any(self.border_patches):
+            legend_elements.append(plt.Rectangle((0, 0), 1, 1, edgecolor='black', facecolor='none', linewidth=2, label='Border'))
         
         if legend_elements:
             self.ax.legend(handles=legend_elements, loc='upper right')

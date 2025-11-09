@@ -33,6 +33,7 @@ class DisplayTab(BaseTab):
         self.show_legend_anchors_checkbox = None
         self.show_legend_tags_checkbox = None
         self.show_legend_tag_truth_checkbox = None
+        self.show_legend_border_checkbox = None
     
     @property
     def tab_name(self):
@@ -184,6 +185,12 @@ class DisplayTab(BaseTab):
         show_legend_tag_truth_item = QTreeWidgetItem(legend_elements_node)
         self.display_tree.setItemWidget(show_legend_tag_truth_item, 0, self.show_legend_tag_truth_checkbox)
 
+        self.show_legend_border_checkbox = QCheckBox("Show Border in Legend")
+        self.show_legend_border_checkbox.setChecked(self.display_config.showLegendBorder)
+        self.show_legend_border_checkbox.stateChanged.connect(self.update_display_config)
+        show_legend_border_item = QTreeWidgetItem(legend_elements_node)
+        self.display_tree.setItemWidget(show_legend_border_item, 0, self.show_legend_border_checkbox)
+
         return self.display_tree
 
     def update_display_config(self):
@@ -221,5 +228,6 @@ class DisplayTab(BaseTab):
         self.display_config.showLegendAnchors = self.show_legend_anchors_checkbox.isChecked()
         self.display_config.showLegendTags = self.show_legend_tags_checkbox.isChecked()
         self.display_config.showLegendTagTruth = self.show_legend_tag_truth_checkbox.isChecked()
+        self.display_config.showLegendBorder = self.show_legend_border_checkbox.isChecked()
 
         self.main_window.update_all()

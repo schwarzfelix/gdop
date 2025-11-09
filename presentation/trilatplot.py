@@ -516,6 +516,8 @@ class TrilatPlot(QObject):
             legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
         if self.display_config.showLegendTagTruth and self.tag_truth_plot:
             legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
+        if self.display_config.showLegendBorder and self.border_rectangle_patch:
+            legend_elements.append(plt.Rectangle((0, 0), 1, 1, edgecolor='black', facecolor='none', linewidth=2, label='Border'))
         
         if legend_elements:
             self.ax_trilat.legend(handles=legend_elements, loc='upper right')
