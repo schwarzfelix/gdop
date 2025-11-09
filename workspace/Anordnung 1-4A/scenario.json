@@ -1,0 +1,35 @@
+{
+  "stations": [
+    {
+		"name": "FTM_PINK",
+		"type": "ANCHOR",
+		"position": [0.00, 11.00]
+    },
+    {
+		"name": "FTM_BLUE",
+		"type": "ANCHOR",
+		"position": [16.00, 11.00]
+    },
+    {
+		"name": "FTM_GREEN",
+		"type": "ANCHOR",
+		"position": [0.00, 0.00]
+    },
+    {
+		"name": "FTM_ORANGE",
+		"type": "ANCHOR",
+		"position": [16.00, 0.00]
+    },
+    {
+		"name": "N10P",
+		"type": "TAG",
+		"position": [8.00, 5.50]
+    }
+	],
+	"rectangle": {
+		"min_x": -1.0,
+		"max_x": 17.0,
+		"min_y": -1.0,
+		"max_y": 12.0
+	}
+}
