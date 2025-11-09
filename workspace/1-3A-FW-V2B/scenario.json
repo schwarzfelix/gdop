@@ -25,7 +25,7 @@
 		"type": "TAG",
 		"position": [8.00, 5.50]
     }
-	],
+  ],
 	"rectangle": {
 		"min_x": -1.0,
 		"max_x": 17.0,
