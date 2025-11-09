@@ -30,9 +30,12 @@ class MultiTrilatPlot(QObject):
 
         # Create legend
         legend_elements = []
-        legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='blue', markersize=8, label='Anchors'))
-        legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
-        legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
+        if self.display_config.showLegendAnchors:
+            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='blue', markersize=8, label='Anchors'))
+        if self.display_config.showLegendTags:
+            legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
+        if self.display_config.showLegendTagTruth:
+            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
         
         if legend_elements:
             self.ax.legend(handles=legend_elements, loc='upper right')
@@ -288,6 +291,9 @@ class MultiTrilatPlot(QObject):
         # Update viewport over all scenarios
         self._update_viewport()
 
+        # Update legend
+        self.update_legend()
+
     def _update_viewport(self):
         """Update viewport based on all positions from all scenarios or border rectangles if option is set."""
         if self.display_config.useBorderRectangleForViewport:
@@ -344,6 +350,28 @@ class MultiTrilatPlot(QObject):
                 ylim = (-10, 10)
         self.ax.set_xlim(xlim)
         self.ax.set_ylim(ylim)
+
+    def update_legend(self):
+        """Update the legend based on current display config."""
+        # Remove existing legend
+        if self.ax.get_legend():
+            self.ax.get_legend().remove()
+        
+        # Create new legend
+        legend_elements = []
+        if self.display_config.showLegendAnchors:
+            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='blue', markersize=8, label='Anchors'))
+        if self.display_config.showLegendTags:
+            legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
+        if self.display_config.showLegendTagTruth:
+            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
+        
+        if legend_elements:
+            self.ax.legend(handles=legend_elements, loc='upper right')
+        else:
+            # Remove legend if no elements
+            if self.ax.get_legend():
+                self.ax.get_legend().remove()
 
     def redraw(self):
         """Trigger a canvas redraw."""

@@ -30,6 +30,9 @@ class DisplayTab(BaseTab):
         self.show_border_rectangle_checkbox = None
         self.use_border_rectangle_for_viewport_checkbox = None
         self.show_position_error_lines_checkbox = None
+        self.show_legend_anchors_checkbox = None
+        self.show_legend_tags_checkbox = None
+        self.show_legend_tag_truth_checkbox = None
     
     @property
     def tab_name(self):
@@ -160,6 +163,27 @@ class DisplayTab(BaseTab):
         use_border_rectangle_for_viewport_item = QTreeWidgetItem(plots_node)
         self.display_tree.setItemWidget(use_border_rectangle_for_viewport_item, 0, self.use_border_rectangle_for_viewport_checkbox)
 
+        # Legend Elements section
+        legend_elements_node = QTreeWidgetItem(self.display_tree, ["Legend Elements"])
+        self.show_legend_anchors_checkbox = QCheckBox("Show Anchors in Legend")
+        self.show_legend_anchors_checkbox.setChecked(self.display_config.showLegendAnchors)
+        self.show_legend_anchors_checkbox.stateChanged.connect(self.update_display_config)
+        show_legend_anchors_item = QTreeWidgetItem(legend_elements_node)
+        self.display_tree.setItemWidget(show_legend_anchors_item, 0, self.show_legend_anchors_checkbox)
+        legend_elements_node.setExpanded(True)
+
+        self.show_legend_tags_checkbox = QCheckBox("Show Tags in Legend")
+        self.show_legend_tags_checkbox.setChecked(self.display_config.showLegendTags)
+        self.show_legend_tags_checkbox.stateChanged.connect(self.update_display_config)
+        show_legend_tags_item = QTreeWidgetItem(legend_elements_node)
+        self.display_tree.setItemWidget(show_legend_tags_item, 0, self.show_legend_tags_checkbox)
+
+        self.show_legend_tag_truth_checkbox = QCheckBox("Show Tag Truth in Legend")
+        self.show_legend_tag_truth_checkbox.setChecked(self.display_config.showLegendTagTruth)
+        self.show_legend_tag_truth_checkbox.stateChanged.connect(self.update_display_config)
+        show_legend_tag_truth_item = QTreeWidgetItem(legend_elements_node)
+        self.display_tree.setItemWidget(show_legend_tag_truth_item, 0, self.show_legend_tag_truth_checkbox)
+
         return self.display_tree
 
     def update_display_config(self):
@@ -192,5 +216,10 @@ class DisplayTab(BaseTab):
         self.display_config.showComparisonPlot = self.show_comparison_plot_checkbox.isChecked()
         self.display_config.showBorderRectangle = self.show_border_rectangle_checkbox.isChecked()
         self.display_config.useBorderRectangleForViewport = self.use_border_rectangle_for_viewport_checkbox.isChecked()
+
+        # Legend Elements
+        self.display_config.showLegendAnchors = self.show_legend_anchors_checkbox.isChecked()
+        self.display_config.showLegendTags = self.show_legend_tags_checkbox.isChecked()
+        self.display_config.showLegendTagTruth = self.show_legend_tag_truth_checkbox.isChecked()
 
         self.main_window.update_all()

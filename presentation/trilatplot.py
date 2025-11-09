@@ -342,6 +342,9 @@ class TrilatPlot(QObject):
         except Exception:
             pass
 
+        # Update legend
+        self.update_legend()
+
         # Update border rectangle visibility
         if self.border_rectangle_patch:
             self.border_rectangle_patch.set_visible(self.display_config.showBorderRectangle)
@@ -469,11 +472,11 @@ class TrilatPlot(QObject):
 
         # Create legend
         legend_elements = []
-        if self.anchor_scatter:
+        if self.display_config.showLegendAnchors and self.anchor_scatter:
             legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=self.STATION_COLOR, markersize=8, label='Anchors'))
-        if self.tag_estimate_scatter:
+        if self.display_config.showLegendTags and self.tag_estimate_scatter:
             legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
-        if self.tag_truth_plot:
+        if self.display_config.showLegendTagTruth and self.tag_truth_plot:
             legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
         
         if legend_elements:
@@ -498,6 +501,28 @@ class TrilatPlot(QObject):
             self.fig.canvas.draw_idle()
         except Exception:
             pass
+
+    def update_legend(self):
+        """Update the legend based on current display config."""
+        # Remove existing legend
+        if self.ax_trilat.get_legend():
+            self.ax_trilat.get_legend().remove()
+        
+        # Create new legend
+        legend_elements = []
+        if self.display_config.showLegendAnchors and self.anchor_scatter:
+            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=self.STATION_COLOR, markersize=8, label='Anchors'))
+        if self.display_config.showLegendTags and self.tag_estimate_scatter:
+            legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
+        if self.display_config.showLegendTagTruth and self.tag_truth_plot:
+            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
+        
+        if legend_elements:
+            self.ax_trilat.legend(handles=legend_elements, loc='upper right')
+        else:
+            # Remove legend if no elements
+            if self.ax_trilat.get_legend():
+                self.ax_trilat.get_legend().remove()
 
     def _on_resize(self, event):
         """Matplotlib resize event handler: adjust trilat axis so x/y units stay proportional."""

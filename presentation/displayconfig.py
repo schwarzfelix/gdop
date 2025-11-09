@@ -31,3 +31,8 @@ class DisplayConfig():
         # Border Rectangle
         self.showBorderRectangle = True
         self.useBorderRectangleForViewport = False
+
+        # Legend Elements
+        self.showLegendAnchors = True
+        self.showLegendTags = True
+        self.showLegendTagTruth = True
