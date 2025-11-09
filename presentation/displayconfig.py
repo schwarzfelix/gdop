@@ -37,3 +37,6 @@ class DisplayConfig():
         self.showLegendTags = True
         self.showLegendTagTruth = True
         self.showLegendBorder = True
+
+        # Import Options
+        self.useStandardAggregationMethod = True

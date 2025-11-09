@@ -34,6 +34,7 @@ class DisplayTab(BaseTab):
         self.show_legend_tags_checkbox = None
         self.show_legend_tag_truth_checkbox = None
         self.show_legend_border_checkbox = None
+        self.use_standard_aggregation_method_checkbox = None
     
     @property
     def tab_name(self):
@@ -191,6 +192,15 @@ class DisplayTab(BaseTab):
         show_legend_border_item = QTreeWidgetItem(legend_elements_node)
         self.display_tree.setItemWidget(show_legend_border_item, 0, self.show_legend_border_checkbox)
 
+        # Import Options section
+        import_options_node = QTreeWidgetItem(self.display_tree, ["Import Options"])
+        self.use_standard_aggregation_method_checkbox = QCheckBox("Use Standard Aggregation Method")
+        self.use_standard_aggregation_method_checkbox.setChecked(self.display_config.useStandardAggregationMethod)
+        self.use_standard_aggregation_method_checkbox.stateChanged.connect(self.update_display_config)
+        use_standard_aggregation_method_item = QTreeWidgetItem(import_options_node)
+        self.display_tree.setItemWidget(use_standard_aggregation_method_item, 0, self.use_standard_aggregation_method_checkbox)
+        import_options_node.setExpanded(True)
+
         return self.display_tree
 
     def update_display_config(self):
@@ -229,5 +239,8 @@ class DisplayTab(BaseTab):
         self.display_config.showLegendTags = self.show_legend_tags_checkbox.isChecked()
         self.display_config.showLegendTagTruth = self.show_legend_tag_truth_checkbox.isChecked()
         self.display_config.showLegendBorder = self.show_legend_border_checkbox.isChecked()
+
+        # Import Options
+        self.display_config.useStandardAggregationMethod = self.use_standard_aggregation_method_checkbox.isChecked()
 
         self.main_window.update_all()

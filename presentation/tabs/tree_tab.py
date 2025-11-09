@@ -385,19 +385,23 @@ class TreeTab(BaseTab):
         Shows an aggregation method dialog (reuse from DataTab) and calls the importer.
         On success appends the scenario to app.scenarios and activates it in the plot.
         """
-        # Ask for aggregation method
-        try:
-            agg_dialog = AggregationMethodDialog(self.main_window)
-        except Exception:
-            # fallback: simple selection
-            from PyQt5.QtWidgets import QMessageBox
-            QMessageBox.information(self.main_window, "Import", "Unable to open aggregation dialog.")
-            return
+        # Check if standard aggregation method should be used
+        if self.main_window.display_config.useStandardAggregationMethod:
+            agg_method = "lowest"
+        else:
+            # Ask for aggregation method
+            try:
+                agg_dialog = AggregationMethodDialog(self.main_window)
+            except Exception:
+                # fallback: simple selection
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.information(self.main_window, "Import", "Unable to open aggregation dialog.")
+                return
 
-        if agg_dialog.exec_() != agg_dialog.Accepted:
-            return
+            if agg_dialog.exec_() != agg_dialog.Accepted:
+                return
 
-        agg_method = agg_dialog.get_method()
+            agg_method = agg_dialog.get_method()
 
         try:
             success, message, imported_scenario = importer_module.import_scenario(scen_name, workspace_dir="workspace", agg_method=agg_method)
