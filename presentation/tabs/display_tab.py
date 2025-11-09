@@ -14,13 +14,15 @@ class DisplayTab(BaseTab):
         self.display_tree = None
         # Store references to checkboxes for later access
         self.anchor_circles_checkbox = None
-        self.anchor_labels_checkbox = None
+        self.anchor_names_checkbox = None
+        self.anchor_coordinates_checkbox = None
         self.between_anchors_lines_checkbox = None
         self.between_anchors_labels_checkbox = None
         self.tag_anchor_lines_checkbox = None
         self.tag_anchor_labels_checkbox = None
         self.right_click_anchors_checkbox = None
-        self.tag_labels_checkbox = None
+        self.tag_names_checkbox = None
+        self.tag_coordinates_checkbox = None
         self.drag_anchors_checkbox = None
         self.show_anchors_checkbox = None
         self.show_tag_truth_checkbox = None
@@ -60,11 +62,17 @@ class DisplayTab(BaseTab):
         anchor_circles_item = QTreeWidgetItem(anchors_node)
         self.display_tree.setItemWidget(anchor_circles_item, 0, self.anchor_circles_checkbox)
 
-        self.anchor_labels_checkbox = QCheckBox("Show Anchor Labels")
-        self.anchor_labels_checkbox.setChecked(self.display_config.showAnchorLabels)
-        self.anchor_labels_checkbox.stateChanged.connect(self.update_display_config)
-        anchor_labels_item = QTreeWidgetItem(anchors_node)
-        self.display_tree.setItemWidget(anchor_labels_item, 0, self.anchor_labels_checkbox)
+        self.anchor_names_checkbox = QCheckBox("Show Anchor Names")
+        self.anchor_names_checkbox.setChecked(self.display_config.showAnchorNames)
+        self.anchor_names_checkbox.stateChanged.connect(self.update_display_config)
+        anchor_names_item = QTreeWidgetItem(anchors_node)
+        self.display_tree.setItemWidget(anchor_names_item, 0, self.anchor_names_checkbox)
+
+        self.anchor_coordinates_checkbox = QCheckBox("Show Anchor Coordinates")
+        self.anchor_coordinates_checkbox.setChecked(self.display_config.showAnchorCoordinates)
+        self.anchor_coordinates_checkbox.stateChanged.connect(self.update_display_config)
+        anchor_coordinates_item = QTreeWidgetItem(anchors_node)
+        self.display_tree.setItemWidget(anchor_coordinates_item, 0, self.anchor_coordinates_checkbox)
 
         # Tags section
         tags_node = QTreeWidgetItem(self.display_tree, ["Tags"])
@@ -81,11 +89,17 @@ class DisplayTab(BaseTab):
         show_tags_item = QTreeWidgetItem(tags_node)
         self.display_tree.setItemWidget(show_tags_item, 0, self.show_tags_checkbox)
 
-        self.tag_labels_checkbox = QCheckBox("Show Tag Labels")
-        self.tag_labels_checkbox.setChecked(self.display_config.showTagLabels)
-        self.tag_labels_checkbox.stateChanged.connect(self.update_display_config)
-        tag_labels_item = QTreeWidgetItem(tags_node)
-        self.display_tree.setItemWidget(tag_labels_item, 0, self.tag_labels_checkbox)
+        self.tag_names_checkbox = QCheckBox("Show Tag Names")
+        self.tag_names_checkbox.setChecked(self.display_config.showTagNames)
+        self.tag_names_checkbox.stateChanged.connect(self.update_display_config)
+        tag_names_item = QTreeWidgetItem(tags_node)
+        self.display_tree.setItemWidget(tag_names_item, 0, self.tag_names_checkbox)
+
+        self.tag_coordinates_checkbox = QCheckBox("Show Tag Coordinates")
+        self.tag_coordinates_checkbox.setChecked(self.display_config.showTagCoordinates)
+        self.tag_coordinates_checkbox.stateChanged.connect(self.update_display_config)
+        tag_coordinates_item = QTreeWidgetItem(tags_node)
+        self.display_tree.setItemWidget(tag_coordinates_item, 0, self.tag_coordinates_checkbox)
 
         self.show_position_error_lines_checkbox = QCheckBox("Show Position Error Lines")
         self.show_position_error_lines_checkbox.setChecked(self.display_config.showPositionErrorLines)
@@ -208,13 +222,15 @@ class DisplayTab(BaseTab):
         # Anchors
         self.display_config.showAnchors = self.show_anchors_checkbox.isChecked()
         self.display_config.showAnchorCircles = self.anchor_circles_checkbox.isChecked()
-        self.display_config.showAnchorLabels = self.anchor_labels_checkbox.isChecked()
+        self.display_config.showAnchorNames = self.anchor_names_checkbox.isChecked()
+        self.display_config.showAnchorCoordinates = self.anchor_coordinates_checkbox.isChecked()
 
         # Tags
         self.display_config.showTagTruth = self.show_tag_truth_checkbox.isChecked()
         self.display_config.showTags = self.show_tags_checkbox.isChecked()
-        self.display_config.showTagLabels = self.tag_labels_checkbox.isChecked()
         self.display_config.showPositionErrorLines = self.show_position_error_lines_checkbox.isChecked()
+        self.display_config.showTagNames = self.tag_names_checkbox.isChecked()
+        self.display_config.showTagCoordinates = self.tag_coordinates_checkbox.isChecked()
 
         # Between Anchors and Tags
         self.display_config.showTagAnchorLabels = self.tag_anchor_labels_checkbox.isChecked()

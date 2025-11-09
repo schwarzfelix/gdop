@@ -4,13 +4,15 @@ class DisplayConfig():
         # Anchors
         self.showAnchors = True
         self.showAnchorCircles = True
-        self.showAnchorLabels = True
+        self.showAnchorNames = True
+        self.showAnchorCoordinates = False
 
         # Tags
         self.showTagTruth = True
         self.showTags = True
-        self.showTagLabels = True
         self.showPositionErrorLines = True
+        self.showTagNames = True
+        self.showTagCoordinates = False
 
         # Between Anchors and Tags
         self.showTagAnchorLabels = False

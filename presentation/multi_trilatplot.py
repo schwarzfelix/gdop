@@ -236,8 +236,14 @@ class MultiTrilatPlot(QObject):
                 tag_name_texts.append(t)
 
             for j, tag_pos in enumerate(tag_positions):
-                if self.display_config.showTagLabels:
-                    tag_name_texts[j].set_text(f"{scenario.get_tag_list()[j].name} ({scenario.name})")
+                parts = []
+                if self.display_config.showTagNames:
+                    parts.append(f"{scenario.get_tag_list()[j].name} ({scenario.name})")
+                if self.display_config.showTagCoordinates:
+                    parts.append(f"({tag_pos[0]:.2f}, {tag_pos[1]:.2f})")
+                text = "\n".join(parts)
+                if text:
+                    tag_name_texts[j].set_text(text)
                     tag_name_texts[j].set_position((tag_pos[0], tag_pos[1]))
                     tag_name_texts[j].set_visible(True)
                 else:
@@ -253,8 +259,14 @@ class MultiTrilatPlot(QObject):
                 anchor_name_texts.append(t)
 
             for j in range(len(anchor_positions)):
-                if self.display_config.showAnchorLabels:
-                    anchor_name_texts[j].set_text(f"{scenario.get_anchor_list()[j].name} ({scenario.name})")
+                parts = []
+                if self.display_config.showAnchorNames:
+                    parts.append(f"{scenario.get_anchor_list()[j].name} ({scenario.name})")
+                if self.display_config.showAnchorCoordinates:
+                    parts.append(f"({anchor_positions[j][0]:.2f}, {anchor_positions[j][1]:.2f})")
+                text = "\n".join(parts)
+                if text:
+                    anchor_name_texts[j].set_text(text)
                     anchor_name_texts[j].set_position((anchor_positions[j][0], anchor_positions[j][1]))
                     anchor_name_texts[j].set_visible(True)
                 else:

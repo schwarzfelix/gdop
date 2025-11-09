@@ -276,9 +276,15 @@ class TrilatPlot(QObject):
             self.tag_name_texts.append(t)
 
         for i, tag_pos in enumerate(tag_positions):
-            if self.display_config.showTagLabels:
+            parts = []
+            if self.display_config.showTagNames:
+                parts.append(self.scenario.get_tag_list()[i].name)
+            if self.display_config.showTagCoordinates:
+                parts.append(f"({tag_pos[0]:.2f}, {tag_pos[1]:.2f})")
+            text = "\n".join(parts)
+            if text:
                 t = self.tag_name_texts[i]
-                t.set_text(self.scenario.get_tag_list()[i].name)
+                t.set_text(text)
                 t.set_position((tag_pos[0], tag_pos[1]))
                 t.set_visible(True)
             else:
@@ -298,9 +304,15 @@ class TrilatPlot(QObject):
             self.anchor_name_texts.append(t)
 
         for i in range(len(anchor_positions)):
-            if self.display_config.showAnchorLabels:
+            parts = []
+            if self.display_config.showAnchorNames:
+                parts.append(self.scenario.get_anchor_list()[i].name)
+            if self.display_config.showAnchorCoordinates:
+                parts.append(f"({anchor_positions[i][0]:.2f}, {anchor_positions[i][1]:.2f})")
+            text = "\n".join(parts)
+            if text:
                 t = self.anchor_name_texts[i]
-                t.set_text(self.scenario.get_anchor_list()[i].name)
+                t.set_text(text)
                 t.set_position((anchor_positions[i][0], anchor_positions[i][1]))
                 t.set_visible(True)
             else:
