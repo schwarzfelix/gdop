@@ -29,19 +29,27 @@ class PositionErrorPlot(QObject):
         self.scenarios = app_scenarios
 
         self.fig, self.ax = plt.subplots(figsize=(6, 4))
-        self.ax.set_title('First-tag Position Error per scenario')
+        self.ax.set_title('First-tag Position Error per Scenario (Grouped by first 4 characters)')
         self.ax.set_ylabel('Position Error (m)')
 
     def update_data(self, anchors=False, tags=False, measurements=False):
-        """Compute position error for the first tag of each scenario and update the bar chart.
+        """Compute position error for the first tag of each scenario and update the grouped bar chart.
+
+        Scenarios are grouped by the first 4 characters of their name, with bars for each scenario within groups.
 
         Signature accepts optional flags for compatibility with MainWindow.update_all().
         """
+        from collections import defaultdict
+
+        group_to_scenarios = defaultdict(list)
+        scenario_errors = []
         scenario_names = []
-        error_values = []
 
         for s in self.scenarios:
-            scenario_names.append(getattr(s, 'name', str(s)))
+            name = getattr(s, 'name', str(s))
+            group_key = name[:4] if name else 'Unknown'
+            group_to_scenarios[group_key].append(s)
+            
             tags = s.get_tag_list()
             if tags and len(tags) > 0:
                 try:
@@ -52,17 +60,37 @@ class PositionErrorPlot(QObject):
                     error = 0.0
             else:
                 error = 0.0
-            error_values.append(float(error))
+            scenario_errors.append(float(error))
+            scenario_names.append(name)
+
+        # Prepare grouped bar positions
+        groups = sorted(group_to_scenarios.keys())
+        if not groups:
+            return
+        
+        max_per_group = max(len(group_to_scenarios[g]) for g in groups)
+        width = 0.8 / max_per_group if max_per_group > 0 else 0.8
+        x_positions = []
+        current_x = 0
+        group_centers = []
+        
+        for group in groups:
+            group_scenarios = group_to_scenarios[group]
+            group_start = current_x
+            for _ in group_scenarios:
+                x_positions.append(current_x)
+                current_x += width
+            group_centers.append((group_start + current_x - width) / 2)
+            current_x += 0.2  # Space between groups
 
         # draw bars
         self.ax.clear()
-        x = range(len(scenario_names))
-        self.ax.bar(x, error_values, color='blue')
-        self.ax.set_xticks(x)
-        self.ax.set_xticklabels(scenario_names, rotation=90)
-        self.ax.set_ylim(0, max(5, max(error_values) * 1.2 if error_values else 5))
-        for i, v in enumerate(error_values):
-            self.ax.text(i, v, f"{v:.2f}", ha='center', va='bottom')
+        self.ax.bar(x_positions, scenario_errors, width=width, color='blue')
+        self.ax.set_xticks(group_centers)
+        self.ax.set_xticklabels(groups, rotation=90)
+        self.ax.set_ylim(0, max(5, max(scenario_errors) * 1.2 if scenario_errors else 5))
+        for i, v in enumerate(scenario_errors):
+            self.ax.text(x_positions[i], v, f"{v:.2f}", ha='center', va='bottom', fontsize=8)
 
     def redraw(self):
         try:
