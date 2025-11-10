@@ -17,6 +17,7 @@ class TrilatPlot(QObject):
     STATION_COLOR = 'blue'
     CIRCLE_LINESTYLE = 'dotted'
     VIEWPORT_PADDING = 5.0
+    LABEL_OFFSET = 1
 
     def __init__(self, window, scenario):
         super().__init__()
@@ -276,16 +277,14 @@ class TrilatPlot(QObject):
             self.tag_name_texts.append(t)
 
         for i, tag_pos in enumerate(tag_positions):
-            parts = []
-            if self.display_config.showTagNames:
-                parts.append(self.scenario.get_tag_list()[i].name)
-            if self.display_config.showTagCoordinates:
-                parts.append(f"({tag_pos[0]:.2f}, {tag_pos[1]:.2f})")
-            text = "\n".join(parts)
-            if text:
+            x, y = tag_pos
+            name = self.scenario.get_tag_list()[i].name
+            label_text = self._generate_label_text(name, x, y, show_name=self.display_config.showTagNames, show_coords=self.display_config.showTagCoordinates)
+            if label_text:
                 t = self.tag_name_texts[i]
-                t.set_text(text)
-                t.set_position((tag_pos[0], tag_pos[1]))
+                t.set_text(label_text)
+                t.set_position((x + self.LABEL_OFFSET, y + self.LABEL_OFFSET))
+                t.set_bbox(dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.8))
                 t.set_visible(True)
             else:
                 self.tag_name_texts[i].set_visible(False)
@@ -304,16 +303,14 @@ class TrilatPlot(QObject):
             self.anchor_name_texts.append(t)
 
         for i in range(len(anchor_positions)):
-            parts = []
-            if self.display_config.showAnchorNames:
-                parts.append(self.scenario.get_anchor_list()[i].name)
-            if self.display_config.showAnchorCoordinates:
-                parts.append(f"({anchor_positions[i][0]:.2f}, {anchor_positions[i][1]:.2f})")
-            text = "\n".join(parts)
-            if text:
+            x, y = anchor_positions[i]
+            name = self.scenario.get_anchor_list()[i].name
+            label_text = self._generate_label_text(name, x, y, show_name=self.display_config.showAnchorNames, show_coords=self.display_config.showAnchorCoordinates)
+            if label_text:
                 t = self.anchor_name_texts[i]
-                t.set_text(text)
-                t.set_position((anchor_positions[i][0], anchor_positions[i][1]))
+                t.set_text(label_text)
+                t.set_position((x + self.LABEL_OFFSET, y + self.LABEL_OFFSET))
+                t.set_bbox(dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.8))
                 t.set_visible(True)
             else:
                 self.anchor_name_texts[i].set_visible(False)
@@ -673,3 +670,13 @@ class TrilatPlot(QObject):
             self.tags_changed.emit()
         if flags.get("measurements"):
             self.measurements_changed.emit()
+
+    def _generate_label_text(self, name, x, y, show_name=False, show_coords=False, scenario_name=None):
+        parts = []
+        if show_name:
+            parts.append(name)
+        if show_coords:
+            parts.append(f"({x:.2f}, {y:.2f})")
+        if scenario_name and (show_name or show_coords):
+            parts.append(f"({scenario_name})")
+        return "\n".join(parts) if parts else ""
