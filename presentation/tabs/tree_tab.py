@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
 from .base_tab import BaseTab
 from PyQt5.QtWidgets import QInputDialog
 from simulation.station import Anchor
+from simulation.scenario import Scenario
 from data.importer import get_available_scenarios, validate_scenario_for_import, get_scenario_data
 from data import importer as importer_module
 from PyQt5.QtWidgets import QComboBox, QFormLayout, QDialog, QVBoxLayout
@@ -26,6 +27,7 @@ from PyQt5.QtCore import QAbstractTableModel, Qt
 from presentation.trilatplot_window import TrilatPlotWindow
 from simulation import station as station_module
 import numpy as np
+import copy
 
 
 class DataFrameModel(QAbstractTableModel):
@@ -198,6 +200,13 @@ class TreeTab(BaseTab):
 
                 row_layout.addWidget(popup_button)
 
+                # Add Rename button for scenarios
+                rename_scenario_button = QPushButton("✎")
+                rename_scenario_button.setToolTip("Rename scenario (creates a clone)")
+                rename_scenario_button.clicked.connect(lambda checked, s=scen: self.rename_scenario_dialog(s))
+
+                row_layout.addWidget(rename_scenario_button)
+
                 if active is scen:
                     self.tree.setCurrentItem(scen_node)
                     checkbox.setEnabled(False)  # Prevent unchecking the active scenario
@@ -278,6 +287,23 @@ class TreeTab(BaseTab):
 
     def rename_station(self, station, new_name):
         station.name = new_name
+        self.main_window.update_all()
+
+    def rename_scenario_dialog(self, scen):
+        new_name, ok = QInputDialog.getText(self.main_window, "Rename Scenario", "New name:", text=scen.name)
+        if ok and new_name and new_name != scen.name:
+            self.clone_and_rename_scenario(scen, new_name)
+
+    def clone_and_rename_scenario(self, scen, new_name):
+        new_scenario = Scenario(new_name)
+        new_scenario._stations = copy.deepcopy(scen.stations)
+        new_scenario._measurements = copy.deepcopy(scen.measurements)
+        new_scenario._sigma = scen._sigma
+        new_scenario._tag_truth = copy.deepcopy(scen._tag_truth)
+        new_scenario._border_rectangle = copy.deepcopy(scen._border_rectangle) if scen._border_rectangle else None
+
+        app = self.main_window.app
+        app.scenarios.append(new_scenario)
         self.main_window.update_all()
 
     def _delete_station(self, station):
