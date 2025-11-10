@@ -26,6 +26,7 @@ class DisplayTab(BaseTab):
         self.drag_anchors_checkbox = None
         self.show_anchors_checkbox = None
         self.show_tag_truth_checkbox = None
+        self.show_tag_truth_labels_checkbox = None
         self.show_tags_checkbox = None
         self.show_trilat_plot_checkbox = None
         self.show_comparison_plot_checkbox = None
@@ -82,6 +83,12 @@ class DisplayTab(BaseTab):
         show_tag_truth_item = QTreeWidgetItem(tags_node)
         self.display_tree.setItemWidget(show_tag_truth_item, 0, self.show_tag_truth_checkbox)
         tags_node.setExpanded(True)
+
+        self.show_tag_truth_labels_checkbox = QCheckBox("Show Tag Truth Labels")
+        self.show_tag_truth_labels_checkbox.setChecked(self.display_config.showTagTruthLabels)
+        self.show_tag_truth_labels_checkbox.stateChanged.connect(self.update_display_config)
+        show_tag_truth_labels_item = QTreeWidgetItem(tags_node)
+        self.display_tree.setItemWidget(show_tag_truth_labels_item, 0, self.show_tag_truth_labels_checkbox)
 
         self.show_tags_checkbox = QCheckBox("Show Tags")
         self.show_tags_checkbox.setChecked(self.display_config.showTags)
@@ -227,6 +234,7 @@ class DisplayTab(BaseTab):
 
         # Tags
         self.display_config.showTagTruth = self.show_tag_truth_checkbox.isChecked()
+        self.display_config.showTagTruthLabels = self.show_tag_truth_labels_checkbox.isChecked()
         self.display_config.showTags = self.show_tags_checkbox.isChecked()
         self.display_config.showPositionErrorLines = self.show_position_error_lines_checkbox.isChecked()
         self.display_config.showTagNames = self.tag_names_checkbox.isChecked()

@@ -15,6 +15,7 @@ class MultiTrilatPlot(QObject):
     CIRCLE_LINESTYLE = 'dotted'
     VIEWPORT_PADDING = 5.0
     LABEL_OFFSET = 1
+    LABEL_OFFSET = 1
 
     def __init__(self, window, scenarios):
         super().__init__()
@@ -54,6 +55,7 @@ class MultiTrilatPlot(QObject):
         self.anchor_name_texts_list = []
         self.position_error_lines_list = []
         self.border_patches = []
+        self.tag_truth_texts = []
 
         linestyles = ['solid', 'dashed', 'dashdot', 'dotted']
         colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black']
@@ -80,6 +82,7 @@ class MultiTrilatPlot(QObject):
             self.tag_name_texts_list.append([])
             self.anchor_name_texts_list.append([])
             self.position_error_lines_list.append([])
+            self.tag_truth_texts.append(None)
 
             # Border rectangle black, as in TrilatPlot
             if scenario.border_rectangle:
@@ -122,8 +125,21 @@ class MultiTrilatPlot(QObject):
             if scenario.tag_truth:
                 tag_truth_scatter.set_offsets([scenario.tag_truth.position()])
                 tag_truth_scatter.set_visible(self.display_config.showTagTruth)
+
+                # Update tag truth label
+                pos = scenario.tag_truth.position()
+                if self.tag_truth_texts[i] is None:
+                    self.tag_truth_texts[i] = self.ax.text(0, 0, '', ha='center', va='bottom', color='green')
+                name = scenario.get_tag_list()[0].name if scenario.get_tag_list() else scenario.tag_truth.name or 'Tag Truth'
+                label_text = self._generate_label_text(name, pos[0], pos[1], show_name=True, show_coords=self.display_config.showTagCoordinates, scenario_name=scenario.name)
+                self.tag_truth_texts[i].set_text(label_text)
+                self.tag_truth_texts[i].set_position((pos[0] + self.LABEL_OFFSET, pos[1] + self.LABEL_OFFSET))
+                self.tag_truth_texts[i].set_bbox(dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.8))
+                self.tag_truth_texts[i].set_visible(self.display_config.showTagTruth and self.display_config.showTagTruthLabels)
             else:
                 tag_truth_scatter.set_visible(False)
+                if self.tag_truth_texts[i]:
+                    self.tag_truth_texts[i].set_visible(False)
 
             # Update circles
             circle_pairs = self.circle_pairs_list[i]

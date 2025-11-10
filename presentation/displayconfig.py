@@ -13,6 +13,7 @@ class DisplayConfig():
         self.showPositionErrorLines = False
         self.showTagNames = False
         self.showTagCoordinates = False
+        self.showTagTruthLabels = True
 
         # Between Anchors and Tags
         self.showTagAnchorLabels = False

@@ -44,6 +44,7 @@ class TrilatPlot(QObject):
         self.lines_plot = []
 
         self.border_rectangle_patch = None
+        self.tag_truth_text = None
 
         self.sandbox_tag = next((tag for tag in self.scenario.get_tag_list() if tag.name == "SANDBOX_TAG"), None)
         if self.sandbox_tag:
@@ -155,6 +156,17 @@ class TrilatPlot(QObject):
         if self.scenario.tag_truth:
             self.tag_truth_plot.set_offsets([self.scenario.tag_truth.position()])
             self.tag_truth_plot.set_visible(self.display_config.showTagTruth)
+
+            # Update tag truth label
+            pos = self.scenario.tag_truth.position()
+            if self.tag_truth_text is None:
+                self.tag_truth_text = self.ax_trilat.text(0, 0, '', ha='center', va='bottom', color='green')
+            name = self.scenario.get_tag_list()[0].name if self.scenario.get_tag_list() else self.scenario.tag_truth.name or 'Tag Truth'
+            label_text = self._generate_label_text(name, pos[0], pos[1], show_name=True, show_coords=self.display_config.showTagCoordinates)
+            self.tag_truth_text.set_text(label_text)
+            self.tag_truth_text.set_position((pos[0] + self.LABEL_OFFSET, pos[1] + self.LABEL_OFFSET))
+            self.tag_truth_text.set_bbox(dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.8))
+            self.tag_truth_text.set_visible(self.display_config.showTagTruth and self.display_config.showTagTruthLabels)
 
         # Update anchor circles: control visibility and radius explicitly. Use visibility toggling
         if self.display_config.showAnchorCircles:
@@ -424,6 +436,14 @@ class TrilatPlot(QObject):
                     except Exception:
                         pass
                 setattr(self, lst_name, [])
+
+            # remove tag_truth_text
+            if getattr(self, 'tag_truth_text', None):
+                try:
+                    self.tag_truth_text.remove()
+                except Exception:
+                    pass
+                self.tag_truth_text = None
 
             # remove circle patches
             for pair in getattr(self, 'circle_pairs', []) or []:
