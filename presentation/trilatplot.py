@@ -160,7 +160,7 @@ class TrilatPlot(QObject):
             # Update tag truth label
             pos = self.scenario.tag_truth.position()
             if self.tag_truth_text is None:
-                self.tag_truth_text = self.ax_trilat.text(0, 0, '', ha='center', va='bottom', color='green')
+                self.tag_truth_text = self.ax_trilat.text(0, 0, '', ha='center', va='center', color='green')
             name = self.scenario.get_tag_list()[0].name if self.scenario.get_tag_list() else self.scenario.tag_truth.name or 'Tag Truth'
             label_text = self._generate_label_text(name, pos[0], pos[1], show_name=True, show_coords=self.display_config.showTagCoordinates)
             self.tag_truth_text.set_text(label_text)
@@ -284,7 +284,7 @@ class TrilatPlot(QObject):
 
         # Update/create tag name texts
         while len(self.tag_name_texts) < len(tag_positions):
-            t = self.ax_trilat.text(0, 0, '', ha='center', va='bottom', color='red')
+            t = self.ax_trilat.text(0, 0, '', ha='center', va='center', color='red')
             t.set_visible(False)
             self.tag_name_texts.append(t)
 
@@ -509,7 +509,7 @@ class TrilatPlot(QObject):
             legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
         
         if legend_elements:
-            self.ax_trilat.legend(handles=legend_elements, loc='upper right')
+            self.ax_trilat.legend(handles=legend_elements, loc='upper right', fontsize='small')
 
         # Create border rectangle if available
         if self.scenario.border_rectangle:
@@ -549,7 +549,7 @@ class TrilatPlot(QObject):
             legend_elements.append(plt.Rectangle((0, 0), 1, 1, edgecolor='black', facecolor='none', linewidth=2, label='Border'))
         
         if legend_elements:
-            self.ax_trilat.legend(handles=legend_elements, loc='upper right')
+            self.ax_trilat.legend(handles=legend_elements, loc='upper right', fontsize='small')
         else:
             # Remove legend if no elements
             if self.ax_trilat.get_legend():

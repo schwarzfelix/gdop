@@ -4,7 +4,7 @@ class DisplayConfig():
         # Anchors
         self.showAnchors = True
         self.showAnchorCircles = False
-        self.showAnchorNames = False
+        self.showAnchorNames = True
         self.showAnchorCoordinates = False
 
         # Tags

@@ -15,7 +15,6 @@ class MultiTrilatPlot(QObject):
     CIRCLE_LINESTYLE = 'dotted'
     VIEWPORT_PADDING = 5.0
     LABEL_OFFSET = 1
-    LABEL_OFFSET = 1
 
     def __init__(self, window, scenarios):
         super().__init__()
@@ -40,7 +39,7 @@ class MultiTrilatPlot(QObject):
             legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
         
         if legend_elements:
-            self.ax.legend(handles=legend_elements, loc='upper right')
+            self.ax.legend(handles=legend_elements, loc='upper right', fontsize='small')
 
         # Initialize artists for each scenario
         self.anchor_scatters = []
@@ -129,7 +128,7 @@ class MultiTrilatPlot(QObject):
                 # Update tag truth label
                 pos = scenario.tag_truth.position()
                 if self.tag_truth_texts[i] is None:
-                    self.tag_truth_texts[i] = self.ax.text(0, 0, '', ha='center', va='bottom', color='green')
+                    self.tag_truth_texts[i] = self.ax.text(0, 0, '', ha='center', va='center', color='green')
                 name = scenario.get_tag_list()[0].name if scenario.get_tag_list() else scenario.tag_truth.name or 'Tag Truth'
                 label_text = self._generate_label_text(name, pos[0], pos[1], show_name=True, show_coords=self.display_config.showTagCoordinates, scenario_name=scenario.name)
                 self.tag_truth_texts[i].set_text(label_text)
@@ -249,7 +248,7 @@ class MultiTrilatPlot(QObject):
             # Update tag names
             tag_name_texts = self.tag_name_texts_list[i]
             while len(tag_name_texts) < len(tag_positions):
-                t = self.ax.text(0, 0, '', ha='center', va='bottom', color='red')
+                t = self.ax.text(0, 0, '', ha='center', va='center', color='red')
                 tag_name_texts.append(t)
 
             for j, tag_pos in enumerate(tag_positions):
@@ -394,7 +393,7 @@ class MultiTrilatPlot(QObject):
             legend_elements.append(plt.Rectangle((0, 0), 1, 1, edgecolor='black', facecolor='none', linewidth=2, label='Border'))
         
         if legend_elements:
-            self.ax.legend(handles=legend_elements, loc='upper right')
+            self.ax.legend(handles=legend_elements, loc='upper right', fontsize='small')
         else:
             # Remove legend if no elements
             if self.ax.get_legend():
