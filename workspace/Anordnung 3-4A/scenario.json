@@ -1,27 +1,27 @@
 {
 	"stations": [
 		{
-			"name": "FTM_PINK",
+			"name": "B",
 			"type": "ANCHOR",
 			"position": [0.00, 11.00]
 		},
 		{
-			"name": "FTM_BLUE",
+			"name": "H",
 			"type": "ANCHOR",
         	"position": [3.50, 11.00]
 		},
 		{
-			"name": "FTM_GREEN",
+			"name": "G",
 			"type": "ANCHOR",
 			"position": [0.00, 8.50]
 		},
 		{
-			"name": "FTM_ORANGE",
+			"name": "F",
 			"type": "ANCHOR",
 			"position": [3.50, 8.50]
 		},
 		{
-			"name": "N10P",
+			"name": "D",
 			"type": "TAG",
 			"position": [16.00, 0.00]
 		}
