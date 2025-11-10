@@ -3,20 +3,20 @@ class DisplayConfig():
 
         # Anchors
         self.showAnchors = True
-        self.showAnchorCircles = True
-        self.showAnchorNames = True
+        self.showAnchorCircles = False
+        self.showAnchorNames = False
         self.showAnchorCoordinates = False
 
         # Tags
         self.showTagTruth = True
-        self.showTags = True
-        self.showPositionErrorLines = True
-        self.showTagNames = True
+        self.showTags = False
+        self.showPositionErrorLines = False
+        self.showTagNames = False
         self.showTagCoordinates = False
 
         # Between Anchors and Tags
         self.showTagAnchorLabels = False
-        self.showTagAnchorLines = True
+        self.showTagAnchorLines = False
 
         # Between Anchors
         self.showBetweenAnchorsLabels = False
@@ -32,11 +32,11 @@ class DisplayConfig():
 
         # Border Rectangle
         self.showBorderRectangle = True
-        self.useBorderRectangleForViewport = False
+        self.useBorderRectangleForViewport = True
 
         # Legend Elements
         self.showLegendAnchors = True
-        self.showLegendTags = True
+        self.showLegendTags = False
         self.showLegendTagTruth = True
         self.showLegendBorder = True
 
