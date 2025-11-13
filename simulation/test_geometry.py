@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from simulation.geometry import (
+    euclidean_distance,
     euclidean_distances,
     trilateration,
     geometry_matrix,
@@ -10,6 +11,69 @@ from simulation.geometry import (
     angle_anchors_tag,
     distance_between,
 )
+
+
+class TestEuclideanDistance:
+    """Tests for the singular euclidean_distance function."""
+    
+    def test_basic_2d(self):
+        p1 = np.array([0, 0])
+        p2 = np.array([3, 4])
+        dist = euclidean_distance(p1, p2)
+        assert np.isclose(dist, 5.0)
+    
+    def test_basic_3d(self):
+        p1 = np.array([0, 0, 0])
+        p2 = np.array([1, 1, 1])
+        dist = euclidean_distance(p1, p2)
+        assert np.isclose(dist, np.sqrt(3))
+    
+    def test_same_point(self):
+        p1 = np.array([1, 2, 3])
+        p2 = np.array([1, 2, 3])
+        dist = euclidean_distance(p1, p2)
+        assert dist == 0.0
+    
+    def test_negative_coordinates(self):
+        p1 = np.array([-1, -2])
+        p2 = np.array([2, 2])
+        dist = euclidean_distance(p1, p2)
+        expected = np.sqrt(3**2 + 4**2)
+        assert np.isclose(dist, expected)
+    
+    def test_1d(self):
+        p1 = np.array([0])
+        p2 = np.array([5])
+        dist = euclidean_distance(p1, p2)
+        assert dist == 5.0
+    
+    def test_list_input(self):
+        """Test that function works with list inputs (converted to arrays)."""
+        p1 = [0, 0]
+        p2 = [3, 4]
+        dist = euclidean_distance(p1, p2)
+        assert np.isclose(dist, 5.0)
+    
+    def test_float_coordinates(self):
+        p1 = np.array([1.5, 2.5])
+        p2 = np.array([4.5, 6.5])
+        dist = euclidean_distance(p1, p2)
+        expected = np.sqrt(3**2 + 4**2)
+        assert np.isclose(dist, expected)
+    
+    def test_large_dimension(self):
+        """Test with higher dimensional space."""
+        p1 = np.array([1, 2, 3, 4, 5])
+        p2 = np.array([1, 2, 3, 4, 5])
+        dist = euclidean_distance(p1, p2)
+        assert dist == 0.0
+    
+    def test_large_distance(self):
+        p1 = np.array([0, 0])
+        p2 = np.array([1000, 1000])
+        dist = euclidean_distance(p1, p2)
+        expected = np.sqrt(1000**2 + 1000**2)
+        assert np.isclose(dist, expected)
 
 
 class TestEuclideanDistances:
