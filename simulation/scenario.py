@@ -57,6 +57,44 @@ class Scenario:
             expected[pair] = distance
         return expected
 
+    def get_measurement_errors(self):
+        """
+        Calculate measurement errors by comparing actual measurements to expected distances.
+        
+        Returns:
+            dict: Dictionary with frozenset([anchor, tag]) as keys and error values as values.
+                  Error is calculated as: measured_distance - expected_distance
+        """
+        errors = {}
+        expected = self.get_expected_measurements()
+        
+        for pair, measured_distance in self.measurements.relation.items():
+            # Find corresponding expected measurement
+            # The pair in measurements might be [anchor, tag], we need to match it with [anchor, tag_truth]
+            station1, station2 = pair
+            
+            # Check if one of the stations is a Tag (localized device)
+            from simulation.station import Tag
+            tag = None
+            anchor = None
+            
+            if isinstance(station1, Tag):
+                tag = station1
+                anchor = station2
+            elif isinstance(station2, Tag):
+                tag = station2
+                anchor = station1
+            
+            if tag is not None and anchor is not None:
+                # Find the expected measurement for this anchor
+                expected_pair = frozenset([anchor, self.tag_truth])
+                if expected_pair in expected:
+                    expected_distance = expected[expected_pair]
+                    error = measured_distance - expected_distance
+                    errors[pair] = error
+        
+        return errors
+
     @property
     def name(self):
         return self._name

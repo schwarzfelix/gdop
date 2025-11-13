@@ -259,10 +259,24 @@ class TreeTab(BaseTab):
 
                 measurements_node = QTreeWidgetItem(scen_node, ["Measurements"]) 
                 #measurements_node.setExpanded(True)
+                
+                # Get measurement errors for display
+                try:
+                    measurement_errors = scen.get_measurement_errors()
+                except Exception:
+                    measurement_errors = {}
+                
                 for pair, distance in scen.measurements.relation.items():
                     station1, station2 = pair
-
-                    label = f"{station1.name} ↔ {station2.name}: {distance:.2f}"
+                    
+                    # Add error information if available
+                    error_text = ""
+                    if pair in measurement_errors:
+                        error = measurement_errors[pair]
+                        sign = "+" if error >= 0 else ""
+                        error_text = f" (Error: {sign}{error:.2f})"
+                    
+                    label = f"{station1.name} ↔ {station2.name}: {distance:.2f}{error_text}"
                     QTreeWidgetItem(measurements_node, [label])
 
                 # Add Expected Measurements node
@@ -281,6 +295,28 @@ class TreeTab(BaseTab):
                         QTreeWidgetItem(expected_measurements_node, [label])
                 except Exception as e:
                     QTreeWidgetItem(expected_measurements_node, [f"Error: {str(e)}"])
+
+                # Add Measurement Errors Summary node
+                measurement_errors_summary_node = QTreeWidgetItem(scen_node, ["Measurement Errors"])
+                #measurement_errors_summary_node.setExpanded(True)
+                try:
+                    if measurement_errors:
+                        error_values = list(measurement_errors.values())
+                        mean_error = np.mean(error_values)
+                        std_error = np.std(error_values)
+                        min_error = np.min(error_values)
+                        max_error = np.max(error_values)
+                        rmse = np.sqrt(np.mean(np.array(error_values)**2))
+                        
+                        QTreeWidgetItem(measurement_errors_summary_node, [f"Mean Error: {mean_error:.2f}"])
+                        QTreeWidgetItem(measurement_errors_summary_node, [f"Std Dev: {std_error:.2f}"])
+                        QTreeWidgetItem(measurement_errors_summary_node, [f"RMSE: {rmse:.2f}"])
+                        QTreeWidgetItem(measurement_errors_summary_node, [f"Min Error: {min_error:.2f}"])
+                        QTreeWidgetItem(measurement_errors_summary_node, [f"Max Error: {max_error:.2f}"])
+                    else:
+                        QTreeWidgetItem(measurement_errors_summary_node, ["No errors to display"])
+                except Exception as e:
+                    QTreeWidgetItem(measurement_errors_summary_node, [f"Error: {str(e)}"])
 
                 # Add Tag Truth GDOP if exists
                 tag_truth_node = QTreeWidgetItem(scen_node, ["Tag Truth"])
