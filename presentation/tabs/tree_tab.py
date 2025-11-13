@@ -272,8 +272,11 @@ class TreeTab(BaseTab):
                     expected = scen.get_expected_measurements()
                     for pair, distance in expected.items():
                         station1, station2 = pair
-                        # station2 is tag_truth, station1 is the anchor
-                        anchor = station1 if isinstance(station1, station_module.Anchor) else station2
+                        # One of them is tag_truth, the other is the anchor
+                        if station1 == scen.tag_truth:
+                            anchor = station2
+                        else:
+                            anchor = station1
                         label = f"{anchor.name} ↔ TAG_TRUTH: {distance:.2f}"
                         QTreeWidgetItem(expected_measurements_node, [label])
                 except Exception as e:
