@@ -4,6 +4,19 @@ from typing import Optional, Union
 
 _LOG = logging.getLogger(__name__)
 
+def euclidean_distance(point1: np.ndarray, point2: np.ndarray) -> float:
+    """
+    Calculate Euclidean distance between two points.
+
+    Args:
+        point1: First point (array-like).
+        point2: Second point (array-like).
+
+    Returns:
+        Distance as a float.
+    """
+    return np.linalg.norm(np.array(point1) - np.array(point2))
+
 def euclidean_distances(anchor_positions: np.ndarray, tag_position: np.ndarray, sigma: float = 0.0) -> np.ndarray:
     """
     Calculate Euclidean distances from anchors to tag position, optionally with noise.
@@ -44,7 +57,7 @@ def trilateration(anchor_positions: Union[list, np.ndarray], distances: Union[li
     if num_anchors == 2 and dimensions >= 2:
         p1, p2 = anchor_positions
         r1, r2 = distances
-        d = np.linalg.norm(p2 - p1)
+        d = euclidean_distance(p2, p1)
 
         if d > r1 + r2 or d < abs(r1 - r2):
             _LOG.warning("The hyper-spheres do not intersect.")
@@ -62,7 +75,9 @@ def trilateration(anchor_positions: Union[list, np.ndarray], distances: Union[li
             fixed = np.zeros(dimensions)
             fixed[1] = 1
             orth = fixed - np.dot(fixed, v) * v
-            orth /= np.linalg.norm(orth)
+            norm_orth = np.linalg.norm(orth)
+            if norm_orth > 0:
+                orth /= norm_orth
         return base + h * orth
 
     A = -2 * (anchor_positions[1:] - anchor_positions[0])
@@ -136,8 +151,8 @@ def angle_vectors(vec_u: np.ndarray, vec_v: np.ndarray) -> float:
         Angle in degrees.
     """
     dot_product = np.dot(vec_u, vec_v)
-    norm_a = np.linalg.norm(vec_u)
-    norm_b = np.linalg.norm(vec_v)
+    norm_a = euclidean_distance(vec_u, np.zeros_like(vec_u))
+    norm_b = euclidean_distance(vec_v, np.zeros_like(vec_v))
     angle_rad = np.arccos(dot_product / (norm_a * norm_b))
     angle_deg = np.degrees(angle_rad)
     return angle_deg
@@ -167,4 +182,4 @@ def distance_between(point1: np.ndarray, point2: np.ndarray) -> float:
     Returns:
         Distance.
     """
-    return np.linalg.norm(point1 - point2)
+    return euclidean_distance(point1, point2)

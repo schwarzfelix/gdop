@@ -265,6 +265,20 @@ class TreeTab(BaseTab):
                     label = f"{station1.name} ↔ {station2.name}: {distance:.2f}"
                     QTreeWidgetItem(measurements_node, [label])
 
+                # Add Expected Measurements node
+                expected_measurements_node = QTreeWidgetItem(scen_node, ["Expected Measurements"])
+                #expected_measurements_node.setExpanded(True)
+                try:
+                    expected = scen.get_expected_measurements()
+                    for pair, distance in expected.items():
+                        station1, station2 = pair
+                        # station2 is tag_truth, station1 is the anchor
+                        anchor = station1 if isinstance(station1, station_module.Anchor) else station2
+                        label = f"{anchor.name} ↔ TAG_TRUTH: {distance:.2f}"
+                        QTreeWidgetItem(expected_measurements_node, [label])
+                except Exception as e:
+                    QTreeWidgetItem(expected_measurements_node, [f"Error: {str(e)}"])
+
                 # Add Tag Truth GDOP if exists
                 tag_truth_node = QTreeWidgetItem(scen_node, ["Tag Truth"])
                 try:

@@ -4,7 +4,7 @@ from matplotlib.patches import Circle, Rectangle
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from simulation import station
+from simulation import station, geometry
 from simulation import SandboxScenario
 
 
@@ -211,7 +211,7 @@ class TrilatPlot(QObject):
 
                 xm = (anchor_positions[i][0] + anchor_positions[j][0]) / 2
                 ym = (anchor_positions[i][1] + anchor_positions[j][1]) / 2
-                distance = np.linalg.norm(anchor_positions[i] - anchor_positions[j])
+                distance = geometry.euclidean_distance(anchor_positions[i], anchor_positions[j])
 
                 if self.display_config.showBetweenAnchorsLabels:
                     t = self.anchor_pair_texts[pair_idx]
@@ -260,7 +260,7 @@ class TrilatPlot(QObject):
                 if self.display_config.showTagAnchorLabels:
                     xm = (anchor_position[0] + tag_position[0]) / 2
                     ym = (anchor_position[1] + tag_position[1]) / 2
-                    distance = np.linalg.norm(anchor_position - tag_position)
+                    distance = geometry.euclidean_distance(anchor_position, tag_position)
                     t = self.tag_anchor_texts[ta_idx]
                     t.set_text(f"{distance:.2f}")
                     t.set_position((xm, ym))

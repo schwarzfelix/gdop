@@ -4,7 +4,7 @@ from matplotlib.patches import Circle, Rectangle
 
 from PyQt5.QtCore import QObject
 
-from simulation import station
+from simulation import station, geometry
 
 
 class MultiTrilatPlot(QObject):
@@ -194,7 +194,7 @@ class MultiTrilatPlot(QObject):
                     if self.display_config.showBetweenAnchorsLabels:
                         xm = (anchor_positions[a][0] + anchor_positions[b][0]) / 2
                         ym = (anchor_positions[a][1] + anchor_positions[b][1]) / 2
-                        distance = np.linalg.norm(anchor_positions[a] - anchor_positions[b])
+                        distance = geometry.euclidean_distance(anchor_positions[a], anchor_positions[b])
                         anchor_pair_texts[pair_idx].set_text(f"{distance:.2f}")
                         anchor_pair_texts[pair_idx].set_position((xm, ym))
                         anchor_pair_texts[pair_idx].set_visible(True)
@@ -232,7 +232,7 @@ class MultiTrilatPlot(QObject):
                     if self.display_config.showTagAnchorLabels:
                         xm = (anchor_pos[0] + tag_pos[0]) / 2
                         ym = (anchor_pos[1] + tag_pos[1]) / 2
-                        distance = np.linalg.norm(anchor_pos - tag_pos)
+                        distance = geometry.euclidean_distance(anchor_pos, tag_pos)
                         tag_anchor_texts[ta_idx].set_text(f"{distance:.2f}")
                         tag_anchor_texts[ta_idx].set_position((xm, ym))
                         tag_anchor_texts[ta_idx].set_visible(True)

@@ -42,6 +42,21 @@ class Scenario:
     def get_tag_truth_gdop(self):
         return self.get_gdop_for_position(self.tag_truth.position())
 
+    def get_expected_measurements(self):
+        """
+        Calculate expected measurements based on Euclidean distance between tag_truth and each anchor.
+        
+        Returns:
+            dict: Dictionary with frozenset([anchor, tag_truth]) as keys and distances as values.
+        """
+        expected = {}
+        tag_truth_pos = self.tag_truth.position()
+        for anchor in self.get_anchor_list():
+            pair = frozenset([anchor, self.tag_truth])
+            distance = geometry.euclidean_distance(anchor.position(), tag_truth_pos)
+            expected[pair] = distance
+        return expected
+
     @property
     def name(self):
         return self._name
