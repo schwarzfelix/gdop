@@ -157,16 +157,47 @@ class TreeTab(BaseTab):
     def __init__(self, main_window):
         super().__init__(main_window)
         self.tree = None
+        self.import_all_button = None
+        self.rename_all_button = None
 
     @property
     def tab_name(self):
         return "Tree"
 
     def create_widget(self):
+        """Create the tree widget with an 'Import All' button."""
+        from PyQt5.QtWidgets import QVBoxLayout, QWidget, QPushButton, QHBoxLayout
+        
+        # Create container widget
+        container = QWidget()
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        
+        # Create button container
+        button_layout = QHBoxLayout()
+        
+        # Create Import All button
+        self.import_all_button = QPushButton("📥 Import All Scenarios")
+        self.import_all_button.setToolTip("Import all scenarios from workspace that are not yet loaded")
+        self.import_all_button.clicked.connect(self._import_all_scenarios)
+        button_layout.addWidget(self.import_all_button)
+        
+        # Create Rename All button
+        self.rename_all_button = QPushButton("✎ Rename All Scenarios")
+        self.rename_all_button.setToolTip("Append text to the name of all loaded scenarios")
+        self.rename_all_button.clicked.connect(self._rename_all_scenarios)
+        button_layout.addWidget(self.rename_all_button)
+        
+        layout.addLayout(button_layout)
+        
+        # Create tree widget
         self.tree = QTreeWidget()
         self.tree.setHeaderHidden(True)
         self.update_tree()
-        return self.tree
+        layout.addWidget(self.tree)
+        
+        container.setLayout(layout)
+        return container
 
     def update_tree(self):
         if not self.tree:
@@ -522,6 +553,202 @@ class TreeTab(BaseTab):
             scen = next((s for s in app.scenarios if s.name == scen_name), None)
             if scen:
                 self._remove_scenario(scen)
+
+    def _import_all_scenarios(self):
+        """Import all scenarios from workspace that are not yet loaded."""
+        from PyQt5.QtWidgets import QMessageBox, QProgressDialog
+        from PyQt5.QtCore import Qt
+        
+        # Get available scenarios
+        scenario_names, error_message = get_available_scenarios()
+        
+        if error_message:
+            QMessageBox.warning(self.main_window, "Error", f"Failed to get available scenarios: {error_message}")
+            return
+        
+        if not scenario_names:
+            QMessageBox.information(self.main_window, "Import All", "No scenarios found in workspace.")
+            return
+        
+        # Filter out already loaded scenarios
+        app = self.main_window.app
+        loaded_scenario_names = {s.name for s in app.scenarios}
+        scenarios_to_import = [name for name in scenario_names if name not in loaded_scenario_names]
+        
+        if not scenarios_to_import:
+            QMessageBox.information(self.main_window, "Import All", "All available scenarios are already loaded.")
+            return
+        
+        # Ask for confirmation
+        reply = QMessageBox.question(
+            self.main_window,
+            "Import All Scenarios",
+            f"Import {len(scenarios_to_import)} scenario(s)?\n\n" + "\n".join(scenarios_to_import),
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.Yes
+        )
+        
+        if reply != QMessageBox.Yes:
+            return
+        
+        # Get aggregation and trilateration methods
+        configured_agg_method = self.main_window.display_config.aggregationMethod
+        configured_trilat_method = self.main_window.display_config.trilaterationMethod
+        
+        # If either is "ask", show dialog once for all imports
+        agg_method = configured_agg_method
+        trilat_method = configured_trilat_method
+        
+        if configured_agg_method == "ask":
+            agg_dialog = AggregationMethodDialog(self.main_window)
+            if agg_dialog.exec_() != agg_dialog.Accepted:
+                return
+            agg_method = agg_dialog.get_method()
+        
+        if configured_trilat_method == "ask":
+            trilat_dialog = TrilaterationMethodDialog(self.main_window)
+            if trilat_dialog.exec_() != trilat_dialog.Accepted:
+                return
+            trilat_method = trilat_dialog.get_method()
+        else:
+            # Make sure we have a valid trilateration method
+            trilat_method = trilat_method if trilat_method != "ask" else "classical"
+        
+        # Create progress dialog
+        progress = QProgressDialog("Importing scenarios...", "Cancel", 0, len(scenarios_to_import), self.main_window)
+        progress.setWindowModality(Qt.WindowModal)
+        progress.setWindowTitle("Import All")
+        
+        # Import scenarios
+        imported_count = 0
+        failed_scenarios = []
+        
+        for i, scen_name in enumerate(scenarios_to_import):
+            if progress.wasCanceled():
+                break
+            
+            progress.setValue(i)
+            progress.setLabelText(f"Importing {scen_name}...")
+            
+            try:
+                success, message, imported_scenario = importer_module.import_scenario(
+                    scen_name, 
+                    workspace_dir="workspace", 
+                    agg_method=agg_method
+                )
+                
+                if success and imported_scenario is not None:
+                    # Set trilateration method
+                    imported_scenario.trilateration_method = trilat_method
+                    
+                    # Append to app scenarios
+                    app.scenarios.append(imported_scenario)
+                    imported_count += 1
+                else:
+                    failed_scenarios.append((scen_name, message))
+                    
+            except Exception as e:
+                failed_scenarios.append((scen_name, str(e)))
+        
+        progress.setValue(len(scenarios_to_import))
+        
+        # Refresh UI
+        self.main_window.update_all()
+        
+        # Show summary
+        summary_msg = f"Successfully imported {imported_count} of {len(scenarios_to_import)} scenario(s)."
+        
+        if failed_scenarios:
+            summary_msg += f"\n\nFailed to import {len(failed_scenarios)} scenario(s):\n"
+            summary_msg += "\n".join([f"- {name}: {msg[:50]}..." for name, msg in failed_scenarios[:5]])
+            if len(failed_scenarios) > 5:
+                summary_msg += f"\n... and {len(failed_scenarios) - 5} more"
+            QMessageBox.warning(self.main_window, "Import Complete", summary_msg)
+        else:
+            QMessageBox.information(self.main_window, "Import Complete", summary_msg)
+
+    def _rename_all_scenarios(self):
+        """Rename all loaded scenarios by appending text to their names."""
+        from PyQt5.QtWidgets import QMessageBox, QInputDialog
+        
+        app = self.main_window.app
+        scenarios = app.scenarios
+        
+        # Filter out sandbox scenario
+        renameable_scenarios = [s for s in scenarios if s.name != "SandboxScenario"]
+        
+        if not renameable_scenarios:
+            QMessageBox.information(self.main_window, "Rename All", "No scenarios available to rename.")
+            return
+        
+        # Ask for suffix/prefix
+        suffix, ok = QInputDialog.getText(
+            self.main_window,
+            "Rename All Scenarios",
+            f"Enter text to append to all {len(renameable_scenarios)} scenario name(s):\n\n"
+            "Example: '_classical' will rename 'Scenario1' to 'Scenario1_classical'",
+            text=""
+        )
+        
+        if not ok or not suffix:
+            return
+        
+        # Ask for confirmation
+        preview = "\n".join([f"{s.name} → {s.name}{suffix}" for s in renameable_scenarios[:5]])
+        if len(renameable_scenarios) > 5:
+            preview += f"\n... and {len(renameable_scenarios) - 5} more"
+        
+        reply = QMessageBox.question(
+            self.main_window,
+            "Confirm Rename All",
+            f"Rename {len(renameable_scenarios)} scenario(s) by appending '{suffix}'?\n\n{preview}",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        
+        if reply != QMessageBox.Yes:
+            return
+        
+        # Rename scenarios by cloning
+        renamed_count = 0
+        new_scenarios = []
+        
+        for scen in renameable_scenarios:
+            try:
+                new_name = scen.name + suffix
+                
+                # Clone scenario with new name
+                new_scenario = Scenario(new_name)
+                new_scenario._stations = copy.deepcopy(scen.stations)
+                new_scenario._measurements = copy.deepcopy(scen.measurements)
+                new_scenario._sigma = scen._sigma
+                new_scenario._tag_truth = copy.deepcopy(scen._tag_truth)
+                new_scenario._border_rectangle = copy.deepcopy(scen._border_rectangle) if scen._border_rectangle else None
+                new_scenario._trilateration_method = scen._trilateration_method
+                new_scenario._aggregation_method = getattr(scen, '_aggregation_method', None)
+                new_scenario._raw_measurement_counts = copy.deepcopy(getattr(scen, '_raw_measurement_counts', {}))
+                
+                new_scenarios.append(new_scenario)
+                renamed_count += 1
+                
+            except Exception as e:
+                print(f"Error renaming {scen.name}: {e}")
+        
+        # Add new scenarios and remove old ones
+        for scen in renameable_scenarios:
+            if scen in app.scenarios:
+                app.scenarios.remove(scen)
+        
+        app.scenarios.extend(new_scenarios)
+        
+        # Update UI
+        self.main_window.update_all()
+        
+        QMessageBox.information(
+            self.main_window,
+            "Rename Complete",
+            f"Successfully renamed {renamed_count} scenario(s)."
+        )
 
     def _import_scenario_from_workspace(self, scen_name: str):
         """Import a scenario by name from the workspace directory.
