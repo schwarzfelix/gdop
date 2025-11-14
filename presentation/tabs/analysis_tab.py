@@ -8,6 +8,7 @@ from .base_tab import BaseTab
 from presentation.comparisonplot_window import ComparisonPlotWindow
 from presentation.multi_trilatplot_window import MultiTrilatPlotWindow
 from presentation.arrangementpositionerrorplot_window import ArrangementPositionErrorPlotWindow
+from presentation.arrangementanchorcountpositionerrorplot_window import ArrangementAnchorCountPositionErrorPlotWindow
 from presentation.arrangementdistanceerrorplot_window import ArrangementDistanceErrorPlotWindow
 from presentation.arrangementdistancestddevplot_window import ArrangementDistanceStdDevPlotWindow
 from presentation.accesspointmetricsplot_raw_window import AccessPointMetricsPlotRawWindow
@@ -65,6 +66,12 @@ class AnalysisTab(BaseTab):
         arrangement_position_error_item.setData(1, "arrangement_position_error_plot")  # Store identifier
         self.analysis_list.addItem(arrangement_position_error_item)
 
+        # Arrangement Anchor Count Position Error Plot
+        arrangement_anchor_count_position_error_item = QListWidgetItem("📊 Arrangement Position Error Plot - 3A vs 4A (Grouped by Arrangement)")
+        arrangement_anchor_count_position_error_item.setToolTip("Open a grouped bar chart showing position error values for 3A and 4A variants side by side, grouped by the first character of the scenario name (arrangement)")
+        arrangement_anchor_count_position_error_item.setData(1, "arrangement_anchor_count_position_error_plot")  # Store identifier
+        self.analysis_list.addItem(arrangement_anchor_count_position_error_item)
+
         # Arrangement Distance Error Plot
         arrangement_distance_error_item = QListWidgetItem("📊 Arrangement Distance Error Plot - PD vs FW (Grouped by Arrangement)")
         arrangement_distance_error_item.setToolTip("Open a grouped bar chart showing average distance error values for PD and FW variants side by side, grouped by the first 4 characters of the scenario name (arrangement)")
@@ -99,6 +106,8 @@ class AnalysisTab(BaseTab):
             self._open_multi_trilat_plot()
         elif analysis_type == "arrangement_position_error_plot":
             self._open_arrangement_position_error_plot()
+        elif analysis_type == "arrangement_anchor_count_position_error_plot":
+            self._open_arrangement_anchor_count_position_error_plot()
         elif analysis_type == "arrangement_distance_error_plot":
             self._open_arrangement_distance_error_plot()
         elif analysis_type == "arrangement_distance_stddev_plot":
@@ -140,6 +149,16 @@ class AnalysisTab(BaseTab):
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open Arrangement Position Error Plot: {str(e)}")
+
+    def _open_arrangement_anchor_count_position_error_plot(self):
+        """Open the arrangement anchor count position error plot in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = ArrangementAnchorCountPositionErrorPlotWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Arrangement Anchor Count Position Error Plot: {str(e)}")
 
     def _open_arrangement_distance_error_plot(self):
         """Open the arrangement distance error plot in a new window."""
