@@ -252,7 +252,7 @@ class DisplayTab(BaseTab):
         trilateration_method_layout.addWidget(trilateration_method_label)
         
         self.trilateration_method_combo = QComboBox()
-        self.trilateration_method_combo.addItems(["classical", "best_subset", "nonlinear"])
+        self.trilateration_method_combo.addItems(["ask", "classical", "best_subset", "nonlinear"])
         # Set current selection
         current_method = self.display_config.trilaterationMethod
         index = self.trilateration_method_combo.findText(current_method)
@@ -315,21 +315,10 @@ class DisplayTab(BaseTab):
         self.display_config.aggregationMethod = method
 
     def update_trilateration_method(self, method):
-        """Update trilateration method when combo box selection changes."""
-        print(f"[DEBUG] update_trilateration_method called with: {method}")
+        """Update trilateration method default when combo box selection changes.
+        
+        Note: This only updates the default method used for new imports.
+        Existing scenarios retain their configured methods.
+        """
         self.display_config.trilaterationMethod = method
-        
-        # Update all scenarios with the new method
-        if hasattr(self.main_window, 'app') and self.main_window.app:
-            for scenario in self.main_window.app.scenarios:
-                print(f"[DEBUG] Setting method '{method}' on scenario: {scenario.name}")
-                scenario.trilateration_method = method
-        
-        # Also update current scenario (via trilat_plot)
-        if hasattr(self.main_window, 'trilat_plot') and self.main_window.trilat_plot.scenario:
-            print(f"[DEBUG] Setting method '{method}' on current scenario: {self.main_window.trilat_plot.scenario.name}")
-            self.main_window.trilat_plot.scenario.trilateration_method = method
-        
-        print(f"[DEBUG] Calling update_all()...")
-        self.main_window.update_all()
-        print(f"[DEBUG] update_all() completed")
+        # Don't update existing scenarios - each scenario keeps its own method

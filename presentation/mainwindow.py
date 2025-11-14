@@ -125,9 +125,9 @@ class MainWindow(QMainWindow):
         self.top_widget.setVisible(self._display_config.showTrilatPlot)
         self.bottom_widget.setVisible(self._display_config.showComparisonPlot)
 
-        # Sync trilateration method from display config to scenario
-        if self._scenario is not None:
-            self._scenario.trilateration_method = self._display_config.trilaterationMethod
+        # Don't sync trilateration method from display config anymore
+        # Each scenario maintains its own trilateration method
+        # Display config method is only used as default for new imports
 
         if anchors:
             self.trilat_plot.update_anchors()

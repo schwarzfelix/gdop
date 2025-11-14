@@ -77,6 +77,7 @@ def import_scenario_data(scenario_obj, scenario_name: str, workspace_dir: str = 
         scenario_obj: The scenario object to update
         scenario_name: Name of the scenario to import
         workspace_dir: Directory containing CSV files
+        agg_method: Aggregation method to use
         
     Returns:
         Tuple of (success, message)
@@ -90,6 +91,9 @@ def import_scenario_data(scenario_obj, scenario_name: str, workspace_dir: str = 
         scenario_data, error = get_scenario_data(scenario_name, workspace_dir)
         if error:
             return False, error
+
+        # Store the aggregation method in the scenario
+        scenario_obj.aggregation_method = agg_method
 
         # Process the data (aggregate per AP based on agg_method)
         processed_count = _process_measurement_data(scenario_obj, scenario_data, scenario_name, agg_method=agg_method)

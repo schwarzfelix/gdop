@@ -48,8 +48,9 @@ class DisplayConfig():
         self.aggregationMethod = "ask"
 
         # Trilateration Options
-        # Options: "classical", "best_subset", "nonlinear"
+        # Options: "classical", "best_subset", "nonlinear", "ask"
+        # - "ask": Show dialog to select method at import time
         # - "classical": Standard least-squares (fast, but fails with poor anchor geometry)
         # - "best_subset": Selects best 3-anchor subset by condition number (recommended for collinear anchors)
         # - "nonlinear": Nonlinear optimization with centroid start (requires scipy)
-        self.trilaterationMethod = "classical"
+        self.trilaterationMethod = "ask"

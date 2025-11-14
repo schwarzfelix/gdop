@@ -17,6 +17,8 @@ from data import importer as importer_module
 from PyQt5.QtWidgets import QComboBox, QFormLayout, QDialog, QVBoxLayout
 from PyQt5.QtWidgets import QLabel, QDialogButtonBox
 import pandas as pd
+import copy
+import numpy as np
 try:
     import pandasgui as pg
 except ImportError:
@@ -102,6 +104,39 @@ class AggregationMethodDialog(QDialog):
         self.combo = QComboBox()
         # default 'lowest' first
         self.combo.addItems(["lowest", "newest", "mean", "median"])
+        self.combo.setCurrentIndex(0)
+        form.addRow("Method:", self.combo)
+        layout.addLayout(form)
+
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        layout.addWidget(button_box)
+
+        self.setLayout(layout)
+
+    def get_method(self):
+        return self.combo.currentText()
+
+
+class TrilaterationMethodDialog(QDialog):
+    """Dialog to choose trilateration method for positioning."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Select Trilateration Method")
+        self.setModal(True)
+        self.resize(350, 150)
+
+        layout = QVBoxLayout()
+
+        info_label = QLabel("Choose trilateration method for positioning:")
+        layout.addWidget(info_label)
+
+        form = QFormLayout()
+        self.combo = QComboBox()
+        # default 'classical' first
+        self.combo.addItems(["classical", "best_subset", "nonlinear"])
         self.combo.setCurrentIndex(0)
         form.addRow("Method:", self.combo)
         layout.addLayout(form)
@@ -210,6 +245,18 @@ class TreeTab(BaseTab):
                 if active is scen:
                     self.tree.setCurrentItem(scen_node)
                     checkbox.setEnabled(False)  # Prevent unchecking the active scenario
+
+                # Add Methods node to show configuration
+                methods_node = QTreeWidgetItem(scen_node, ["Methods"])
+                
+                # Show trilateration method
+                trilat_method = getattr(scen, 'trilateration_method', 'N/A')
+                QTreeWidgetItem(methods_node, [f"Trilateration: {trilat_method}"])
+                
+                # Show aggregation method (if available)
+                agg_method = getattr(scen, 'aggregation_method', None)
+                if agg_method:
+                    QTreeWidgetItem(methods_node, [f"Aggregation: {agg_method}"])
 
                 stations_node = QTreeWidgetItem(scen_node, ["Stations"]) 
                 #stations_node.setExpanded(True)
@@ -367,6 +414,8 @@ class TreeTab(BaseTab):
         new_scenario._tag_truth = copy.deepcopy(scen._tag_truth)
         new_scenario._border_rectangle = copy.deepcopy(scen._border_rectangle) if scen._border_rectangle else None
         new_scenario._trilateration_method = scen._trilateration_method
+        new_scenario._aggregation_method = getattr(scen, '_aggregation_method', None)
+        new_scenario._raw_measurement_counts = copy.deepcopy(getattr(scen, '_raw_measurement_counts', {}))
 
         app = self.main_window.app
         app.scenarios.append(new_scenario)
@@ -386,9 +435,7 @@ class TreeTab(BaseTab):
         plot = self.main_window.trilat_plot
         plot.scenario = scen
         
-        # Sync trilateration method from display config to newly activated scenario
-        if scen is not None and hasattr(self.main_window, 'display_config'):
-            scen.trilateration_method = self.main_window.display_config.trilaterationMethod
+        # Each scenario keeps its own trilateration method - don't override it
         
         try:
             plot.sandbox_tag = next((tag for tag in plot.scenario.get_tag_list() if tag.name == "SANDBOX_TAG"), None)
@@ -479,13 +526,13 @@ class TreeTab(BaseTab):
     def _import_scenario_from_workspace(self, scen_name: str):
         """Import a scenario by name from the workspace directory.
 
-        Shows an aggregation method dialog (reuse from DataTab) and calls the importer.
+        Shows aggregation and trilateration method dialogs and calls the importer.
         On success appends the scenario to app.scenarios and activates it in the plot.
         """
         # Check configured aggregation method
-        configured_method = self.main_window.display_config.aggregationMethod
+        configured_agg_method = self.main_window.display_config.aggregationMethod
         
-        if configured_method == "ask":
+        if configured_agg_method == "ask":
             # Ask for aggregation method
             try:
                 agg_dialog = AggregationMethodDialog(self.main_window)
@@ -501,7 +548,27 @@ class TreeTab(BaseTab):
             agg_method = agg_dialog.get_method()
         else:
             # Use the configured method directly
-            agg_method = configured_method
+            agg_method = configured_agg_method
+
+        # Check configured trilateration method
+        configured_trilat_method = self.main_window.display_config.trilaterationMethod
+        
+        if configured_trilat_method == "ask":
+            # Ask for trilateration method
+            try:
+                trilat_dialog = TrilaterationMethodDialog(self.main_window)
+            except Exception:
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.information(self.main_window, "Import", "Unable to open trilateration dialog.")
+                return
+
+            if trilat_dialog.exec_() != trilat_dialog.Accepted:
+                return
+
+            trilat_method = trilat_dialog.get_method()
+        else:
+            # Use the configured method directly (unless it's "ask")
+            trilat_method = configured_trilat_method if configured_trilat_method != "ask" else "classical"
 
         try:
             success, message, imported_scenario = importer_module.import_scenario(scen_name, workspace_dir="workspace", agg_method=agg_method)
@@ -511,9 +578,8 @@ class TreeTab(BaseTab):
             imported_scenario = None
 
         if success and imported_scenario is not None:
-            # Set trilateration method from display config
-            if hasattr(self.main_window, 'display_config'):
-                imported_scenario.trilateration_method = self.main_window.display_config.trilaterationMethod
+            # Set trilateration method
+            imported_scenario.trilateration_method = trilat_method
             
             # Append to app scenarios
             app = getattr(self.main_window, 'app', None)

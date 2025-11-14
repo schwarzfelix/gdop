@@ -11,6 +11,7 @@ class Scenario:
         self._tag_truth = station.Anchor([0.0, 0.0], 'TAG_TRUTH')
         self._border_rectangle = None
         self._trilateration_method = "classical"  # Default method
+        self._aggregation_method = None  # Stores the aggregation method used during import
         self._raw_measurement_counts = {}  # Dict mapping anchor name -> count of raw measurements
 
     def anchor_positions(self):
@@ -165,3 +166,13 @@ class Scenario:
     def raw_measurement_counts(self, value):
         """Set dictionary of raw measurement counts per anchor before aggregation."""
         self._raw_measurement_counts = dict(value) if value else {}
+
+    @property
+    def aggregation_method(self):
+        """Get the aggregation method used during import."""
+        return self._aggregation_method
+    
+    @aggregation_method.setter
+    def aggregation_method(self, value):
+        """Set the aggregation method used during import."""
+        self._aggregation_method = value
