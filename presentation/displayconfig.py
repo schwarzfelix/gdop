@@ -9,15 +9,15 @@ class DisplayConfig():
 
         # Tags
         self.showTagTruth = True
-        self.showTags = False
-        self.showPositionErrorLines = False
+        self.showTags = True
+        self.showPositionErrorLines = True
         self.showTagNames = False
         self.showTagCoordinates = False
         self.showTagTruthLabels = True
 
         # Between Anchors and Tags
         self.showTagAnchorLabels = False
-        self.showTagAnchorLines = False
+        self.showTagAnchorLines = True
 
         # Between Anchors
         self.showBetweenAnchorsLabels = False
@@ -43,3 +43,10 @@ class DisplayConfig():
 
         # Import Options
         self.useStandardAggregationMethod = True
+
+        # Trilateration Options
+        # Options: "classical", "best_subset", "nonlinear"
+        # - "classical": Standard least-squares (fast, but fails with poor anchor geometry)
+        # - "best_subset": Selects best 3-anchor subset by condition number (recommended for collinear anchors)
+        # - "nonlinear": Nonlinear optimization with centroid start (requires scipy)
+        self.trilaterationMethod = "classical"

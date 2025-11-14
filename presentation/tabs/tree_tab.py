@@ -354,6 +354,7 @@ class TreeTab(BaseTab):
         new_scenario._sigma = scen._sigma
         new_scenario._tag_truth = copy.deepcopy(scen._tag_truth)
         new_scenario._border_rectangle = copy.deepcopy(scen._border_rectangle) if scen._border_rectangle else None
+        new_scenario._trilateration_method = scen._trilateration_method
 
         app = self.main_window.app
         app.scenarios.append(new_scenario)
@@ -372,6 +373,11 @@ class TreeTab(BaseTab):
     def _activate_scenario(self, scen):
         plot = self.main_window.trilat_plot
         plot.scenario = scen
+        
+        # Sync trilateration method from display config to newly activated scenario
+        if scen is not None and hasattr(self.main_window, 'display_config'):
+            scen.trilateration_method = self.main_window.display_config.trilaterationMethod
+        
         try:
             plot.sandbox_tag = next((tag for tag in plot.scenario.get_tag_list() if tag.name == "SANDBOX_TAG"), None)
         except Exception:
@@ -490,6 +496,10 @@ class TreeTab(BaseTab):
             imported_scenario = None
 
         if success and imported_scenario is not None:
+            # Set trilateration method from display config
+            if hasattr(self.main_window, 'display_config'):
+                imported_scenario.trilateration_method = self.main_window.display_config.trilaterationMethod
+            
             # Append to app scenarios
             app = getattr(self.main_window, 'app', None)
             if app is not None:

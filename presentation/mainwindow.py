@@ -125,6 +125,10 @@ class MainWindow(QMainWindow):
         self.top_widget.setVisible(self._display_config.showTrilatPlot)
         self.bottom_widget.setVisible(self._display_config.showComparisonPlot)
 
+        # Sync trilateration method from display config to scenario
+        if self._scenario is not None:
+            self._scenario.trilateration_method = self._display_config.trilaterationMethod
+
         if anchors:
             self.trilat_plot.update_anchors()
             self.tree_tab.update()

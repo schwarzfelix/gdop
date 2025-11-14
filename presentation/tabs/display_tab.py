@@ -2,7 +2,7 @@
 Display tab for the GDOP application.
 """
 
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QCheckBox
+from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QCheckBox, QComboBox, QLabel, QHBoxLayout, QWidget
 from .base_tab import BaseTab
 
 
@@ -38,6 +38,7 @@ class DisplayTab(BaseTab):
         self.show_legend_tag_truth_checkbox = None
         self.show_legend_border_checkbox = None
         self.use_standard_aggregation_method_checkbox = None
+        self.trilateration_method_combo = None
     
     @property
     def tab_name(self):
@@ -222,6 +223,31 @@ class DisplayTab(BaseTab):
         self.display_tree.setItemWidget(use_standard_aggregation_method_item, 0, self.use_standard_aggregation_method_checkbox)
         import_options_node.setExpanded(True)
 
+        # Trilateration Options section
+        trilateration_options_node = QTreeWidgetItem(self.display_tree, ["Trilateration Options"])
+        trilateration_options_node.setExpanded(True)
+        
+        # Create a widget with label and combo box
+        trilateration_method_widget = QWidget()
+        trilateration_method_layout = QHBoxLayout(trilateration_method_widget)
+        trilateration_method_layout.setContentsMargins(0, 0, 0, 0)
+        
+        trilateration_method_label = QLabel("Method:")
+        trilateration_method_layout.addWidget(trilateration_method_label)
+        
+        self.trilateration_method_combo = QComboBox()
+        self.trilateration_method_combo.addItems(["classical", "best_subset", "nonlinear"])
+        # Set current selection
+        current_method = self.display_config.trilaterationMethod
+        index = self.trilateration_method_combo.findText(current_method)
+        if index >= 0:
+            self.trilateration_method_combo.setCurrentIndex(index)
+        self.trilateration_method_combo.currentTextChanged.connect(self.update_trilateration_method)
+        trilateration_method_layout.addWidget(self.trilateration_method_combo)
+        
+        trilateration_method_item = QTreeWidgetItem(trilateration_options_node)
+        self.display_tree.setItemWidget(trilateration_method_item, 0, trilateration_method_widget)
+
         return self.display_tree
 
     def update_display_config(self):
@@ -268,3 +294,23 @@ class DisplayTab(BaseTab):
         self.display_config.useStandardAggregationMethod = self.use_standard_aggregation_method_checkbox.isChecked()
 
         self.main_window.update_all()
+
+    def update_trilateration_method(self, method):
+        """Update trilateration method when combo box selection changes."""
+        print(f"[DEBUG] update_trilateration_method called with: {method}")
+        self.display_config.trilaterationMethod = method
+        
+        # Update all scenarios with the new method
+        if hasattr(self.main_window, 'app') and self.main_window.app:
+            for scenario in self.main_window.app.scenarios:
+                print(f"[DEBUG] Setting method '{method}' on scenario: {scenario.name}")
+                scenario.trilateration_method = method
+        
+        # Also update current scenario (via trilat_plot)
+        if hasattr(self.main_window, 'trilat_plot') and self.main_window.trilat_plot.scenario:
+            print(f"[DEBUG] Setting method '{method}' on current scenario: {self.main_window.trilat_plot.scenario.name}")
+            self.main_window.trilat_plot.scenario.trilateration_method = method
+        
+        print(f"[DEBUG] Calling update_all()...")
+        self.main_window.update_all()
+        print(f"[DEBUG] update_all() completed")

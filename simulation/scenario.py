@@ -10,6 +10,7 @@ class Scenario:
         self._sigma = 0.0
         self._tag_truth = station.Anchor([0.0, 0.0], 'TAG_TRUTH')
         self._border_rectangle = None
+        self._trilateration_method = "classical"  # Default method
 
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.get_anchor_list()])
@@ -142,3 +143,14 @@ class Scenario:
     @border_rectangle.setter
     def border_rectangle(self, value):
         self._border_rectangle = value
+
+    @property
+    def trilateration_method(self):
+        return self._trilateration_method
+    
+    @trilateration_method.setter
+    def trilateration_method(self, value):
+        """Set trilateration method: 'classical', 'best_subset', or 'nonlinear'"""
+        if value not in ["classical", "best_subset", "nonlinear"]:
+            raise ValueError(f"Invalid trilateration method: {value}")
+        self._trilateration_method = value

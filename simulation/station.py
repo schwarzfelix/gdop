@@ -83,7 +83,7 @@ class Tag(Station):
     def __init__(self, scenario, name='LocalizedDevice'):
         super().__init__(scenario, name)
 
-    def position(self, exclude=None):
+    def position(self, exclude=None, trilateration_method=None):
 
         if exclude is None:
             exclude = {self}
@@ -110,7 +110,24 @@ class Tag(Station):
             station_positions.append(partner.position(exclude))
             distances = np.append(distances, measurement[1])
 
-        return geometry.trilateration(np.array(station_positions), np.array(distances))
+        # Use method from scenario if not explicitly provided
+        if trilateration_method is None:
+            trilateration_method = getattr(self.scenario, 'trilateration_method', 'classical')
+
+        # Use robust trilateration if requested
+        if trilateration_method in ["best_subset", "nonlinear"]:
+            position, metadata = geometry.trilateration_robust(
+                np.array(station_positions), 
+                np.array(distances),
+                method=trilateration_method
+            )
+            # Store metadata for debugging/analysis (optional)
+            if hasattr(self, '_trilateration_metadata'):
+                self._trilateration_metadata = metadata
+            return position
+        else:
+            # Classical method
+            return geometry.trilateration(np.array(station_positions), np.array(distances))
 
     def distance_to(self, other: Station):
         return distance_between(self, other, self.scenario.measurements)

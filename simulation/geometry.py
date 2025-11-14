@@ -1,6 +1,7 @@
 import numpy as np
 import logging
-from typing import Optional, Union
+from typing import Optional, Union, Tuple
+from itertools import combinations
 
 _LOG = logging.getLogger(__name__)
 
@@ -183,3 +184,239 @@ def distance_between(point1: np.ndarray, point2: np.ndarray) -> float:
         Distance.
     """
     return euclidean_distance(point1, point2)
+
+
+def trilateration_robust(
+    anchor_positions: Union[list, np.ndarray], 
+    distances: Union[list, np.ndarray],
+    method: str = "best_subset",
+    condition_threshold: float = 100.0
+) -> Tuple[np.ndarray, dict]:
+    """
+    Robust trilateration that handles poor anchor geometry.
+    
+    This method addresses the problem where classical least-squares trilateration
+    can produce physically impossible results (e.g., positions hundreds of meters
+    away when all measurements are < 20m) when anchors have poor geometry
+    (e.g., 3+ anchors collinear).
+    
+    Strategy:
+    - "best_subset": Find the best 3-anchor subset by condition number (recommended)
+    - "nonlinear": Use nonlinear least-squares with centroid start (requires scipy)
+    - "classical": Fall back to classical method (may fail on poor geometry)
+    
+    Args:
+        anchor_positions: Array of anchor positions (Nx2 or Nx3)
+        distances: Measured distances to anchors
+        method: Strategy to use ("best_subset", "nonlinear", or "classical")
+        condition_threshold: Maximum acceptable condition number (default: 100)
+    
+    Returns:
+        Tuple of (estimated_position, metadata_dict)
+        metadata contains: method_used, condition_number, residual, anchor_subset, warnings
+    """
+    anchor_positions = np.array(anchor_positions)
+    distances = np.array(distances)
+    num_anchors, dimensions = anchor_positions.shape
+    
+    metadata = {
+        'method_used': method,
+        'condition_number': None,
+        'residual': None,
+        'anchor_subset': None,
+        'warnings': []
+    }
+    
+    # For 3 or fewer anchors, use classical method
+    if num_anchors <= 3:
+        solution = trilateration(anchor_positions, distances)
+        metadata['method_used'] = 'classical_3_or_less'
+        return solution, metadata
+    
+    # Method 1: Find best 3-anchor subset
+    if method == "best_subset":
+        best_solution = None
+        best_condition = float('inf')
+        best_combo = None
+        best_residual = float('inf')
+        
+        for combo in combinations(range(num_anchors), 3):
+            anchors_subset = anchor_positions[list(combo)]
+            distances_subset = distances[list(combo)]
+            
+            # Compute condition number
+            A = -2 * (anchors_subset[1:] - anchors_subset[0])
+            
+            try:
+                cond = np.linalg.cond(A)
+                
+                # Skip if poorly conditioned
+                if cond > condition_threshold:
+                    continue
+                
+                # Solve trilateration
+                b = (distances_subset[1:]**2 - distances_subset[0]**2 - 
+                     np.sum(anchors_subset[1:]**2, axis=1) + np.sum(anchors_subset[0]**2))
+                sol = np.linalg.solve(A, b)
+                
+                # Compute residual: how well does this solution fit ALL measurements?
+                reconstructed_distances = np.linalg.norm(anchor_positions - sol, axis=1)
+                residual = np.sqrt(np.sum((distances - reconstructed_distances)**2))
+                
+                # Update best if this is better
+                if residual < best_residual:
+                    best_solution = sol
+                    best_condition = cond
+                    best_combo = combo
+                    best_residual = residual
+                    
+            except np.linalg.LinAlgError:
+                # Singular matrix, skip this combination
+                continue
+        
+        if best_solution is not None:
+            metadata['condition_number'] = best_condition
+            metadata['residual'] = best_residual
+            metadata['anchor_subset'] = best_combo
+            
+            if best_condition > 50:
+                metadata['warnings'].append(
+                    f"High condition number ({best_condition:.1f}) indicates poor geometry"
+                )
+            
+            _LOG.debug(f"Best 3-anchor subset: {best_combo}, condition={best_condition:.1f}, "
+                      f"residual={best_residual:.2f}m")
+            return best_solution, metadata
+        else:
+            metadata['warnings'].append("No well-conditioned 3-anchor subset found")
+            _LOG.warning("All 3-anchor combinations are poorly conditioned or singular")
+            # Fall through to nonlinear method
+            method = "nonlinear"
+    
+    # Method 2: Nonlinear least-squares
+    if method == "nonlinear":
+        try:
+            from scipy.optimize import least_squares
+            
+            def residuals_function(pos, anchors, measured_dist):
+                """Compute residuals: measured - calculated distances"""
+                calculated = np.linalg.norm(anchors - pos, axis=1)
+                return measured_dist - calculated
+            
+            # Start from centroid of anchors
+            x0 = np.mean(anchor_positions, axis=0)
+            
+            result = least_squares(
+                residuals_function, 
+                x0, 
+                args=(anchor_positions, distances),
+                loss='soft_l1'  # Robust to outliers
+            )
+            
+            solution = result.x
+            metadata['method_used'] = 'nonlinear_lstsq'
+            metadata['residual'] = np.linalg.norm(result.fun)
+            
+            _LOG.debug(f"Nonlinear least-squares: residual={metadata['residual']:.2f}m")
+            return solution, metadata
+            
+        except ImportError:
+            _LOG.warning("scipy not available, falling back to classical method")
+            method = "classical"
+    
+    # Method 3: Classical (may fail on poor geometry)
+    if method == "classical":
+        solution = trilateration(anchor_positions, distances)
+        
+        # Check if solution is plausible
+        reconstructed = np.linalg.norm(anchor_positions - solution, axis=1)
+        max_error = np.max(np.abs(reconstructed - distances))
+        
+        if max_error > 2 * np.max(distances):
+            metadata['warnings'].append(
+                f"Classical solution may be unreliable (max error {max_error:.1f}m)"
+            )
+        
+        metadata['method_used'] = 'classical'
+        metadata['residual'] = np.sqrt(np.sum((distances - reconstructed)**2))
+        
+        return solution, metadata
+    
+    # Should not reach here
+    raise ValueError(f"Unknown method: {method}")
+
+
+def check_anchor_geometry(anchor_positions: np.ndarray, collinearity_threshold: float = 1.0) -> dict:
+    """
+    Analyze anchor geometry to identify potential trilateration issues.
+    
+    Args:
+        anchor_positions: Nx2 or Nx3 array of anchor positions
+        collinearity_threshold: Area threshold below which anchors are considered collinear (default: 1.0)
+    
+    Returns:
+        Dictionary with geometry metrics:
+        - is_collinear: bool, if 3+ anchors are nearly collinear
+        - min_triangle_area: smallest triangle area (for 2D)
+        - condition_numbers: condition numbers for all 3-anchor subsets
+        - recommendations: list of warning strings
+    """
+    num_anchors = len(anchor_positions)
+    
+    result = {
+        'is_collinear': False,
+        'min_triangle_area': None,
+        'condition_numbers': [],
+        'recommendations': []
+    }
+    
+    if num_anchors < 3:
+        result['recommendations'].append("Need at least 3 anchors for trilateration")
+        return result
+    
+    # Check triangle areas (for 2D)
+    if anchor_positions.shape[1] == 2:
+        min_area = float('inf')
+        
+        for combo in combinations(range(num_anchors), 3):
+            p1, p2, p3 = [anchor_positions[i] for i in combo]
+            v1 = p2 - p1
+            v2 = p3 - p1
+            area = 0.5 * abs(v1[0] * v2[1] - v1[1] * v2[0])
+            
+            if area < min_area:
+                min_area = area
+            
+            if area < collinearity_threshold:
+                result['is_collinear'] = True
+                result['recommendations'].append(
+                    f"Anchors {combo} are nearly collinear (area={area:.2f})"
+                )
+        
+        result['min_triangle_area'] = min_area
+        
+        if min_area < 5.0:
+            result['recommendations'].append(
+                "Consider repositioning anchors to form larger triangles"
+            )
+    
+    # Check condition numbers
+    for combo in combinations(range(num_anchors), 3):
+        anchors_subset = anchor_positions[list(combo)]
+        A = -2 * (anchors_subset[1:] - anchors_subset[0])
+        
+        try:
+            cond = np.linalg.cond(A)
+            result['condition_numbers'].append({
+                'subset': combo,
+                'condition': cond
+            })
+            
+            if cond > 100:
+                result['recommendations'].append(
+                    f"Subset {combo} has high condition number ({cond:.1f})"
+                )
+        except:
+            result['recommendations'].append(f"Subset {combo} is singular")
+    
+    return result
