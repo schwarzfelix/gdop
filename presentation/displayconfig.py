@@ -42,7 +42,10 @@ class DisplayConfig():
         self.showLegendBorder = True
 
         # Import Options
-        self.useStandardAggregationMethod = True
+        # Options: "newest", "lowest", "mean", "median", "ask"
+        # - "ask": Show dialog to select method at import time
+        # - Other values: Use that method directly without asking
+        self.aggregationMethod = "ask"
 
         # Trilateration Options
         # Options: "classical", "best_subset", "nonlinear"

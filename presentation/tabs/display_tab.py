@@ -37,7 +37,7 @@ class DisplayTab(BaseTab):
         self.show_legend_tags_checkbox = None
         self.show_legend_tag_truth_checkbox = None
         self.show_legend_border_checkbox = None
-        self.use_standard_aggregation_method_checkbox = None
+        self.aggregation_method_combo = None
         self.trilateration_method_combo = None
     
     @property
@@ -216,12 +216,28 @@ class DisplayTab(BaseTab):
 
         # Import Options section
         import_options_node = QTreeWidgetItem(self.display_tree, ["Import Options"])
-        self.use_standard_aggregation_method_checkbox = QCheckBox("Use Standard Aggregation Method")
-        self.use_standard_aggregation_method_checkbox.setChecked(self.display_config.useStandardAggregationMethod)
-        self.use_standard_aggregation_method_checkbox.stateChanged.connect(self.update_display_config)
-        use_standard_aggregation_method_item = QTreeWidgetItem(import_options_node)
-        self.display_tree.setItemWidget(use_standard_aggregation_method_item, 0, self.use_standard_aggregation_method_checkbox)
         import_options_node.setExpanded(True)
+        
+        # Create a widget with label and combo box for aggregation method
+        aggregation_method_widget = QWidget()
+        aggregation_method_layout = QHBoxLayout(aggregation_method_widget)
+        aggregation_method_layout.setContentsMargins(0, 0, 0, 0)
+        
+        aggregation_method_label = QLabel("Aggregation Method:")
+        aggregation_method_layout.addWidget(aggregation_method_label)
+        
+        self.aggregation_method_combo = QComboBox()
+        self.aggregation_method_combo.addItems(["ask", "newest", "lowest", "mean", "median"])
+        # Set current selection
+        current_method = self.display_config.aggregationMethod
+        index = self.aggregation_method_combo.findText(current_method)
+        if index >= 0:
+            self.aggregation_method_combo.setCurrentIndex(index)
+        self.aggregation_method_combo.currentTextChanged.connect(self.update_aggregation_method)
+        aggregation_method_layout.addWidget(self.aggregation_method_combo)
+        
+        aggregation_method_item = QTreeWidgetItem(import_options_node)
+        self.display_tree.setItemWidget(aggregation_method_item, 0, aggregation_method_widget)
 
         # Trilateration Options section
         trilateration_options_node = QTreeWidgetItem(self.display_tree, ["Trilateration Options"])
@@ -290,10 +306,13 @@ class DisplayTab(BaseTab):
         self.display_config.showLegendTagTruth = self.show_legend_tag_truth_checkbox.isChecked()
         self.display_config.showLegendBorder = self.show_legend_border_checkbox.isChecked()
 
-        # Import Options
-        self.display_config.useStandardAggregationMethod = self.use_standard_aggregation_method_checkbox.isChecked()
+        # Note: Import Options (aggregation method) are updated via update_aggregation_method()
 
         self.main_window.update_all()
+
+    def update_aggregation_method(self, method):
+        """Update aggregation method when combo box selection changes."""
+        self.display_config.aggregationMethod = method
 
     def update_trilateration_method(self, method):
         """Update trilateration method when combo box selection changes."""

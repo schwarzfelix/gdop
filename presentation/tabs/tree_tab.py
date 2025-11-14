@@ -482,10 +482,10 @@ class TreeTab(BaseTab):
         Shows an aggregation method dialog (reuse from DataTab) and calls the importer.
         On success appends the scenario to app.scenarios and activates it in the plot.
         """
-        # Check if standard aggregation method should be used
-        if self.main_window.display_config.useStandardAggregationMethod:
-            agg_method = "lowest"
-        else:
+        # Check configured aggregation method
+        configured_method = self.main_window.display_config.aggregationMethod
+        
+        if configured_method == "ask":
             # Ask for aggregation method
             try:
                 agg_dialog = AggregationMethodDialog(self.main_window)
@@ -499,6 +499,9 @@ class TreeTab(BaseTab):
                 return
 
             agg_method = agg_dialog.get_method()
+        else:
+            # Use the configured method directly
+            agg_method = configured_method
 
         try:
             success, message, imported_scenario = importer_module.import_scenario(scen_name, workspace_dir="workspace", agg_method=agg_method)
