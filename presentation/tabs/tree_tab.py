@@ -279,6 +279,18 @@ class TreeTab(BaseTab):
                     label = f"{station1.name} ↔ {station2.name}: {distance:.2f}{error_text}"
                     QTreeWidgetItem(measurements_node, [label])
 
+                # Add Raw Measurement Counts node
+                if hasattr(scen, 'raw_measurement_counts') and scen.raw_measurement_counts:
+                    raw_counts_node = QTreeWidgetItem(scen_node, ["Raw Measurement Counts"])
+                    #raw_counts_node.setExpanded(True)
+                    
+                    total_raw = sum(scen.raw_measurement_counts.values())
+                    QTreeWidgetItem(raw_counts_node, [f"Total: {total_raw} measurements"])
+                    
+                    for ap_name, count in sorted(scen.raw_measurement_counts.items()):
+                        QTreeWidgetItem(raw_counts_node, [f"{ap_name}: {count}"])
+
+
                 # Add Expected Measurements node
                 expected_measurements_node = QTreeWidgetItem(scen_node, ["Expected Measurements"])
                 #expected_measurements_node.setExpanded(True)

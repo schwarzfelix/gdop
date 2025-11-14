@@ -193,6 +193,10 @@ def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenari
         _LOG.info("No valid measurements to import for scenario '%s'", scenario_name)
         return 0
 
+    # Count raw measurements per AP before aggregation
+    raw_counts = valid_df['ap-ssid'].value_counts().to_dict()
+    scenario_obj.raw_measurement_counts = raw_counts
+
     # Define aggregation function
     agg_method = (agg_method or "newest").lower()
     if agg_method not in ("newest", "lowest", "mean", "median"):

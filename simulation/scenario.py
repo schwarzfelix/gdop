@@ -11,6 +11,7 @@ class Scenario:
         self._tag_truth = station.Anchor([0.0, 0.0], 'TAG_TRUTH')
         self._border_rectangle = None
         self._trilateration_method = "classical"  # Default method
+        self._raw_measurement_counts = {}  # Dict mapping anchor name -> count of raw measurements
 
     def anchor_positions(self):
         return np.array([anchor.position() for anchor in self.get_anchor_list()])
@@ -154,3 +155,13 @@ class Scenario:
         if value not in ["classical", "best_subset", "nonlinear"]:
             raise ValueError(f"Invalid trilateration method: {value}")
         self._trilateration_method = value
+
+    @property
+    def raw_measurement_counts(self):
+        """Get dictionary of raw measurement counts per anchor before aggregation."""
+        return self._raw_measurement_counts
+    
+    @raw_measurement_counts.setter
+    def raw_measurement_counts(self, value):
+        """Set dictionary of raw measurement counts per anchor before aggregation."""
+        self._raw_measurement_counts = dict(value) if value else {}
