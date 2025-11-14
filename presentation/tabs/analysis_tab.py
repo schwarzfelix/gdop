@@ -9,6 +9,7 @@ from presentation.comparisonplot_window import ComparisonPlotWindow
 from presentation.multi_trilatplot_window import MultiTrilatPlotWindow
 from presentation.arrangementpositionerrorplot_window import ArrangementPositionErrorPlotWindow
 from presentation.arrangementdistanceerrorplot_window import ArrangementDistanceErrorPlotWindow
+from presentation.arrangementdistancestddevplot_window import ArrangementDistanceStdDevPlotWindow
 from presentation.accesspointmetricsplot_raw_window import AccessPointMetricsPlotRawWindow
 from presentation.combinedmetricslineplot_sorted_window import CombinedMetricsLinePlotSortedWindow
 
@@ -70,6 +71,12 @@ class AnalysisTab(BaseTab):
         arrangement_distance_error_item.setData(1, "arrangement_distance_error_plot")  # Store identifier
         self.analysis_list.addItem(arrangement_distance_error_item)
 
+        # Arrangement Distance Std Dev Plot
+        arrangement_distance_stddev_item = QListWidgetItem("📊 Arrangement Distance Std Dev Plot - PD vs FW (Grouped by Arrangement)")
+        arrangement_distance_stddev_item.setToolTip("Open a grouped bar chart showing average distance standard deviation values for PD and FW variants side by side, grouped by the first 4 characters of the scenario name (arrangement)")
+        arrangement_distance_stddev_item.setData(1, "arrangement_distance_stddev_plot")  # Store identifier
+        self.analysis_list.addItem(arrangement_distance_stddev_item)
+
         # Access Point Metrics Plot (RAW DATA)
         access_point_metrics_raw_item = QListWidgetItem("📊 Access Point Quality Metrics - RAW DATA (All CSV Entries)")
         access_point_metrics_raw_item.setToolTip("Open a grouped bar chart showing average distance error and standard deviation for each Access Point using ALL raw CSV measurements (no aggregation)")
@@ -94,6 +101,8 @@ class AnalysisTab(BaseTab):
             self._open_arrangement_position_error_plot()
         elif analysis_type == "arrangement_distance_error_plot":
             self._open_arrangement_distance_error_plot()
+        elif analysis_type == "arrangement_distance_stddev_plot":
+            self._open_arrangement_distance_stddev_plot()
         elif analysis_type == "access_point_metrics_plot_raw":
             self._open_access_point_metrics_plot_raw()
         elif analysis_type == "combined_metrics_line_plot_sorted":
@@ -141,6 +150,16 @@ class AnalysisTab(BaseTab):
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open Arrangement Distance Error Plot: {str(e)}")
+
+    def _open_arrangement_distance_stddev_plot(self):
+        """Open the arrangement distance standard deviation plot in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = ArrangementDistanceStdDevPlotWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Arrangement Distance Std Dev Plot: {str(e)}")
 
     def _open_access_point_metrics_plot_raw(self):
         """Open the Access Point quality metrics plot (raw data) in a new window."""
