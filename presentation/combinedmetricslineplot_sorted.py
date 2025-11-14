@@ -71,8 +71,9 @@ class CombinedMetricsLinePlotSorted(QObject):
                     'tag_truth_gdop': 0.0
                 })
 
-        # Sort by tag truth GDOP ascending
-        scenario_data.sort(key=lambda x: x['tag_truth_gdop'])
+        # Sort by tag truth GDOP (rounded to 2 decimals) ascending, then by position error ascending
+        # This ensures that scenarios with visually identical GDOP are sorted by position error
+        scenario_data.sort(key=lambda x: (round(float(x['tag_truth_gdop']), 2), float(x['position_error'])))
 
         # Extract sorted data
         scenario_names = [d['name'] for d in scenario_data]
