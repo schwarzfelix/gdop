@@ -5,7 +5,7 @@ showing average distance standard deviations grouped by arrangement with PD vs F
 """
 
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from presentation.arrangementdistancestddevplot import ArrangementDistanceStdDevPlot
 
 
@@ -26,8 +26,11 @@ class ArrangementDistanceStdDevPlotWindow(QMainWindow):
         # Create the plot
         self.plot = ArrangementDistanceStdDevPlot(self, self.scenarios)
         
-        # Create canvas and add to layout
+        # Create canvas and toolbar
         self.canvas = FigureCanvasQTAgg(self.plot.fig)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        
+        layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
 
         # Initial update

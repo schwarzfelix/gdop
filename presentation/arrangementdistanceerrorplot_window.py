@@ -5,7 +5,7 @@ showing average distance errors grouped by arrangement with PD vs FW variants.
 """
 
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 from presentation.arrangementdistanceerrorplot import ArrangementDistanceErrorPlot
 
 
@@ -26,8 +26,11 @@ class ArrangementDistanceErrorPlotWindow(QMainWindow):
         # Create the plot
         self.plot = ArrangementDistanceErrorPlot(self, self.scenarios)
         
-        # Create canvas and add to layout
+        # Create canvas and toolbar
         self.canvas = FigureCanvasQTAgg(self.plot.fig)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        
+        layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
 
         # Initial update
