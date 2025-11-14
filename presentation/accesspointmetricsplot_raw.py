@@ -1,28 +1,31 @@
-"""Access Point metrics plot showing average distance error and standard deviation per AP.
+"""Access Point metrics plot using RAW data (all CSV entries without aggregation).
 
 This file contains the code to draw a grouped bar chart showing the average distance error
 (measured distance vs. true distance) and standard deviation for each Access Point (Anchor) 
-across all active scenarios. This helps identify if any anchor points are measuring 
-significantly worse than others.
+across ALL raw CSV measurements from all active scenarios WITHOUT aggregation.
+This provides a comprehensive view of AP quality using all available data points.
 """
 
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import QObject, pyqtSignal
 import numpy as np
+import pandas as pd
 from collections import defaultdict
+from pathlib import Path
 
 
-class AccessPointMetricsPlot(QObject):
-    """Draw a grouped bar chart showing average distance error and standard deviation per Access Point.
+class AccessPointMetricsPlotRaw(QObject):
+    """Draw a grouped bar chart showing average distance error and standard deviation per Access Point
+    using ALL raw CSV data (not aggregated).
     
-    For each anchor across all scenarios, we calculate:
+    For each anchor across all raw CSV measurements, we calculate:
     - Average distance error (measured distance - true distance)
     - Standard deviation of distance errors
     
     Expected to show 4 anchors × 2 metrics = 8 bars total.
 
     Expected usage:
-      plot = AccessPointMetricsPlot(window, scenarios)
+      plot = AccessPointMetricsPlotRaw(window, scenarios)
       plot.update_data()
       plot.redraw()
     """
@@ -39,64 +42,75 @@ class AccessPointMetricsPlot(QObject):
         # Create figure with single plot and two y-axes
         self.fig, self.ax1 = plt.subplots(figsize=(12, 6))
         self.ax2 = self.ax1.twinx()  # Create second y-axis sharing same x-axis
-        self.fig.suptitle('Access Point Quality Metrics (Avg Distance Error & Std Dev)', 
+        self.fig.suptitle('Access Point Quality Metrics - RAW DATA (All CSV Entries)', 
                          fontsize=13, fontweight='bold')
 
     def update_data(self, anchors=False, tags=False, measurements=False):
-        """Compute average distance error and standard deviation per Access Point.
+        """Compute average distance error and standard deviation per Access Point using RAW CSV data.
 
-        Goes through all scenarios and collects distance errors (measured - true) for each
-        anchor-tag pair. Then calculates statistics per anchor.
+        Reads all CSV files directly and uses ALL entries (no aggregation).
+        Calculates distance errors using true_range(m) column if available.
 
         Signature accepts optional flags for compatibility with MainWindow.update_all().
         """
-        # Collect distance errors per anchor
+        from data.import_measurements import read_workspace_csvs
+        
+        # Collect distance errors per anchor from raw CSV data
         # anchor_name -> list of distance errors (measured - true distance)
         anchor_distance_errors = defaultdict(list)
-
-        for scenario in self.scenarios:
-            # Get all anchors and tags in this scenario
-            anchors = scenario.get_anchor_list() if hasattr(scenario, 'get_anchor_list') else []
-            tags = scenario.get_tag_list() if hasattr(scenario, 'get_tag_list') else []
+        
+        try:
+            # Load all raw CSV data
+            df = read_workspace_csvs(workspace_dir='workspace')
             
-            # For each tag, calculate distance errors for each anchor
-            for tag in tags:
-                try:
-                    # Get tag's true position (if available via tag_truth)
-                    if not hasattr(scenario, 'tag_truth') or scenario.tag_truth is None:
-                        continue
-                    
-                    tag_true_position = scenario.tag_truth.position()
-                    
-                    # Find measurements for this tag
-                    if hasattr(scenario, 'measurements') and scenario.measurements:
-                        tag_relations = scenario.measurements.find_relation_single(tag)
-                        
-                        # For each anchor-tag measurement
-                        for pair, measured_distance in tag_relations:
-                            # Extract the anchor from the pair
-                            partner = next(iter(pair - {tag}), None)
-                            if partner is not None and hasattr(partner, 'name'):
-                                from simulation.station import Anchor
-                                if isinstance(partner, Anchor):
-                                    # Calculate true distance (anchor to tag_truth)
-                                    anchor_position = partner.position()
-                                    from simulation import geometry
-                                    true_distance = geometry.distance_between(anchor_position, tag_true_position)
-                                    
-                                    # Calculate distance error (measured - true)
-                                    distance_error = measured_distance - true_distance
-                                    anchor_distance_errors[partner.name].append(float(distance_error))
-                except Exception as e:
-                    # Skip tags that cause errors
-                    continue
-
+            if df.empty:
+                self._show_no_data()
+                return
+            
+            # Filter for scenarios that are currently active/loaded
+            active_scenario_names = [getattr(s, 'name', str(s)) for s in self.scenarios]
+            if active_scenario_names:
+                df = df[df['scenario'].isin(active_scenario_names)]
+            
+            if df.empty:
+                self._show_no_data()
+                return
+            
+            # Required columns: 'ap-ssid', 'est._range(m)', 'true_range(m)'
+            required_cols = ['ap-ssid', 'est._range(m)', 'true_range(m)']
+            missing_cols = [col for col in required_cols if col not in df.columns]
+            
+            if missing_cols:
+                self._show_no_data(f"Missing columns: {', '.join(missing_cols)}")
+                return
+            
+            # Clean and filter data
+            valid_df = df.copy()
+            valid_df['est_range'] = pd.to_numeric(valid_df['est._range(m)'], errors='coerce')
+            valid_df['true_range'] = pd.to_numeric(valid_df['true_range(m)'], errors='coerce')
+            
+            # Remove invalid entries
+            valid_df = valid_df.dropna(subset=['est_range', 'true_range'])
+            valid_df = valid_df[(valid_df['est_range'] > 0) & (valid_df['true_range'] > 0)]
+            
+            if valid_df.empty:
+                self._show_no_data("No valid measurements found")
+                return
+            
+            # Calculate distance error for each row
+            valid_df['distance_error'] = valid_df['est_range'] - valid_df['true_range']
+            
+            # Group by AP and collect all errors
+            for ap_name, group in valid_df.groupby('ap-ssid'):
+                errors = group['distance_error'].tolist()
+                anchor_distance_errors[str(ap_name)].extend(errors)
+            
+        except Exception as e:
+            self._show_no_data(f"Error loading data: {str(e)}")
+            return
+        
         if not anchor_distance_errors:
-            self.ax1.clear()
-            self.ax2.clear()
-            self.ax1.text(0.5, 0.5, 'No data available', 
-                         transform=self.ax1.transAxes,
-                         ha='center', va='center', fontsize=12)
+            self._show_no_data()
             return
 
         # Sort anchors by name for consistent ordering
@@ -171,12 +185,20 @@ class AccessPointMetricsPlot(QObject):
         self.ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=10)
         
         # Add sample count info at the bottom of the figure
-        info_text = "Samples per AP: " + ", ".join([f"{name}: {len(anchor_distance_errors[name])}" 
-                                                     for name in anchor_names])
+        info_text = "RAW samples per AP: " + ", ".join([f"{name}: {len(anchor_distance_errors[name])}" 
+                                                         for name in anchor_names])
         self.fig.text(0.5, 0.02, info_text, 
-                     ha='center', fontsize=9, style='italic')
+                     ha='center', fontsize=9, style='italic', color='darkgreen', fontweight='bold')
         
         self.fig.tight_layout(rect=[0, 0.05, 1, 0.96])  # Leave space for suptitle and info text
+
+    def _show_no_data(self, message="No data available"):
+        """Helper to display a 'no data' message on the plot."""
+        self.ax1.clear()
+        self.ax2.clear()
+        self.ax1.text(0.5, 0.5, message, 
+                     transform=self.ax1.transAxes,
+                     ha='center', va='center', fontsize=12)
 
     def redraw(self):
         try:

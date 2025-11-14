@@ -11,6 +11,7 @@ from presentation.positionerrorplot_window import PositionErrorPlotWindow
 from presentation.environmentpositionerrorplot_window import EnvironmentPositionErrorPlotWindow
 from presentation.arrangementpositionerrorplot_window import ArrangementPositionErrorPlotWindow
 from presentation.accesspointmetricsplot_window import AccessPointMetricsPlotWindow
+from presentation.accesspointmetricsplot_raw_window import AccessPointMetricsPlotRawWindow
 from presentation.combinedmetricsplot_window import CombinedMetricsPlotWindow
 from presentation.combinedmetricslineplot_window import CombinedMetricsLinePlotWindow
 from presentation.combinedmetricsplot_sorted_window import CombinedMetricsPlotSortedWindow
@@ -82,9 +83,15 @@ class AnalysisTab(BaseTab):
 
         # Access Point Metrics Plot
         access_point_metrics_item = QListWidgetItem("📊 Access Point Quality Metrics - Avg Error & Std Dev per AP")
-        access_point_metrics_item.setToolTip("Open a grouped bar chart showing average position error and standard deviation for each Access Point across all active scenarios")
+        access_point_metrics_item.setToolTip("Open a grouped bar chart showing average distance error and standard deviation for each Access Point across all active scenarios (using aggregated data)")
         access_point_metrics_item.setData(1, "access_point_metrics_plot")  # Store identifier
         self.analysis_list.addItem(access_point_metrics_item)
+
+        # Access Point Metrics Plot (RAW DATA)
+        access_point_metrics_raw_item = QListWidgetItem("📊 Access Point Quality Metrics - RAW DATA (All CSV Entries)")
+        access_point_metrics_raw_item.setToolTip("Open a grouped bar chart showing average distance error and standard deviation for each Access Point using ALL raw CSV measurements (no aggregation)")
+        access_point_metrics_raw_item.setData(1, "access_point_metrics_plot_raw")  # Store identifier
+        self.analysis_list.addItem(access_point_metrics_raw_item)
 
         # Combined Metrics Plot
         combined_metrics_item = QListWidgetItem("📊 Combined Metrics Plot - Position Error and Tag Truth GDOP per Scenario")
@@ -126,6 +133,8 @@ class AnalysisTab(BaseTab):
             self._open_arrangement_position_error_plot()
         elif analysis_type == "access_point_metrics_plot":
             self._open_access_point_metrics_plot()
+        elif analysis_type == "access_point_metrics_plot_raw":
+            self._open_access_point_metrics_plot_raw()
         elif analysis_type == "combined_metrics_plot":
             self._open_combined_metrics_plot()
         elif analysis_type == "combined_metrics_line_plot":
@@ -199,6 +208,16 @@ class AnalysisTab(BaseTab):
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open Access Point Metrics Plot: {str(e)}")
+
+    def _open_access_point_metrics_plot_raw(self):
+        """Open the Access Point quality metrics plot (raw data) in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = AccessPointMetricsPlotRawWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Access Point Metrics Plot (Raw Data): {str(e)}")
 
     def _open_combined_metrics_plot(self):
         """Open the combined metrics plot in a new window."""
