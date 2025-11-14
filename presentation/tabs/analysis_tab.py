@@ -10,6 +10,7 @@ from presentation.multi_trilatplot_window import MultiTrilatPlotWindow
 from presentation.positionerrorplot_window import PositionErrorPlotWindow
 from presentation.environmentpositionerrorplot_window import EnvironmentPositionErrorPlotWindow
 from presentation.arrangementpositionerrorplot_window import ArrangementPositionErrorPlotWindow
+from presentation.accesspointmetricsplot_window import AccessPointMetricsPlotWindow
 from presentation.combinedmetricsplot_window import CombinedMetricsPlotWindow
 from presentation.combinedmetricslineplot_window import CombinedMetricsLinePlotWindow
 from presentation.combinedmetricsplot_sorted_window import CombinedMetricsPlotSortedWindow
@@ -79,6 +80,12 @@ class AnalysisTab(BaseTab):
         arrangement_position_error_item.setData(1, "arrangement_position_error_plot")  # Store identifier
         self.analysis_list.addItem(arrangement_position_error_item)
 
+        # Access Point Metrics Plot
+        access_point_metrics_item = QListWidgetItem("📊 Access Point Quality Metrics - Avg Error & Std Dev per AP")
+        access_point_metrics_item.setToolTip("Open a grouped bar chart showing average position error and standard deviation for each Access Point across all active scenarios")
+        access_point_metrics_item.setData(1, "access_point_metrics_plot")  # Store identifier
+        self.analysis_list.addItem(access_point_metrics_item)
+
         # Combined Metrics Plot
         combined_metrics_item = QListWidgetItem("📊 Combined Metrics Plot - Position Error and Tag Truth GDOP per Scenario")
         combined_metrics_item.setToolTip("Open a grouped bar chart showing position error and tag truth GDOP for the first tag in each scenario")
@@ -117,6 +124,8 @@ class AnalysisTab(BaseTab):
             self._open_environment_position_error_plot()
         elif analysis_type == "arrangement_position_error_plot":
             self._open_arrangement_position_error_plot()
+        elif analysis_type == "access_point_metrics_plot":
+            self._open_access_point_metrics_plot()
         elif analysis_type == "combined_metrics_plot":
             self._open_combined_metrics_plot()
         elif analysis_type == "combined_metrics_line_plot":
@@ -180,6 +189,16 @@ class AnalysisTab(BaseTab):
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open Arrangement Position Error Plot: {str(e)}")
+
+    def _open_access_point_metrics_plot(self):
+        """Open the Access Point quality metrics plot in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = AccessPointMetricsPlotWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Access Point Metrics Plot: {str(e)}")
 
     def _open_combined_metrics_plot(self):
         """Open the combined metrics plot in a new window."""
