@@ -9,6 +9,7 @@ from presentation.comparisonplot_window import ComparisonPlotWindow
 from presentation.multi_trilatplot_window import MultiTrilatPlotWindow
 from presentation.positionerrorplot_window import PositionErrorPlotWindow
 from presentation.environmentpositionerrorplot_window import EnvironmentPositionErrorPlotWindow
+from presentation.arrangementpositionerrorplot_window import ArrangementPositionErrorPlotWindow
 from presentation.combinedmetricsplot_window import CombinedMetricsPlotWindow
 from presentation.combinedmetricslineplot_window import CombinedMetricsLinePlotWindow
 from presentation.combinedmetricsplot_sorted_window import CombinedMetricsPlotSortedWindow
@@ -72,6 +73,12 @@ class AnalysisTab(BaseTab):
         environment_position_error_item.setData(1, "environment_position_error_plot")  # Store identifier
         self.analysis_list.addItem(environment_position_error_item)
 
+        # Arrangement Position Error Plot
+        arrangement_position_error_item = QListWidgetItem("📊 Arrangement Position Error Plot - PD vs FW (Grouped by Arrangement)")
+        arrangement_position_error_item.setToolTip("Open a grouped bar chart showing position error values for PD and FW variants side by side, grouped by the first 4 characters of the scenario name (arrangement)")
+        arrangement_position_error_item.setData(1, "arrangement_position_error_plot")  # Store identifier
+        self.analysis_list.addItem(arrangement_position_error_item)
+
         # Combined Metrics Plot
         combined_metrics_item = QListWidgetItem("📊 Combined Metrics Plot - Position Error and Tag Truth GDOP per Scenario")
         combined_metrics_item.setToolTip("Open a grouped bar chart showing position error and tag truth GDOP for the first tag in each scenario")
@@ -108,6 +115,8 @@ class AnalysisTab(BaseTab):
             self._open_position_error_plot()
         elif analysis_type == "environment_position_error_plot":
             self._open_environment_position_error_plot()
+        elif analysis_type == "arrangement_position_error_plot":
+            self._open_arrangement_position_error_plot()
         elif analysis_type == "combined_metrics_plot":
             self._open_combined_metrics_plot()
         elif analysis_type == "combined_metrics_line_plot":
@@ -161,6 +170,16 @@ class AnalysisTab(BaseTab):
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open Environment Position Error Plot: {str(e)}")
+
+    def _open_arrangement_position_error_plot(self):
+        """Open the arrangement position error plot in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = ArrangementPositionErrorPlotWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Arrangement Position Error Plot: {str(e)}")
 
     def _open_combined_metrics_plot(self):
         """Open the combined metrics plot in a new window."""
