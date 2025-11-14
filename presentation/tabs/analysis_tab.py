@@ -13,8 +13,8 @@ from presentation.arrangementdistanceerrorplot_window import ArrangementDistance
 from presentation.arrangementdistancestddevplot_window import ArrangementDistanceStdDevPlotWindow
 from presentation.accesspointmetricsplot_raw_window import AccessPointMetricsPlotRawWindow
 from presentation.combinedmetricslineplot_sorted_window import CombinedMetricsLinePlotSortedWindow
-from presentation.aggregationmethodcomparisonplot_window import AggregationMethodComparisonPlotWindow
-from presentation.trilaterationmethodcomparisonplot_window import TrilaterationMethodComparisonPlotWindow
+from presentation.aggregationmethodaverageplot_window import AggregationMethodAveragePlotWindow
+from presentation.trilaterationmethodaverageplot_window import TrilaterationMethodAveragePlotWindow
 
 class AnalysisTab(BaseTab):
     """Tab for analysis options and plots that can be opened in separate windows."""
@@ -98,17 +98,17 @@ class AnalysisTab(BaseTab):
         combined_metrics_line_sorted_item.setData(1, "combined_metrics_line_plot_sorted")  # Store identifier
         self.analysis_list.addItem(combined_metrics_line_sorted_item)
 
-        # Aggregation Method Comparison Plot
-        aggregation_method_comparison_item = QListWidgetItem("📊 Aggregation Method Comparison - Position Error Analysis")
-        aggregation_method_comparison_item.setToolTip("Compare position errors across different aggregation methods (newest, lowest, mean, median) for all scenarios")
-        aggregation_method_comparison_item.setData(1, "aggregation_method_comparison")  # Store identifier
-        self.analysis_list.addItem(aggregation_method_comparison_item)
+        # Aggregation Method Average Plot
+        aggregation_method_average_item = QListWidgetItem("📊 Aggregation Method Average - Mean Position Error per Method")
+        aggregation_method_average_item.setToolTip("Show average position error for each aggregation method across all scenarios")
+        aggregation_method_average_item.setData(1, "aggregation_method_average")  # Store identifier
+        self.analysis_list.addItem(aggregation_method_average_item)
 
-        # Trilateration Method Comparison Plot
-        trilateration_method_comparison_item = QListWidgetItem("📊 Trilateration Method Comparison - Position Error Analysis")
-        trilateration_method_comparison_item.setToolTip("Compare position errors across different trilateration methods (classical, best_subset, nonlinear) for all scenarios")
-        trilateration_method_comparison_item.setData(1, "trilateration_method_comparison")  # Store identifier
-        self.analysis_list.addItem(trilateration_method_comparison_item)
+        # Trilateration Method Average Plot
+        trilateration_method_average_item = QListWidgetItem("📊 Trilateration Method Average - Mean Position Error per Method")
+        trilateration_method_average_item.setToolTip("Show average position error for each trilateration method across all scenarios")
+        trilateration_method_average_item.setData(1, "trilateration_method_average")  # Store identifier
+        self.analysis_list.addItem(trilateration_method_average_item)
 
     def _open_analysis(self, item):
         """Open the selected analysis in a new window."""
@@ -130,10 +130,10 @@ class AnalysisTab(BaseTab):
             self._open_access_point_metrics_plot_raw()
         elif analysis_type == "combined_metrics_line_plot_sorted":
             self._open_combined_metrics_line_plot_sorted()
-        elif analysis_type == "aggregation_method_comparison":
-            self._open_aggregation_method_comparison()
-        elif analysis_type == "trilateration_method_comparison":
-            self._open_trilateration_method_comparison()
+        elif analysis_type == "aggregation_method_average":
+            self._open_aggregation_method_average()
+        elif analysis_type == "trilateration_method_average":
+            self._open_trilateration_method_average()
         else:
             # Unknown analysis type
             pass
@@ -218,25 +218,25 @@ class AnalysisTab(BaseTab):
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open Combined Metrics Line Plot (Sorted): {str(e)}")
 
-    def _open_aggregation_method_comparison(self):
-        """Open the aggregation method comparison plot in a new window."""
+    def _open_aggregation_method_average(self):
+        """Open the aggregation method average plot in a new window."""
         try:
             scenarios = self.app.scenarios if self.app else []
-            window = AggregationMethodComparisonPlotWindow(scenarios, self.main_window)
+            window = AggregationMethodAveragePlotWindow(self.main_window, scenarios)
             window.show()
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
-            QMessageBox.critical(self.main_window, "Error", f"Failed to open Aggregation Method Comparison Plot: {str(e)}")
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Aggregation Method Average Plot: {str(e)}")
 
-    def _open_trilateration_method_comparison(self):
-        """Open the trilateration method comparison plot in a new window."""
+    def _open_trilateration_method_average(self):
+        """Open the trilateration method average plot in a new window."""
         try:
             scenarios = self.app.scenarios if self.app else []
-            window = TrilaterationMethodComparisonPlotWindow(scenarios, self.main_window)
+            window = TrilaterationMethodAveragePlotWindow(self.main_window, scenarios)
             window.show()
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
-            QMessageBox.critical(self.main_window, "Error", f"Failed to open Trilateration Method Comparison Plot: {str(e)}")
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open Trilateration Method Average Plot: {str(e)}")
 
     def update(self):
         """Update the analysis tab if needed."""
