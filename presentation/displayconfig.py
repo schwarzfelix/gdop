@@ -54,3 +54,8 @@ class DisplayConfig():
         # - "best_subset": Selects best 3-anchor subset by condition number (recommended for collinear anchors)
         # - "nonlinear": Nonlinear optimization with centroid start (requires scipy)
         self.trilaterationMethod = "ask"
+
+        # Bar Chart Label Offset
+        # Vertical offset (in data coordinates as fraction of y-range) for value labels above bars
+        # Increase this value to move labels further above the bars
+        self.barLabelOffset = 0.02  # 2% of y-axis range

@@ -8,6 +8,7 @@ tag in each provided scenario.
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import QObject, pyqtSignal
 from presentation.plot_colors import TAG_TRUTH_GDOP
+from presentation.displayconfig import DisplayConfig
 
 
 class ComparisonPlot(QObject):
@@ -28,6 +29,7 @@ class ComparisonPlot(QObject):
         super().__init__()
         self.window = window
         self.scenarios = app_scenarios
+        self.display_config = DisplayConfig()
 
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         # Initial setup - will be updated in update_data()
@@ -69,9 +71,13 @@ class ComparisonPlot(QObject):
         # Add grid
         self.ax.grid(True, alpha=0.3, axis='y', linestyle='--')
         
+        # Calculate label offset based on y-axis range
+        y_range = self.ax.get_ylim()[1] - self.ax.get_ylim()[0]
+        label_offset = y_range * self.display_config.barLabelOffset
+        
         # Add value labels on bars
         for i, v in enumerate(gdop_values):
-            self.ax.text(i, v, f"{v:.2f}", ha='center', va='bottom')
+            self.ax.text(i, v + label_offset, f"{v:.2f}", ha='center', va='bottom', rotation=90)
         
         # Add sample count info
         n_scenarios = len(scenario_names)

@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from data.importer import import_scenario
 from presentation.plot_colors import AGG_METHOD_COLORS, POSITION_ERROR
+from presentation.displayconfig import DisplayConfig
 
 
 class AggregationMethodAveragePlot:
@@ -25,6 +26,7 @@ class AggregationMethodAveragePlot:
         """
         self.parent = parent
         self.scenarios = scenarios
+        self.display_config = DisplayConfig()
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         
     def update_data(self):
@@ -94,12 +96,6 @@ class AggregationMethodAveragePlot:
         bars = self.ax.bar(x_pos, avg_errors, color=bar_colors, 
                           edgecolor='black', linewidth=1.5, width=0.6)
         
-        # Add value labels on bars
-        for i, (pos, height, method) in enumerate(zip(x_pos, avg_errors, methods)):
-            count = method_counts[method]
-            self.ax.text(pos, height, f'{height:.2f}m\n(n={count})',
-                       ha='center', va='bottom')
-        
         # Customize plot
         self.ax.set_xlabel('Aggregation Method')
         self.ax.set_ylabel('Average Position Error (m)')
@@ -113,6 +109,16 @@ class AggregationMethodAveragePlot:
         
         # Set y-axis to start from 0
         self.ax.set_ylim(bottom=0)
+        
+        # Calculate label offset based on y-axis range
+        y_range = self.ax.get_ylim()[1] - self.ax.get_ylim()[0]
+        label_offset = y_range * self.display_config.barLabelOffset
+        
+        # Add value labels on bars
+        for i, (pos, height, method) in enumerate(zip(x_pos, avg_errors, methods)):
+            count = method_counts[method]
+            self.ax.text(pos, height + label_offset, f'{height:.2f}m\n(n={count})',
+                       ha='center', va='bottom', rotation=90)
         
         # Add total sample count info
         total_samples = sum(method_counts.values())

@@ -13,6 +13,7 @@ import pandas as pd
 from collections import defaultdict
 from pathlib import Path
 from presentation.plot_colors import DISTANCE_ERROR, STD_DEVIATION
+from presentation.displayconfig import DisplayConfig
 
 
 class AccessPointMetricsPlotRaw(QObject):
@@ -39,6 +40,7 @@ class AccessPointMetricsPlotRaw(QObject):
         super().__init__()
         self.window = window
         self.scenarios = app_scenarios
+        self.display_config = DisplayConfig()
 
         # Create figure with single plot and two y-axes
         self.fig, self.ax1 = plt.subplots(figsize=(12, 6))
@@ -170,15 +172,25 @@ class AccessPointMetricsPlotRaw(QObject):
         max_std = max(std_distance_errors) if std_distance_errors else 3
         self.ax2.set_ylim(0, max(3, max_std * 1.15))
         
+        # Calculate label offsets based on y-axis ranges
+        y_range_ax1 = self.ax1.get_ylim()[1] - self.ax1.get_ylim()[0]
+        label_offset_ax1 = y_range_ax1 * self.display_config.barLabelOffset
+        
+        y_range_ax2 = self.ax2.get_ylim()[1] - self.ax2.get_ylim()[0]
+        label_offset_ax2 = y_range_ax2 * self.display_config.barLabelOffset
+        
         # ========== Add value labels on bars ==========
         for i, val in enumerate(avg_distance_errors):
-            va = 'bottom' if val >= 0 else 'top'
-            self.ax1.text(x[i] - width/2, val, f"{val:.2f}", 
-                         ha='center', va=va)
+            if val >= 0:
+                self.ax1.text(x[i] - width/2, val + label_offset_ax1, f"{val:.2f}", 
+                             ha='center', va='bottom', rotation=90)
+            else:
+                self.ax1.text(x[i] - width/2, val - label_offset_ax1, f"{val:.2f}", 
+                             ha='center', va='top', rotation=90)
         
         for i, val in enumerate(std_distance_errors):
-            self.ax2.text(x[i] + width/2, val, f"{val:.2f}",
-                         ha='center', va='bottom')
+            self.ax2.text(x[i] + width/2, val + label_offset_ax2, f"{val:.2f}",
+                         ha='center', va='bottom', rotation=90)
         
         # ========== Add combined legend ==========
         lines1, labels1 = self.ax1.get_legend_handles_labels()

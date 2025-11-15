@@ -8,6 +8,7 @@ name (arrangement), with PD and FW variants shown in different colors side by si
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import QObject, pyqtSignal
 from presentation.plot_colors import DISTANCE_ERROR, PD_COLOR, FW_COLOR
+from presentation.displayconfig import DisplayConfig
 
 
 class ArrangementDistanceErrorPlot(QObject):
@@ -29,6 +30,7 @@ class ArrangementDistanceErrorPlot(QObject):
         super().__init__()
         self.window = window
         self.scenarios = app_scenarios
+        self.display_config = DisplayConfig()
 
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         self.ax.set_title('Average Distance Error per Arrangement (PD vs FW)')
@@ -134,14 +136,18 @@ class ArrangementDistanceErrorPlot(QObject):
                        max(fw_values) if fw_values else 0)
         self.ax.set_ylim(0, max(5, max_error * 1.2))
         
+        # Calculate label offset based on y-axis range
+        y_range = self.ax.get_ylim()[1] - self.ax.get_ylim()[0]
+        label_offset = y_range * self.display_config.barLabelOffset
+        
         # Add value labels on bars
         for i, (pd_val, fw_val) in enumerate(zip(pd_values, fw_values)):
             if pd_val > 0:
-                self.ax.text(i - width/2, pd_val, f"{pd_val:.2f}", 
-                           ha='center', va='bottom')
+                self.ax.text(i - width/2, pd_val + label_offset, f"{pd_val:.2f}", 
+                           ha='center', va='bottom', rotation=90)
             if fw_val > 0:
-                self.ax.text(i + width/2, fw_val, f"{fw_val:.2f}",
-                           ha='center', va='bottom')
+                self.ax.text(i + width/2, fw_val + label_offset, f"{fw_val:.2f}",
+                           ha='center', va='bottom', rotation=90)
         
         # Add sample count info
         total_scenarios = sum(len(arrangement_data[arr]['PD']) + len(arrangement_data[arr]['FW']) 

@@ -8,6 +8,7 @@ name (arrangement number), with 3A and 4A variants shown in different colors sid
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import QObject, pyqtSignal
 from presentation.plot_colors import ANCHOR_3A, ANCHOR_4A
+from presentation.displayconfig import DisplayConfig
 
 
 class ArrangementAnchorCountPositionErrorPlot(QObject):
@@ -29,6 +30,7 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
         super().__init__()
         self.window = window
         self.scenarios = app_scenarios
+        self.display_config = DisplayConfig()
 
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         self.ax.set_title('First-tag Position Error per Arrangement (3A vs 4A)')
@@ -135,14 +137,18 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
                        max(a4_values) if a4_values else 0)
         self.ax.set_ylim(0, max(5, max_error * 1.2))
         
+        # Calculate label offset based on y-axis range
+        y_range = self.ax.get_ylim()[1] - self.ax.get_ylim()[0]
+        label_offset = y_range * self.display_config.barLabelOffset
+        
         # Add value labels on bars
         for i, (a3_val, a4_val) in enumerate(zip(a3_values, a4_values)):
             if a3_val > 0:
-                self.ax.text(i - width/2, a3_val, f"{a3_val:.2f}", 
-                           ha='center', va='bottom')
+                self.ax.text(i - width/2, a3_val + label_offset, f"{a3_val:.2f}", 
+                           ha='center', va='bottom', rotation=90)
             if a4_val > 0:
-                self.ax.text(i + width/2, a4_val, f"{a4_val:.2f}",
-                           ha='center', va='bottom')
+                self.ax.text(i + width/2, a4_val + label_offset, f"{a4_val:.2f}",
+                           ha='center', va='bottom', rotation=90)
         
         # Add sample count info
         total_scenarios = sum(len(arrangement_data[arr]['3A']) + len(arrangement_data[arr]['4A']) 
