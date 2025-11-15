@@ -7,6 +7,7 @@ tag in each provided scenario.
 
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import QObject, pyqtSignal
+from presentation.plot_colors import TAG_TRUTH_GDOP
 
 
 class ComparisonPlot(QObject):
@@ -29,8 +30,7 @@ class ComparisonPlot(QObject):
         self.scenarios = app_scenarios
 
         self.fig, self.ax = plt.subplots(figsize=(6, 4))
-        self.ax.set_title('First-tag GDOP per scenario')
-        self.ax.set_ylabel('GDOP')
+        # Initial setup - will be updated in update_data()
 
     def update_data(self, anchors=False, tags=False, measurements=False):
         """Compute GDOP for the first tag of each scenario and update the bar chart.
@@ -55,12 +55,25 @@ class ComparisonPlot(QObject):
         # draw bars
         self.ax.clear()
         x = range(len(scenario_names))
-        self.ax.bar(x, gdop_values, color='orange')
+        self.ax.bar(x, gdop_values, color=TAG_TRUTH_GDOP)
         self.ax.set_xticks(x)
         self.ax.set_xticklabels(scenario_names, rotation=90)
         self.ax.set_ylim(0, max(12, max(gdop_values) * 1.2 if gdop_values else 12))
+        
+        # Add title and labels
+        self.ax.set_title('GDOP Comparison Across Scenarios')
+        self.ax.set_xlabel('Scenario')
+        self.ax.set_ylabel('GDOP')
+        
+        # Add value labels on bars
         for i, v in enumerate(gdop_values):
             self.ax.text(i, v, f"{v:.2f}", ha='center', va='bottom')
+        
+        # Add sample count info
+        n_scenarios = len(scenario_names)
+        self.fig.text(0.5, 0.02, f'Number of scenarios: {n_scenarios}', ha='center')
+        
+        self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
 
     def redraw(self):
         try:

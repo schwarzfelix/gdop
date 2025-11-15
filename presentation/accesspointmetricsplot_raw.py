@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 from collections import defaultdict
 from pathlib import Path
+from presentation.plot_colors import DISTANCE_ERROR, STD_DEVIATION
 
 
 class AccessPointMetricsPlotRaw(QObject):
@@ -42,8 +43,7 @@ class AccessPointMetricsPlotRaw(QObject):
         # Create figure with single plot and two y-axes
         self.fig, self.ax1 = plt.subplots(figsize=(12, 6))
         self.ax2 = self.ax1.twinx()  # Create second y-axis sharing same x-axis
-        self.fig.suptitle('Access Point Quality Metrics - RAW DATA (All CSV Entries)', 
-                         fontsize=13, fontweight='bold')
+        self.fig.suptitle('Access Point Quality Metrics - RAW DATA (All CSV Entries)')
 
     def update_data(self, anchors=False, tags=False, measurements=False):
         """Compute average distance error and standard deviation per Access Point using RAW CSV data.
@@ -137,17 +137,17 @@ class AccessPointMetricsPlotRaw(QObject):
         # Left axis (ax1): Average Distance Error
         bars_avg = self.ax1.bar(x - width/2, avg_distance_errors, width, 
                                 label='Avg Distance Error', 
-                                color='steelblue', alpha=0.8, edgecolor='navy', linewidth=1.5)
+                                color=DISTANCE_ERROR, edgecolor='darkred', linewidth=1.5)
         
         # Right axis (ax2): Standard Deviation
         bars_std = self.ax2.bar(x + width/2, std_distance_errors, width,
                                 label='Std Deviation',
-                                color='coral', alpha=0.8, edgecolor='darkred', linewidth=1.5)
+                                color=STD_DEVIATION, edgecolor='purple', linewidth=1.5)
         
         # ========== Configure left y-axis (Average Distance Error) ==========
-        self.ax1.set_xlabel('Access Point', fontsize=11, fontweight='bold')
-        self.ax1.set_ylabel('Average Distance Error (m)', fontsize=11, fontweight='bold', color='steelblue')
-        self.ax1.tick_params(axis='y', labelcolor='steelblue')
+        self.ax1.set_xlabel('Access Point')
+        self.ax1.set_ylabel('Average Distance Error (m)')
+        self.ax1.tick_params(axis='y')
         self.ax1.set_xticks(x)
         self.ax1.set_xticklabels(anchor_names, rotation=45, ha='right')
         
@@ -158,12 +158,12 @@ class AccessPointMetricsPlotRaw(QObject):
         self.ax1.set_ylim(min(0, min_avg - y_margin_avg), max(3, max_avg + y_margin_avg))
         
         # Add grid and zero line
-        self.ax1.grid(axis='y', alpha=0.3, linestyle='--', color='steelblue')
+        self.ax1.grid(axis='y', alpha=0.3, linestyle='--')
         self.ax1.axhline(y=0, color='gray', linestyle='-', linewidth=1, alpha=0.5)
         
         # ========== Configure right y-axis (Standard Deviation) ==========
-        self.ax2.set_ylabel('Standard Deviation (m)', fontsize=11, fontweight='bold', color='coral')
-        self.ax2.tick_params(axis='y', labelcolor='coral')
+        self.ax2.set_ylabel('Standard Deviation (m)')
+        self.ax2.tick_params(axis='y')
         
         # Set y-limit for std dev (always positive, start from 0)
         max_std = max(std_distance_errors) if std_distance_errors else 3
@@ -173,22 +173,21 @@ class AccessPointMetricsPlotRaw(QObject):
         for i, val in enumerate(avg_distance_errors):
             va = 'bottom' if val >= 0 else 'top'
             self.ax1.text(x[i] - width/2, val, f"{val:.2f}", 
-                         ha='center', va=va, fontsize=9, fontweight='bold', color='navy')
+                         ha='center', va=va)
         
         for i, val in enumerate(std_distance_errors):
             self.ax2.text(x[i] + width/2, val, f"{val:.2f}",
-                         ha='center', va='bottom', fontsize=9, fontweight='bold', color='darkred')
+                         ha='center', va='bottom')
         
         # ========== Add combined legend ==========
         lines1, labels1 = self.ax1.get_legend_handles_labels()
         lines2, labels2 = self.ax2.get_legend_handles_labels()
-        self.ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=10)
+        self.ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
         
         # Add sample count info at the bottom of the figure
         info_text = "RAW samples per AP: " + ", ".join([f"{name}: {len(anchor_distance_errors[name])}" 
                                                          for name in anchor_names])
-        self.fig.text(0.5, 0.02, info_text, 
-                     ha='center', fontsize=9, style='italic', color='darkgreen', fontweight='bold')
+        self.fig.text(0.5, 0.02, info_text, ha='center')
         
         self.fig.tight_layout(rect=[0, 0.05, 1, 0.96])  # Leave space for suptitle and info text
 
@@ -198,7 +197,7 @@ class AccessPointMetricsPlotRaw(QObject):
         self.ax2.clear()
         self.ax1.text(0.5, 0.5, message, 
                      transform=self.ax1.transAxes,
-                     ha='center', va='center', fontsize=12)
+                     ha='center', va='center')
 
     def redraw(self):
         try:

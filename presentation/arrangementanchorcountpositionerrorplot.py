@@ -7,6 +7,7 @@ name (arrangement number), with 3A and 4A variants shown in different colors sid
 
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import QObject, pyqtSignal
+from presentation.plot_colors import ANCHOR_3A, ANCHOR_4A
 
 
 class ArrangementAnchorCountPositionErrorPlot(QObject):
@@ -112,9 +113,9 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
         
         # Plot bars
         bars_3a = self.ax.bar([i - width/2 for i in x], a3_values, width, 
-                              label='3A', color='blue', alpha=0.8)
+                              label='3A', color=ANCHOR_3A)
         bars_4a = self.ax.bar([i + width/2 for i in x], a4_values, width,
-                              label='4A', color='orange', alpha=0.8)
+                              label='4A', color=ANCHOR_4A)
         
         # Labels and formatting
         self.ax.set_xlabel('Arrangement')
@@ -133,12 +134,17 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
         for i, (a3_val, a4_val) in enumerate(zip(a3_values, a4_values)):
             if a3_val > 0:
                 self.ax.text(i - width/2, a3_val, f"{a3_val:.2f}", 
-                           ha='center', va='bottom', fontsize=8)
+                           ha='center', va='bottom')
             if a4_val > 0:
                 self.ax.text(i + width/2, a4_val, f"{a4_val:.2f}",
-                           ha='center', va='bottom', fontsize=8)
+                           ha='center', va='bottom')
         
-        self.fig.tight_layout()
+        # Add sample count info
+        total_scenarios = sum(len(arrangement_data[arr]['3A']) + len(arrangement_data[arr]['4A']) 
+                            for arr in arrangements)
+        self.fig.text(0.5, 0.02, f'Total scenarios: {total_scenarios}', ha='center')
+        
+        self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
 
     def redraw(self):
         try:

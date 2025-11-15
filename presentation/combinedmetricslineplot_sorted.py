@@ -6,6 +6,7 @@ across scenarios sorted by their tag truth GDOP values.
 
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import QObject, pyqtSignal
+from presentation.plot_colors import POSITION_ERROR, TAG_TRUTH_GDOP
 
 
 class CombinedMetricsLinePlotSorted(QObject):
@@ -31,9 +32,7 @@ class CombinedMetricsLinePlotSorted(QObject):
         self.scenarios = app_scenarios
 
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
-        self.ax.set_title('Scenario Metrics Trends (Sorted by Tag Truth GDOP): Position Error and Tag Truth GDOP')
-        self.ax.set_ylabel('Value')
-        self.ax.set_xlabel('Scenario (sorted by Tag Truth GDOP)')
+        # Title and labels will be set in update_data()
 
     def update_data(self, anchors=False, tags=False, measurements=False):
         """Compute metrics for the first tag of each scenario, sort by tag truth GDOP, and update the line plot.
@@ -85,12 +84,17 @@ class CombinedMetricsLinePlotSorted(QObject):
         x = range(len(scenario_names))
 
         # Plot position error line
-        self.ax.plot(x, position_errors, 'o-', label='Position Error (m)', color='blue', linewidth=2, markersize=6)
+        self.ax.plot(x, position_errors, 'o-', label='Position Error (m)', color=POSITION_ERROR, linewidth=2, markersize=6)
 
         # Plot tag truth GDOP line
-        self.ax.plot(x, tag_truth_gdops, 's-', label='Tag Truth GDOP', color='orange', linewidth=2, markersize=6)
+        self.ax.plot(x, tag_truth_gdops, 's-', label='Tag Truth GDOP', color=TAG_TRUTH_GDOP, linewidth=2, markersize=6)
 
-        # Set labels and ticks
+        # Set title and labels
+        self.ax.set_title('Scenario Metrics Trends (Sorted by Tag Truth GDOP)')
+        self.ax.set_xlabel('Scenario (sorted by Tag Truth GDOP)')
+        self.ax.set_ylabel('Value')
+        
+        # Set ticks and formatting
         self.ax.set_xticks(x)
         self.ax.set_xticklabels(scenario_names, rotation=45, ha='right')
         self.ax.legend()
@@ -98,8 +102,8 @@ class CombinedMetricsLinePlotSorted(QObject):
 
         # Add value labels at each point
         for i, (pe, gdop) in enumerate(zip(position_errors, tag_truth_gdops)):
-            self.ax.annotate(f'{pe:.2f}', (x[i], pe), textcoords="offset points", xytext=(0,10), ha='center', fontsize=8, color='blue')
-            self.ax.annotate(f'{gdop:.2f}', (x[i], gdop), textcoords="offset points", xytext=(0,-15), ha='center', fontsize=8, color='orange')
+            self.ax.annotate(f'{pe:.2f}', (x[i], pe), textcoords="offset points", xytext=(0,10), ha='center')
+            self.ax.annotate(f'{gdop:.2f}', (x[i], gdop), textcoords="offset points", xytext=(0,-15), ha='center')
 
         # Set y-limits with some padding
         all_values = position_errors + tag_truth_gdops
@@ -108,6 +112,12 @@ class CombinedMetricsLinePlotSorted(QObject):
             max_val = max(all_values)
             padding = (max_val - min_val) * 0.1 if max_val != min_val else 1.0
             self.ax.set_ylim(max(0, min_val - padding), max_val + padding)
+        
+        # Add sample count info
+        n_scenarios = len(scenario_names)
+        self.fig.text(0.5, 0.02, f'Number of scenarios: {n_scenarios}', ha='center')
+        
+        self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
 
     def redraw(self):
         try:

@@ -7,6 +7,7 @@ name (arrangement), with PD and FW variants shown in different colors side by si
 
 import matplotlib.pyplot as plt
 from PyQt5.QtCore import QObject, pyqtSignal
+from presentation.plot_colors import STD_DEVIATION, PD_COLOR, FW_COLOR
 
 
 class ArrangementDistanceStdDevPlot(QObject):
@@ -111,11 +112,11 @@ class ArrangementDistanceStdDevPlot(QObject):
         
         self.ax.clear()
         
-        # Plot bars
+        # Plot bars - using PD/FW colors to distinguish the variants
         bars_pd = self.ax.bar([i - width/2 for i in x], pd_values, width, 
-                              label='PD', color='blue', alpha=0.8)
+                              label='PD', color=PD_COLOR)
         bars_fw = self.ax.bar([i + width/2 for i in x], fw_values, width,
-                              label='FW', color='orange', alpha=0.8)
+                              label='FW', color=FW_COLOR)
         
         # Labels and formatting
         self.ax.set_xlabel('Arrangement')
@@ -134,12 +135,17 @@ class ArrangementDistanceStdDevPlot(QObject):
         for i, (pd_val, fw_val) in enumerate(zip(pd_values, fw_values)):
             if pd_val > 0:
                 self.ax.text(i - width/2, pd_val, f"{pd_val:.2f}", 
-                           ha='center', va='bottom', fontsize=8)
+                           ha='center', va='bottom')
             if fw_val > 0:
                 self.ax.text(i + width/2, fw_val, f"{fw_val:.2f}",
-                           ha='center', va='bottom', fontsize=8)
+                           ha='center', va='bottom')
         
-        self.fig.tight_layout()
+        # Add sample count info
+        total_scenarios = sum(len(arrangement_data[arr]['PD']) + len(arrangement_data[arr]['FW']) 
+                            for arr in arrangements)
+        self.fig.text(0.5, 0.02, f'Total scenarios: {total_scenarios}', ha='center')
+        
+        self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
 
     def redraw(self):
         try:

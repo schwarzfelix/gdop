@@ -8,6 +8,7 @@ with the mean position error calculated using that specific method.
 
 import matplotlib.pyplot as plt
 import numpy as np
+from presentation.plot_colors import TRILAT_METHOD_COLORS
 
 
 class TrilaterationMethodAveragePlot:
@@ -35,7 +36,6 @@ class TrilaterationMethodAveragePlot:
         
         # Define trilateration methods to compare
         trilat_methods = ['classical', 'best_subset', 'nonlinear']
-        colors = {'classical': '#1f77b4', 'best_subset': '#ff7f0e', 'nonlinear': '#2ca02c'}
         
         # Filter out sandbox scenario
         valid_scenarios = [s for s in self.scenarios if s.name != "SandboxScenario"]
@@ -83,24 +83,23 @@ class TrilaterationMethodAveragePlot:
         # Prepare data for plotting
         methods = list(method_errors.keys())
         avg_errors = [method_errors[m] for m in methods]
-        bar_colors = [colors[m] for m in methods]
+        bar_colors = [TRILAT_METHOD_COLORS[m] for m in methods]
         
         # Create bar plot
         x_pos = np.arange(len(methods))
-        bars = self.ax.bar(x_pos, avg_errors, color=bar_colors, alpha=0.8, 
+        bars = self.ax.bar(x_pos, avg_errors, color=bar_colors, 
                           edgecolor='black', linewidth=1.5, width=0.6)
         
         # Add value labels on bars
         for i, (pos, height, method) in enumerate(zip(x_pos, avg_errors, methods)):
             count = method_counts[method]
             self.ax.text(pos, height, f'{height:.2f}m\n(n={count})',
-                       ha='center', va='bottom', fontsize=10, fontweight='bold')
+                       ha='center', va='bottom')
         
         # Customize plot
-        self.ax.set_xlabel('Trilateration Method', fontsize=12, fontweight='bold')
-        self.ax.set_ylabel('Average Position Error (m)', fontsize=12, fontweight='bold')
-        self.ax.set_title('Average Position Error by Trilateration Method', 
-                         fontsize=14, fontweight='bold')
+        self.ax.set_xlabel('Trilateration Method')
+        self.ax.set_ylabel('Average Position Error (m)')
+        self.ax.set_title('Average Position Error by Trilateration Method')
         self.ax.set_xticks(x_pos)
         self.ax.set_xticklabels([m.replace('_', ' ').title() for m in methods])
         
@@ -111,7 +110,11 @@ class TrilaterationMethodAveragePlot:
         # Set y-axis to start from 0
         self.ax.set_ylim(bottom=0)
         
-        self.fig.tight_layout()
+        # Add total sample count info
+        total_samples = sum(method_counts.values())
+        self.fig.text(0.5, 0.02, f'Total measurements across all methods: {total_samples}', ha='center')
+        
+        self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
     
     def redraw(self):
         """Redraw the plot."""
