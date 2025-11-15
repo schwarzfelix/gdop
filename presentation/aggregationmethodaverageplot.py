@@ -10,7 +10,7 @@ with that specific method.
 import matplotlib.pyplot as plt
 import numpy as np
 from data.importer import import_scenario
-from presentation.plot_colors import AGG_METHOD_COLORS
+from presentation.plot_colors import AGG_METHOD_COLORS, POSITION_ERROR
 
 
 class AggregationMethodAveragePlot:

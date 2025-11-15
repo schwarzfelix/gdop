@@ -8,7 +8,7 @@ with the mean position error calculated using that specific method.
 
 import matplotlib.pyplot as plt
 import numpy as np
-from presentation.plot_colors import TRILAT_METHOD_COLORS
+from presentation.plot_colors import TRILAT_METHOD_COLORS, POSITION_ERROR
 
 
 class TrilaterationMethodAveragePlot:

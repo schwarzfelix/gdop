@@ -8,7 +8,7 @@ Diese Datei definiert einheitliche Farben für konsistente Darstellung
 # Metriken
 DISTANCE_ERROR = '#FF6B6B'      # Distanzfehler - helles Rot
 STD_DEVIATION = '#9B59B6'       # Standardabweichung - Lila
-POSITION_ERROR = '#E74C3C'      # Positionsfehler - kräftiges Rot
+POSITION_ERROR = '#C0392B'      # Positionsfehler - dunkleres kräftiges Rot
 TAG_TRUTH_GDOP = '#FF8C00'      # Tag Truth GDOP - Orange (DarkOrange)
 
 # Varianten
