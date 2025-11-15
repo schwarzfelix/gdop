@@ -77,11 +77,16 @@ class ComparisonPlot(QObject):
         
         # Add value labels on bars
         for i, v in enumerate(gdop_values):
-            self.ax.text(i, v + label_offset, f"{v:.2f}", ha='center', va='bottom', rotation=90)
+            self.ax.text(i, v + label_offset, f"{v:.2f}", ha='center', va='bottom', rotation=90,
+                        fontsize=self.display_config.fontSize_annotation)
         
         # Add sample count info
         n_scenarios = len(scenario_names)
-        self.fig.text(0.5, 0.02, f'Number of scenarios: {n_scenarios}', ha='center')
+        self.fig.text(0.5, 0.02, f'Number of scenarios: {n_scenarios}', ha='center',
+                     fontsize=self.display_config.fontSize_info)
+        
+        # Apply font sizes to axes
+        self.display_config.apply_font_sizes(self.ax, self.fig)
         
         self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
 

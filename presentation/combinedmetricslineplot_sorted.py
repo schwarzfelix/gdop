@@ -114,7 +114,7 @@ class CombinedMetricsLinePlotSorted(QObject):
         # Combined legend
         lines = line1 + line2
         labels = [l.get_label() for l in lines]
-        self.ax1.legend(lines, labels, loc='upper left')
+        self.ax1.legend(lines, labels, loc='upper left', fontsize=display_config.fontSize_legend)
         
         self.ax1.grid(True, alpha=0.3, axis='y', linestyle='--')
 
@@ -131,9 +131,17 @@ class CombinedMetricsLinePlotSorted(QObject):
             padding_gdop = (max_gdop - min_gdop) * 0.15 if max_gdop != min_gdop else 1.0
             self.ax2.set_ylim(max(0, min_gdop - padding_gdop), max_gdop + padding_gdop)
         
+        # Apply font sizes to axes
+        from presentation.displayconfig import DisplayConfig
+        display_config = DisplayConfig()
+        display_config.apply_font_sizes(self.ax1, self.fig)
+        self.ax2.yaxis.label.set_fontsize(display_config.fontSize_axisLabel)
+        self.ax2.tick_params(axis='y', labelsize=display_config.fontSize_tickLabel)
+        
         # Add sample count info
         n_scenarios = len(scenario_names)
-        self.fig.text(0.5, 0.02, f'Number of scenarios: {n_scenarios}', ha='center')
+        self.fig.text(0.5, 0.02, f'Number of scenarios: {n_scenarios}', ha='center',
+                     fontsize=display_config.fontSize_info)
         
         self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
 

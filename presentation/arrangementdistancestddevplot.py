@@ -128,7 +128,7 @@ class ArrangementDistanceStdDevPlot(QObject):
         self.ax.set_title('Average Distance Standard Deviation per Arrangement (PD vs FW)')
         self.ax.set_xticks(x)
         self.ax.set_xticklabels(arrangements, rotation=0, ha='center')
-        self.ax.legend()
+        self.ax.legend(fontsize=self.display_config.fontSize_legend)
         
         # Add grid
         self.ax.grid(True, alpha=0.3, axis='y', linestyle='--')
@@ -146,15 +146,21 @@ class ArrangementDistanceStdDevPlot(QObject):
         for i, (pd_val, fw_val) in enumerate(zip(pd_values, fw_values)):
             if pd_val > 0:
                 self.ax.text(i - width/2, pd_val + label_offset, f"{pd_val:.2f}", 
-                           ha='center', va='bottom', rotation=90)
+                           ha='center', va='bottom', rotation=90,
+                           fontsize=self.display_config.fontSize_annotation)
             if fw_val > 0:
                 self.ax.text(i + width/2, fw_val + label_offset, f"{fw_val:.2f}",
-                           ha='center', va='bottom', rotation=90)
+                           ha='center', va='bottom', rotation=90,
+                           fontsize=self.display_config.fontSize_annotation)
         
         # Add sample count info
         total_scenarios = sum(len(arrangement_data[arr]['PD']) + len(arrangement_data[arr]['FW']) 
                             for arr in arrangements)
-        self.fig.text(0.5, 0.02, f'Total scenarios: {total_scenarios}', ha='center')
+        self.fig.text(0.5, 0.02, f'Total scenarios: {total_scenarios}', ha='center',
+                     fontsize=self.display_config.fontSize_info)
+        
+        # Apply font sizes to axes
+        self.display_config.apply_font_sizes(self.ax, self.fig)
         
         self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
 

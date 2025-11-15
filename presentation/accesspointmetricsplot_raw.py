@@ -183,24 +183,38 @@ class AccessPointMetricsPlotRaw(QObject):
         for i, val in enumerate(avg_distance_errors):
             if val >= 0:
                 self.ax1.text(x[i] - width/2, val + label_offset_ax1, f"{val:.2f}", 
-                             ha='center', va='bottom', rotation=90)
+                             ha='center', va='bottom', rotation=90,
+                             fontsize=self.display_config.fontSize_annotation)
             else:
                 self.ax1.text(x[i] - width/2, val - label_offset_ax1, f"{val:.2f}", 
-                             ha='center', va='top', rotation=90)
+                             ha='center', va='top', rotation=90,
+                             fontsize=self.display_config.fontSize_annotation)
         
         for i, val in enumerate(std_distance_errors):
             self.ax2.text(x[i] + width/2, val + label_offset_ax2, f"{val:.2f}",
-                         ha='center', va='bottom', rotation=90)
+                         ha='center', va='bottom', rotation=90,
+                         fontsize=self.display_config.fontSize_annotation)
         
         # ========== Add combined legend ==========
         lines1, labels1 = self.ax1.get_legend_handles_labels()
         lines2, labels2 = self.ax2.get_legend_handles_labels()
-        self.ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
+        self.ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left',
+                       fontsize=self.display_config.fontSize_legend)
+        
+        # Apply font sizes to both axes
+        self.display_config.apply_font_sizes(self.ax1, self.fig)
+        self.ax2.yaxis.label.set_fontsize(self.display_config.fontSize_axisLabel)
+        self.ax2.tick_params(axis='y', labelsize=self.display_config.fontSize_tickLabel)
+        
+        # Apply font size to suptitle
+        self.fig.suptitle('Access Point Quality Metrics - RAW DATA (All CSV Entries)',
+                         fontsize=self.display_config.fontSize_title)
         
         # Add sample count info at the bottom of the figure
         info_text = "RAW samples per AP: " + ", ".join([f"{name}: {len(anchor_distance_errors[name])}" 
                                                          for name in anchor_names])
-        self.fig.text(0.5, 0.02, info_text, ha='center')
+        self.fig.text(0.5, 0.02, info_text, ha='center',
+                     fontsize=self.display_config.fontSize_info)
         
         self.fig.tight_layout(rect=[0, 0.05, 1, 0.96])  # Leave space for suptitle and info text
 

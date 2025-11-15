@@ -39,7 +39,10 @@ class MultiTrilatPlot(QObject):
             legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
         
         if legend_elements:
-            self.ax.legend(handles=legend_elements, loc='upper right', fontsize='small')
+            self.ax.legend(handles=legend_elements, loc='upper right', fontsize=self.display_config.fontSize_legend)
+        
+        # Apply font sizes
+        self.display_config.apply_font_sizes(self.ax, self.fig)
 
         # Initialize artists for each scenario
         self.anchor_scatters = []
@@ -393,7 +396,7 @@ class MultiTrilatPlot(QObject):
             legend_elements.append(plt.Rectangle((0, 0), 1, 1, edgecolor='black', facecolor='none', linewidth=2, label='Border'))
         
         if legend_elements:
-            self.ax.legend(handles=legend_elements, loc='upper right', fontsize='small')
+            self.ax.legend(handles=legend_elements, loc='upper right', fontsize=self.display_config.fontSize_legend)
         else:
             # Remove legend if no elements
             if self.ax.get_legend():

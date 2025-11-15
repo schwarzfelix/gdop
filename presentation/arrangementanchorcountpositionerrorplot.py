@@ -127,7 +127,7 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
         self.ax.set_title('First-tag Position Error per Arrangement (3A vs 4A)')
         self.ax.set_xticks(x)
         self.ax.set_xticklabels(arrangements, rotation=0, ha='center')
-        self.ax.legend()
+        self.ax.legend(fontsize=self.display_config.fontSize_legend)
         
         # Add grid
         self.ax.grid(True, alpha=0.3, axis='y', linestyle='--')
@@ -145,15 +145,21 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
         for i, (a3_val, a4_val) in enumerate(zip(a3_values, a4_values)):
             if a3_val > 0:
                 self.ax.text(i - width/2, a3_val + label_offset, f"{a3_val:.2f}", 
-                           ha='center', va='bottom', rotation=90)
+                           ha='center', va='bottom', rotation=90,
+                           fontsize=self.display_config.fontSize_annotation)
             if a4_val > 0:
                 self.ax.text(i + width/2, a4_val + label_offset, f"{a4_val:.2f}",
-                           ha='center', va='bottom', rotation=90)
+                           ha='center', va='bottom', rotation=90,
+                           fontsize=self.display_config.fontSize_annotation)
         
         # Add sample count info
         total_scenarios = sum(len(arrangement_data[arr]['3A']) + len(arrangement_data[arr]['4A']) 
                             for arr in arrangements)
-        self.fig.text(0.5, 0.02, f'Total scenarios: {total_scenarios}', ha='center')
+        self.fig.text(0.5, 0.02, f'Total scenarios: {total_scenarios}', ha='center',
+                     fontsize=self.display_config.fontSize_info)
+        
+        # Apply font sizes to axes
+        self.display_config.apply_font_sizes(self.ax, self.fig)
         
         self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
 

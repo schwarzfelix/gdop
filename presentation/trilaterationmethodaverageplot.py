@@ -114,12 +114,17 @@ class TrilaterationMethodAveragePlot:
         # Add value labels on bars
         for i, (pos, height, method) in enumerate(zip(x_pos, avg_errors, methods)):
             self.ax.text(pos, height + label_offset, f'{height:.2f}m',
-                       ha='center', va='bottom', rotation=90)
+                       ha='center', va='bottom', rotation=90,
+                       fontsize=self.display_config.fontSize_annotation)
         
         # Add total sample count info
         total_samples = sum(method_counts.values())
         num_scenarios = len(valid_scenarios)
-        self.fig.text(0.5, 0.02, f'Total measurements across all methods: {total_samples} | Scenarios (n): {num_scenarios}', ha='center')
+        self.fig.text(0.5, 0.02, f'Total measurements across all methods: {total_samples} | Scenarios (n): {num_scenarios}', 
+                     ha='center', fontsize=self.display_config.fontSize_info)
+        
+        # Apply font sizes to axes
+        self.display_config.apply_font_sizes(self.ax, self.fig)
         
         self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
     
