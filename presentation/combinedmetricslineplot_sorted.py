@@ -87,11 +87,11 @@ class CombinedMetricsLinePlotSorted(QObject):
 
         # Plot position error line on left axis
         line1 = self.ax1.plot(x, position_errors, 'o-', label='Position Error', 
-                             color=POSITION_ERROR, linewidth=2, markersize=6)
+                             color=POSITION_ERROR, linewidth=3, markersize=8)
 
         # Plot tag truth GDOP line on right axis
         line2 = self.ax2.plot(x, tag_truth_gdops, 's-', label='Tag Truth GDOP', 
-                             color=TAG_TRUTH_GDOP, linewidth=2, markersize=6)
+                             color=TAG_TRUTH_GDOP, linewidth=3, markersize=8)
 
         # Set title and labels
         self.ax1.set_title('Scenario Metrics Trends (Sorted by Tag Truth GDOP)')
