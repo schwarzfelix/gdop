@@ -32,7 +32,7 @@ class ArrangementPositionErrorPlot(QObject):
         self.scenarios = app_scenarios
         self.display_config = DisplayConfig()
 
-        self.fig, self.ax = plt.subplots(figsize=(10, 6))
+        self.fig, self.ax = plt.subplots(figsize=(10, 8))
         self.ax.set_title('First-tag Position Error per Arrangement (PD vs FW)')
         self.ax.set_ylabel('Position Error (m)')
         self.ax.set_xlabel('Arrangement')

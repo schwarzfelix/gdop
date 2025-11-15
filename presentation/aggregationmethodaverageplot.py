@@ -27,7 +27,7 @@ class AggregationMethodAveragePlot:
         self.parent = parent
         self.scenarios = scenarios
         self.display_config = DisplayConfig()
-        self.fig, self.ax = plt.subplots(figsize=(10, 6))
+        self.fig, self.ax = plt.subplots(figsize=(10, 8))
         
     def update_data(self):
         """Update plot data by calculating average position error per method."""

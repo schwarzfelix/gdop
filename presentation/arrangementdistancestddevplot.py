@@ -32,7 +32,7 @@ class ArrangementDistanceStdDevPlot(QObject):
         self.scenarios = app_scenarios
         self.display_config = DisplayConfig()
 
-        self.fig, self.ax = plt.subplots(figsize=(10, 6))
+        self.fig, self.ax = plt.subplots(figsize=(10, 8))
         self.ax.set_title('Average Distance Standard Deviation per Arrangement (PD vs FW)')
         self.ax.set_ylabel('Distance Std Dev (m)')
         self.ax.set_xlabel('Arrangement')

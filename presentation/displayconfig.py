@@ -94,9 +94,10 @@ class DisplayConfig():
             config = DisplayConfig()
             config.apply_font_sizes(self.ax, self.fig)
         """
-        # Set title font size
+        # Set title font size and weight (bold)
         if ax.get_title():
             ax.title.set_fontsize(self.fontSize_title)
+            ax.title.set_fontweight('bold')
         
         # Set axis label font sizes
         ax.xaxis.label.set_fontsize(self.fontSize_axisLabel)

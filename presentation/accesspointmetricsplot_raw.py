@@ -43,7 +43,7 @@ class AccessPointMetricsPlotRaw(QObject):
         self.display_config = DisplayConfig()
 
         # Create figure with single plot and two y-axes
-        self.fig, self.ax1 = plt.subplots(figsize=(12, 6))
+        self.fig, self.ax1 = plt.subplots(figsize=(12, 8))
         self.ax2 = self.ax1.twinx()  # Create second y-axis sharing same x-axis
         self.fig.suptitle('Access Point Quality Metrics - RAW DATA (All CSV Entries)')
 
@@ -206,9 +206,9 @@ class AccessPointMetricsPlotRaw(QObject):
         self.ax2.yaxis.label.set_fontsize(self.display_config.fontSize_axisLabel)
         self.ax2.tick_params(axis='y', labelsize=self.display_config.fontSize_tickLabel)
         
-        # Apply font size to suptitle
+        # Apply font size to suptitle (bold)
         self.fig.suptitle('Access Point Quality Metrics - RAW DATA (All CSV Entries)',
-                         fontsize=self.display_config.fontSize_title)
+                         fontsize=self.display_config.fontSize_title, fontweight='bold')
         
         # Add sample count info at the bottom of the figure
         info_text = "RAW samples per AP: " + ", ".join([f"{name}: {len(anchor_distance_errors[name])}" 

@@ -26,7 +26,7 @@ class TrilatPlot(QObject):
         self.display_config = self.window.display_config
 
         self.dragging_point = None
-        self.fig, self.ax_trilat = plt.subplots(figsize=(6, 4))
+        self.fig, self.ax_trilat = plt.subplots(figsize=(8, 6))
 
         self.anchor_plots = []
         self.anchor_scatter = None

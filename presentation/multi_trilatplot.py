@@ -22,7 +22,7 @@ class MultiTrilatPlot(QObject):
         self.scenarios = scenarios
         self.display_config = self.window.display_config
 
-        self.fig, self.ax = plt.subplots(figsize=(8, 6))
+        self.fig, self.ax = plt.subplots(figsize=(8, 8))
         self.ax.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
         self.ax.set_title("Multi-Scenario Trilateration Plot")
         self.ax.set_xlabel('x (m)')

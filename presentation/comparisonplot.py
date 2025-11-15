@@ -31,7 +31,7 @@ class ComparisonPlot(QObject):
         self.scenarios = app_scenarios
         self.display_config = DisplayConfig()
 
-        self.fig, self.ax = plt.subplots(figsize=(10, 6))
+        self.fig, self.ax = plt.subplots(figsize=(10, 8))
         # Initial setup - will be updated in update_data()
 
     def update_data(self, anchors=False, tags=False, measurements=False):
