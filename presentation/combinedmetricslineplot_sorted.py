@@ -31,7 +31,8 @@ class CombinedMetricsLinePlotSorted(QObject):
         self.window = window
         self.scenarios = app_scenarios
 
-        self.fig, self.ax = plt.subplots(figsize=(10, 6))
+        self.fig, self.ax1 = plt.subplots(figsize=(10, 6))
+        self.ax2 = self.ax1.twinx()  # Create second y-axis for GDOP
         # Title and labels will be set in update_data()
 
     def update_data(self, anchors=False, tags=False, measurements=False):
@@ -79,39 +80,57 @@ class CombinedMetricsLinePlotSorted(QObject):
         position_errors = [d['position_error'] for d in scenario_data]
         tag_truth_gdops = [d['tag_truth_gdop'] for d in scenario_data]
 
-        # Clear and plot lines
-        self.ax.clear()
+        # Clear both axes
+        self.ax1.clear()
+        self.ax2.clear()
         x = range(len(scenario_names))
 
-        # Plot position error line
-        self.ax.plot(x, position_errors, 'o-', label='Position Error (m)', color=POSITION_ERROR, linewidth=2, markersize=6)
+        # Plot position error line on left axis
+        line1 = self.ax1.plot(x, position_errors, 'o-', label='Position Error', 
+                             color=POSITION_ERROR, linewidth=2, markersize=6)
 
-        # Plot tag truth GDOP line
-        self.ax.plot(x, tag_truth_gdops, 's-', label='Tag Truth GDOP', color=TAG_TRUTH_GDOP, linewidth=2, markersize=6)
+        # Plot tag truth GDOP line on right axis
+        line2 = self.ax2.plot(x, tag_truth_gdops, 's-', label='Tag Truth GDOP', 
+                             color=TAG_TRUTH_GDOP, linewidth=2, markersize=6)
 
         # Set title and labels
-        self.ax.set_title('Scenario Metrics Trends (Sorted by Tag Truth GDOP)')
-        self.ax.set_xlabel('Scenario (sorted by Tag Truth GDOP)')
-        self.ax.set_ylabel('Value')
+        self.ax1.set_title('Scenario Metrics Trends (Sorted by Tag Truth GDOP)')
+        self.ax1.set_xlabel('Scenario (sorted by Tag Truth GDOP)')
+        self.ax1.set_ylabel('Position Error (m)')
+        self.ax2.set_ylabel('GDOP')
         
         # Set ticks and formatting
-        self.ax.set_xticks(x)
-        self.ax.set_xticklabels(scenario_names, rotation=45, ha='right')
-        self.ax.legend()
-        self.ax.grid(True, alpha=0.3)
+        self.ax1.set_xticks(x)
+        self.ax1.set_xticklabels(scenario_names, rotation=45, ha='right')
+        
+        # Combined legend
+        lines = line1 + line2
+        labels = [l.get_label() for l in lines]
+        self.ax1.legend(lines, labels, loc='upper left')
+        
+        self.ax1.grid(True, alpha=0.3)
 
         # Add value labels at each point
-        for i, (pe, gdop) in enumerate(zip(position_errors, tag_truth_gdops)):
-            self.ax.annotate(f'{pe:.2f}', (x[i], pe), textcoords="offset points", xytext=(0,10), ha='center')
-            self.ax.annotate(f'{gdop:.2f}', (x[i], gdop), textcoords="offset points", xytext=(0,-15), ha='center')
+        for i, pe in enumerate(position_errors):
+            self.ax1.annotate(f'{pe:.2f}', (x[i], pe), textcoords="offset points", 
+                            xytext=(0,10), ha='center')
+        
+        for i, gdop in enumerate(tag_truth_gdops):
+            self.ax2.annotate(f'{gdop:.2f}', (x[i], gdop), textcoords="offset points", 
+                            xytext=(0,-15), ha='center')
 
-        # Set y-limits with some padding
-        all_values = position_errors + tag_truth_gdops
-        if all_values:
-            min_val = min(all_values)
-            max_val = max(all_values)
-            padding = (max_val - min_val) * 0.1 if max_val != min_val else 1.0
-            self.ax.set_ylim(max(0, min_val - padding), max_val + padding)
+        # Set y-limits with some padding for each axis independently
+        if position_errors:
+            min_pe = min(position_errors)
+            max_pe = max(position_errors)
+            padding_pe = (max_pe - min_pe) * 0.15 if max_pe != min_pe else 1.0
+            self.ax1.set_ylim(max(0, min_pe - padding_pe), max_pe + padding_pe)
+        
+        if tag_truth_gdops:
+            min_gdop = min(tag_truth_gdops)
+            max_gdop = max(tag_truth_gdops)
+            padding_gdop = (max_gdop - min_gdop) * 0.15 if max_gdop != min_gdop else 1.0
+            self.ax2.set_ylim(max(0, min_gdop - padding_gdop), max_gdop + padding_gdop)
         
         # Add sample count info
         n_scenarios = len(scenario_names)
