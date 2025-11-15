@@ -85,13 +85,20 @@ class CombinedMetricsLinePlotSorted(QObject):
         self.ax2.clear()
         x = range(len(scenario_names))
 
-        # Plot position error line on left axis
-        line1 = self.ax1.plot(x, position_errors, 'o-', label='Position Error', 
-                             color=POSITION_ERROR, linewidth=3, markersize=8)
+        # Set zorder for axes to control layering
+        self.ax1.set_zorder(2)  # Position Error axis in front
+        self.ax2.set_zorder(1)  # GDOP axis in back
+        
+        # Make ax1 background transparent so ax2 is visible
+        self.ax1.patch.set_visible(False)
 
         # Plot tag truth GDOP line on right axis
         line2 = self.ax2.plot(x, tag_truth_gdops, 's-', label='Tag Truth GDOP', 
                              color=TAG_TRUTH_GDOP, linewidth=3, markersize=8)
+
+        # Plot position error line on left axis (will be in front due to ax1 zorder)
+        line1 = self.ax1.plot(x, position_errors, 'o-', label='Position Error', 
+                             color=POSITION_ERROR, linewidth=3, markersize=8)
 
         # Set title and labels
         self.ax1.set_title('Scenario Metrics Trends (Sorted by Tag Truth GDOP)')
@@ -109,15 +116,6 @@ class CombinedMetricsLinePlotSorted(QObject):
         self.ax1.legend(lines, labels, loc='upper left')
         
         self.ax1.grid(True, alpha=0.3)
-
-        # Add value labels at each point
-        for i, pe in enumerate(position_errors):
-            self.ax1.annotate(f'{pe:.2f}', (x[i], pe), textcoords="offset points", 
-                            xytext=(0,10), ha='center')
-        
-        for i, gdop in enumerate(tag_truth_gdops):
-            self.ax2.annotate(f'{gdop:.2f}', (x[i], gdop), textcoords="offset points", 
-                            xytext=(0,-15), ha='center')
 
         # Set y-limits with some padding for each axis independently
         if position_errors:
