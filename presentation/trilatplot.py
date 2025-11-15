@@ -509,10 +509,7 @@ class TrilatPlot(QObject):
             legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
         
         if legend_elements:
-            self.ax_trilat.legend(handles=legend_elements, loc='upper right', fontsize=self.display_config.fontSize_legend)
-        
-        # Apply font sizes to axes
-        self.display_config.apply_font_sizes(self.ax_trilat, self.fig)
+            self.ax_trilat.legend(handles=legend_elements, loc='upper right', fontsize='small')
 
         # Create border rectangle if available
         if self.scenario.border_rectangle:
@@ -552,7 +549,7 @@ class TrilatPlot(QObject):
             legend_elements.append(plt.Rectangle((0, 0), 1, 1, edgecolor='black', facecolor='none', linewidth=2, label='Border'))
         
         if legend_elements:
-            self.ax_trilat.legend(handles=legend_elements, loc='upper right', fontsize=self.display_config.fontSize_legend)
+            self.ax_trilat.legend(handles=legend_elements, loc='upper right', fontsize='small')
         else:
             # Remove legend if no elements
             if self.ax_trilat.get_legend():

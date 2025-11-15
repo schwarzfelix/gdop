@@ -83,19 +83,22 @@ class DisplayConfig():
         self.fontSize_annotation = 16  # For value labels on bars, etc.
         self.fontSize_info = 16  # For info text at bottom of plots
 
-    def apply_font_sizes(self, ax, fig=None):
+    def apply_font_sizes(self, ax, fig=None, apply_title=True):
         """Apply font size settings to a matplotlib axes (and optionally figure).
         
         Args:
             ax: matplotlib axes object
             fig: optional matplotlib figure object (for fig.text elements)
+            apply_title: if False, skip title font size/weight (useful for plots with default styling)
         
         Usage in plot classes:
             config = DisplayConfig()
             config.apply_font_sizes(self.ax, self.fig)
+            # Or to skip title formatting:
+            config.apply_font_sizes(self.ax, self.fig, apply_title=False)
         """
-        # Set title font size and weight (bold)
-        if ax.get_title():
+        # Set title font size and weight (bold) - only if apply_title is True
+        if apply_title and ax.get_title():
             ax.title.set_fontsize(self.fontSize_title)
             ax.title.set_fontweight('bold')
         
