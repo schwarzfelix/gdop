@@ -137,12 +137,12 @@ class AccessPointMetricsPlotRaw(QObject):
         # Left axis (ax1): Average Distance Error
         bars_avg = self.ax1.bar(x - width/2, avg_distance_errors, width, 
                                 label='Avg Distance Error', 
-                                color=DISTANCE_ERROR, linewidth=1.5)
+                                color=DISTANCE_ERROR, edgecolor='black', linewidth=1.5)
         
         # Right axis (ax2): Standard Deviation
         bars_std = self.ax2.bar(x + width/2, std_distance_errors, width,
                                 label='Std Deviation',
-                                color=STD_DEVIATION, linewidth=1.5)
+                                color=STD_DEVIATION, edgecolor='black', linewidth=1.5)
         
         # ========== Configure left y-axis (Average Distance Error) ==========
         self.ax1.set_xlabel('Access Point')

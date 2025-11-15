@@ -113,9 +113,11 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
         
         # Plot bars
         bars_3a = self.ax.bar([i - width/2 for i in x], a3_values, width, 
-                              label='3A', color=ANCHOR_3A)
+                              label='3A', color=ANCHOR_3A,
+                              edgecolor='black', linewidth=1.5)
         bars_4a = self.ax.bar([i + width/2 for i in x], a4_values, width,
-                              label='4A', color=ANCHOR_4A)
+                              label='4A', color=ANCHOR_4A,
+                              edgecolor='black', linewidth=1.5)
         
         # Labels and formatting
         self.ax.set_xlabel('Arrangement')

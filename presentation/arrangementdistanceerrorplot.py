@@ -112,9 +112,11 @@ class ArrangementDistanceErrorPlot(QObject):
         
         # Plot bars - using DISTANCE_ERROR color for both to show they are distance errors
         bars_pd = self.ax.bar([i - width/2 for i in x], pd_values, width, 
-                              label='PD', color=PD_COLOR)
+                              label='PD', color=PD_COLOR,
+                              edgecolor='black', linewidth=1.5)
         bars_fw = self.ax.bar([i + width/2 for i in x], fw_values, width,
-                              label='FW', color=FW_COLOR)
+                              label='FW', color=FW_COLOR,
+                              edgecolor='black', linewidth=1.5)
         
         # Labels and formatting
         self.ax.set_xlabel('Arrangement')
