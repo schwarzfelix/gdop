@@ -126,6 +126,9 @@ class ArrangementDistanceErrorPlot(QObject):
         self.ax.set_xticklabels(arrangements, rotation=0, ha='center')
         self.ax.legend()
         
+        # Add grid
+        self.ax.grid(True, alpha=0.3, axis='y', linestyle='--')
+        
         # Set y-limit with some headroom
         max_error = max(max(pd_values) if pd_values else 0, 
                        max(fw_values) if fw_values else 0)

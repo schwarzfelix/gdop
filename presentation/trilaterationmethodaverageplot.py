@@ -103,8 +103,8 @@ class TrilaterationMethodAveragePlot:
         self.ax.set_xticks(x_pos)
         self.ax.set_xticklabels([m.replace('_', ' ').title() for m in methods])
         
-        # Add grid
-        self.ax.grid(True, alpha=0.3, axis='y')
+                # Add grid for better readability
+        self.ax.grid(True, alpha=0.3, axis='y', linestyle='--')
         self.ax.set_axisbelow(True)
         
         # Set y-axis to start from 0

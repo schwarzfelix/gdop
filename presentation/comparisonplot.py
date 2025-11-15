@@ -29,7 +29,7 @@ class ComparisonPlot(QObject):
         self.window = window
         self.scenarios = app_scenarios
 
-        self.fig, self.ax = plt.subplots(figsize=(6, 4))
+        self.fig, self.ax = plt.subplots(figsize=(10, 6))
         # Initial setup - will be updated in update_data()
 
     def update_data(self, anchors=False, tags=False, measurements=False):
@@ -65,6 +65,9 @@ class ComparisonPlot(QObject):
         self.ax.set_title('GDOP Comparison Across Scenarios')
         self.ax.set_xlabel('Scenario')
         self.ax.set_ylabel('GDOP')
+        
+        # Add grid
+        self.ax.grid(True, alpha=0.3, axis='y', linestyle='--')
         
         # Add value labels on bars
         for i, v in enumerate(gdop_values):

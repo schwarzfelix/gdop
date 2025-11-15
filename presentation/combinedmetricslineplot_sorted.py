@@ -116,7 +116,7 @@ class CombinedMetricsLinePlotSorted(QObject):
         labels = [l.get_label() for l in lines]
         self.ax1.legend(lines, labels, loc='upper left')
         
-        self.ax1.grid(True, alpha=0.3)
+        self.ax1.grid(True, alpha=0.3, axis='y', linestyle='--')
 
         # Set y-limits with some padding for each axis independently
         if position_errors:
