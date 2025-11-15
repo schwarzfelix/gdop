@@ -123,7 +123,7 @@ class ArrangementDistanceErrorPlot(QObject):
         self.ax.set_ylabel('Distance Error (m)')
         self.ax.set_title('Average Distance Error per Arrangement (PD vs FW)')
         self.ax.set_xticks(x)
-        self.ax.set_xticklabels(arrangements, rotation=45, ha='right')
+        self.ax.set_xticklabels(arrangements, rotation=0, ha='center')
         self.ax.legend()
         
         # Set y-limit with some headroom

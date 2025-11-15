@@ -108,7 +108,7 @@ class CombinedMetricsLinePlotSorted(QObject):
         
         # Set ticks and formatting
         self.ax1.set_xticks(x)
-        self.ax1.set_xticklabels(scenario_names, rotation=45, ha='right')
+        self.ax1.set_xticklabels(scenario_names, rotation=90, ha='center')
         
         # Combined legend
         lines = line1 + line2

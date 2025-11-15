@@ -149,7 +149,7 @@ class AccessPointMetricsPlotRaw(QObject):
         self.ax1.set_ylabel('Average Distance Error (m)')
         self.ax1.tick_params(axis='y')
         self.ax1.set_xticks(x)
-        self.ax1.set_xticklabels(anchor_names, rotation=45, ha='right')
+        self.ax1.set_xticklabels(anchor_names, rotation=0, ha='center')
         
         # Set y-limit for avg error (with margin, considering positive/negative)
         min_avg = min(avg_distance_errors) if avg_distance_errors else 0

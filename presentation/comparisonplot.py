@@ -58,7 +58,7 @@ class ComparisonPlot(QObject):
         self.ax.bar(x, gdop_values, color=TAG_TRUTH_GDOP, 
                    edgecolor='black', linewidth=1.5)
         self.ax.set_xticks(x)
-        self.ax.set_xticklabels(scenario_names, rotation=90)
+        self.ax.set_xticklabels(scenario_names, rotation=90, ha='center')
         self.ax.set_ylim(0, max(12, max(gdop_values) * 1.2 if gdop_values else 12))
         
         # Add title and labels

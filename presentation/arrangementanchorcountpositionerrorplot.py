@@ -124,7 +124,7 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
         self.ax.set_ylabel('Position Error (m)')
         self.ax.set_title('First-tag Position Error per Arrangement (3A vs 4A)')
         self.ax.set_xticks(x)
-        self.ax.set_xticklabels(arrangements, rotation=45, ha='right')
+        self.ax.set_xticklabels(arrangements, rotation=0, ha='center')
         self.ax.legend()
         
         # Set y-limit with some headroom
