@@ -105,6 +105,7 @@ class CombinedMetricsLinePlotSorted(QObject):
         self.ax1.set_xlabel('Scenario (sorted by Tag Truth GDOP)')
         self.ax1.set_ylabel('Position Error (m)')
         self.ax2.set_ylabel('GDOP')
+        self.ax2.yaxis.set_label_position('right')
         
         # Set ticks and formatting
         self.ax1.set_xticks(x)

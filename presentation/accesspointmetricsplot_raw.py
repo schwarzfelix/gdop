@@ -163,6 +163,7 @@ class AccessPointMetricsPlotRaw(QObject):
         
         # ========== Configure right y-axis (Standard Deviation) ==========
         self.ax2.set_ylabel('Standard Deviation (m)')
+        self.ax2.yaxis.set_label_position('right')
         self.ax2.tick_params(axis='y')
         
         # Set y-limit for std dev (always positive, start from 0)
