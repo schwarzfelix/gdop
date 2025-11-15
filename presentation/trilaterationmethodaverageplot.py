@@ -103,8 +103,9 @@ class TrilaterationMethodAveragePlot:
         self.ax.grid(True, alpha=0.3, axis='y', linestyle='--')
         self.ax.set_axisbelow(True)
         
-        # Set y-axis to start from 0
-        self.ax.set_ylim(bottom=0)
+        # Set y-axis to start from 0 with extra headroom for vertical labels
+        max_val = max(avg_errors) if avg_errors else 1.0
+        self.ax.set_ylim(bottom=0, top=max_val * 1.25)
         
         # Calculate label offset based on y-axis range
         y_range = self.ax.get_ylim()[1] - self.ax.get_ylim()[0]

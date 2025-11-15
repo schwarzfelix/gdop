@@ -156,7 +156,7 @@ class AccessPointMetricsPlotRaw(QObject):
         # Set y-limit for avg error (with margin, considering positive/negative)
         min_avg = min(avg_distance_errors) if avg_distance_errors else 0
         max_avg = max(avg_distance_errors) if avg_distance_errors else 3
-        y_margin_avg = max(abs(max_avg), abs(min_avg)) * 0.2
+        y_margin_avg = max(abs(max_avg), abs(min_avg)) * 0.35  # Increased from 0.2 to 0.35 for vertical labels
         self.ax1.set_ylim(min(0, min_avg - y_margin_avg), max(3, max_avg + y_margin_avg))
         
         # Add grid and zero line
@@ -168,9 +168,9 @@ class AccessPointMetricsPlotRaw(QObject):
         self.ax2.yaxis.set_label_position('right')
         self.ax2.tick_params(axis='y')
         
-        # Set y-limit for std dev (always positive, start from 0)
+        # Set y-limit for std dev (always positive, start from 0, extra headroom for vertical labels)
         max_std = max(std_distance_errors) if std_distance_errors else 3
-        self.ax2.set_ylim(0, max(3, max_std * 1.15))
+        self.ax2.set_ylim(0, max(3, max_std * 1.35))  # Increased from 1.15 to 1.35
         
         # Calculate label offsets based on y-axis ranges
         y_range_ax1 = self.ax1.get_ylim()[1] - self.ax1.get_ylim()[0]
