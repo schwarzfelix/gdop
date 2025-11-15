@@ -113,13 +113,13 @@ class TrilaterationMethodAveragePlot:
         
         # Add value labels on bars
         for i, (pos, height, method) in enumerate(zip(x_pos, avg_errors, methods)):
-            count = method_counts[method]
-            self.ax.text(pos, height + label_offset, f'{height:.2f}m\n(n={count})',
+            self.ax.text(pos, height + label_offset, f'{height:.2f}m',
                        ha='center', va='bottom', rotation=90)
         
         # Add total sample count info
         total_samples = sum(method_counts.values())
-        self.fig.text(0.5, 0.02, f'Total measurements across all methods: {total_samples}', ha='center')
+        num_scenarios = len(valid_scenarios)
+        self.fig.text(0.5, 0.02, f'Total measurements across all methods: {total_samples} | Scenarios (n): {num_scenarios}', ha='center')
         
         self.fig.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for info text
     
