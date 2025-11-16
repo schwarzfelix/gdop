@@ -33,8 +33,8 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
         self.display_config = DisplayConfig()
 
         self.fig, self.ax = plt.subplots(figsize=(10, 8))
-        self.ax.set_title('First-tag Position Error per Arrangement (3A vs 4A)')
-        self.ax.set_ylabel('Position Error (m)')
+        self.ax.set_title('Average Position Error per Arrangement (3A vs 4A)')
+        self.ax.set_ylabel('Average Position Error (m)')
         self.ax.set_xlabel('Arrangement')
 
     def update_data(self, anchors=False, tags=False, measurements=False):
@@ -87,8 +87,8 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
         arrangements = sorted(arrangement_data.keys())
         if not arrangements:
             self.ax.clear()
-            self.ax.set_title('First-tag Position Error per Arrangement (3A vs 4A)')
-            self.ax.set_ylabel('Position Error (m)')
+            self.ax.set_title('Average Position Error per Arrangement (3A vs 4A)')
+            self.ax.set_ylabel('Average Position Error (m)')
             self.ax.set_xlabel('Arrangement')
             return
 
@@ -123,8 +123,8 @@ class ArrangementAnchorCountPositionErrorPlot(QObject):
         
         # Labels and formatting
         self.ax.set_xlabel('Arrangement')
-        self.ax.set_ylabel('Position Error (m)')
-        self.ax.set_title('First-tag Position Error per Arrangement (3A vs 4A)')
+        self.ax.set_ylabel('Average Position Error (m)')
+        self.ax.set_title('Average Position Error per Arrangement (3A vs 4A)')
         self.ax.set_xticks(x)
         self.ax.set_xticklabels(arrangements, rotation=0, ha='center')
         self.ax.legend(fontsize=self.display_config.fontSize_legend)
