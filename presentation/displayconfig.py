@@ -74,6 +74,9 @@ class DisplayConfig():
         # Increase this value to move labels further above the bars
         self.barLabelOffset = 0.02  # 2% of y-axis range
 
+        # Line Plot Value Labels
+        self.showLinePointValues = False  # Show values at each data point on line plots
+
         # Font Sizes (in points)
         # These control text sizes across all plots
         self.fontSize_title = 24

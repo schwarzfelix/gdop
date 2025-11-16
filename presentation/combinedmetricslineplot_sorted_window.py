@@ -7,6 +7,10 @@ class CombinedMetricsLinePlotSortedWindow(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Combined Metrics Line Plot (Sorted) - Position Error and Tag Truth GDOP Trends")
         self.resize(1200, 700)
+        
+        # Get display_config from parent if available
+        if parent and hasattr(parent, 'display_config'):
+            self.display_config = parent.display_config
 
         # Create the CombinedMetricsLinePlotSorted instance
         self.combined_metrics_line_plot_sorted = CombinedMetricsLinePlotSorted(self, app_scenarios)

@@ -31,11 +31,22 @@ class CombinedMetricsLinePlotSorted(QObject):
         super().__init__()
         self.window = window
         self.scenarios = app_scenarios
-        self.display_config = DisplayConfig()
+        # Don't create display_config here - access it via property
 
         self.fig, self.ax1 = plt.subplots(figsize=(10, 8))
         self.ax2 = self.ax1.twinx()  # Create second y-axis for GDOP
         # Title and labels will be set in update_data()
+
+    @property
+    def display_config(self):
+        """Access display_config from window if available, otherwise create a default one."""
+        if hasattr(self.window, 'display_config'):
+            return self.window.display_config
+        else:
+            # Fallback for cases where window doesn't have display_config yet
+            if not hasattr(self, '_display_config'):
+                self._display_config = DisplayConfig()
+            return self._display_config
 
     def update_data(self, anchors=False, tags=False, measurements=False):
         """Compute metrics for the first tag of each scenario, sort by tag truth GDOP, and update the line plot.
@@ -117,6 +128,20 @@ class CombinedMetricsLinePlotSorted(QObject):
         lines = line1 + line2
         labels = [l.get_label() for l in lines]
         self.ax1.legend(lines, labels, loc='upper left', fontsize=self.display_config.fontSize_legend)
+        
+        # Add value labels at each point if enabled
+        if self.display_config.showLinePointValues:
+            for i, (pe, gdop) in enumerate(zip(position_errors, tag_truth_gdops)):
+                # Position error labels (left axis)
+                self.ax1.text(i, pe, f'{pe:.2f}', 
+                            ha='right', va='bottom', 
+                            fontsize=self.display_config.fontSize_annotation - 4,
+                            color=POSITION_ERROR)
+                # GDOP labels (right axis)
+                self.ax2.text(i, gdop, f'{gdop:.2f}',
+                            ha='left', va='top',
+                            fontsize=self.display_config.fontSize_annotation - 4,
+                            color=TAG_TRUTH_GDOP)
         
         self.ax1.grid(True, alpha=0.3, axis='y', linestyle='--')
 

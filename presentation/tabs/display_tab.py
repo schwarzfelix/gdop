@@ -37,6 +37,7 @@ class DisplayTab(BaseTab):
         self.show_legend_tags_checkbox = None
         self.show_legend_tag_truth_checkbox = None
         self.show_legend_border_checkbox = None
+        self.show_line_point_values_checkbox = None
         self.aggregation_method_combo = None
         self.trilateration_method_combo = None
     
@@ -214,6 +215,15 @@ class DisplayTab(BaseTab):
         show_legend_border_item = QTreeWidgetItem(legend_elements_node)
         self.display_tree.setItemWidget(show_legend_border_item, 0, self.show_legend_border_checkbox)
 
+        # Line Plot Options section
+        line_plot_options_node = QTreeWidgetItem(self.display_tree, ["Line Plot Options"])
+        self.show_line_point_values_checkbox = QCheckBox("Show Values at Points")
+        self.show_line_point_values_checkbox.setChecked(self.display_config.showLinePointValues)
+        self.show_line_point_values_checkbox.stateChanged.connect(self.update_display_config)
+        show_line_point_values_item = QTreeWidgetItem(line_plot_options_node)
+        self.display_tree.setItemWidget(show_line_point_values_item, 0, self.show_line_point_values_checkbox)
+        line_plot_options_node.setExpanded(True)
+
         # Import Options section
         import_options_node = QTreeWidgetItem(self.display_tree, ["Import Options"])
         import_options_node.setExpanded(True)
@@ -305,6 +315,9 @@ class DisplayTab(BaseTab):
         self.display_config.showLegendTags = self.show_legend_tags_checkbox.isChecked()
         self.display_config.showLegendTagTruth = self.show_legend_tag_truth_checkbox.isChecked()
         self.display_config.showLegendBorder = self.show_legend_border_checkbox.isChecked()
+
+        # Line Plot Options
+        self.display_config.showLinePointValues = self.show_line_point_values_checkbox.isChecked()
 
         # Note: Import Options (aggregation method) are updated via update_aggregation_method()
 
