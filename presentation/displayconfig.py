@@ -18,16 +18,16 @@ class DisplayConfig():
         # Anchors
         self.showAnchors = True
         self.showAnchorCircles = False
-        self.showAnchorNames = True
+        self.showAnchorNames = False
         self.showAnchorCoordinates = False
 
         # Tags
         self.showTagTruth = True
         self.showTags = True
-        self.showPositionErrorLines = True
+        self.showPositionErrorLines = False
         self.showTagNames = False
         self.showTagCoordinates = False
-        self.showTagTruthLabels = True
+        self.showTagTruthLabels = False
 
         # Between Anchors and Tags
         self.showTagAnchorLabels = False
@@ -51,7 +51,7 @@ class DisplayConfig():
 
         # Legend Elements
         self.showLegendAnchors = True
-        self.showLegendTags = False
+        self.showLegendTags = True
         self.showLegendTagTruth = True
         self.showLegendBorder = True
 

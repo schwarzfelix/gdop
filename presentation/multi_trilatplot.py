@@ -15,6 +15,14 @@ class MultiTrilatPlot(QObject):
     CIRCLE_LINESTYLE = 'dotted'
     VIEWPORT_PADDING = 5.0
     LABEL_OFFSET = 1
+    
+    # Red color shades for different scenarios (tags and tag-anchor lines)
+    RED_SHADES = [
+        '#FF0000',
+        "#D26C00",
+        "#FF00D0",
+        "#5D00FF",
+    ]
 
     def __init__(self, window, scenarios):
         super().__init__()
@@ -24,22 +32,19 @@ class MultiTrilatPlot(QObject):
 
         self.fig, self.ax = plt.subplots(figsize=(8, 8))
         self.ax.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
-        self.ax.set_title("Multi-Scenario Trilateration Plot")
+        
+        # Generate title from first scenario name
+        title = "Multi-Scenario Trilateration Plot"
+        if scenarios and len(scenarios) > 0:
+            first_scenario_name = scenarios[0].name if scenarios[0].name else ""
+            if first_scenario_name:
+                first_char = first_scenario_name[0].upper()
+                title = f"Anordnung {first_char} (Versuch)"
+        
+        self.ax.set_title(title)
         self.ax.set_xlabel('x (m)')
         self.ax.set_ylabel('y (m)')
         self.ax.set_aspect('equal', adjustable='box')
-
-        # Create legend
-        legend_elements = []
-        if self.display_config.showLegendAnchors:
-            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='blue', markersize=8, label='Anchors'))
-        if self.display_config.showLegendTags:
-            legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
-        if self.display_config.showLegendTagTruth:
-            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
-        
-        if legend_elements:
-            self.ax.legend(handles=legend_elements, loc='upper right', fontsize='small')
 
         # Initialize artists for each scenario
         self.anchor_scatters = []
@@ -57,16 +62,15 @@ class MultiTrilatPlot(QObject):
         self.tag_truth_texts = []
 
         linestyles = ['solid', 'dashed', 'dashdot', 'dotted']
-        colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black']
 
         for i, scenario in enumerate(scenarios):
             linestyle = linestyles[i % len(linestyles)]
-            # All anchors blue, as in TrilatPlot
-            color = 'blue'
+            # Get unique color for this scenario's tags
+            tag_color = self.RED_SHADES[i % len(self.RED_SHADES)]
 
             # Initialize empty artists
             anchor_scatter = self.ax.scatter([], [], c='blue', s=self.STATION_DOT_SIZE, marker='o')
-            tag_scatter = self.ax.scatter([], [], c='red', marker='x')
+            tag_scatter = self.ax.scatter([], [], c=tag_color, marker='x', s=self.STATION_DOT_SIZE)
             tag_truth_scatter = self.ax.scatter([], [], c='green', s=self.STATION_DOT_SIZE)
 
             self.anchor_scatters.append(anchor_scatter)
@@ -95,6 +99,9 @@ class MultiTrilatPlot(QObject):
                 self.border_patches.append(border_patch)
             else:
                 self.border_patches.append(None)
+        
+        # Create initial legend after all scenarios are initialized
+        self.update_legend()
 
     def update_data(self, anchors=False, tags=False, measurements=False):
         """Update all artists with current scenario data."""
@@ -210,9 +217,10 @@ class MultiTrilatPlot(QObject):
             # Update tag-anchor lines and texts
             tag_anchor_lines = self.tag_anchor_lines_list[i]
             tag_anchor_texts = self.tag_anchor_texts_list[i]
+            tag_color = self.RED_SHADES[i % len(self.RED_SHADES)]
             num_ta = len(tag_positions) * len(anchor_positions)
             while len(tag_anchor_lines) < num_ta:
-                l, = self.ax.plot([], [], 'r--', alpha=0.5)
+                l, = self.ax.plot([], [], color=tag_color, linestyle='--', alpha=0.5)
                 tag_anchor_lines.append(l)
                 t = self.ax.text(0, 0, '', ha='center', va='center')
                 tag_anchor_texts.append(t)
@@ -247,8 +255,9 @@ class MultiTrilatPlot(QObject):
 
             # Update tag names
             tag_name_texts = self.tag_name_texts_list[i]
+            tag_color = self.RED_SHADES[i % len(self.RED_SHADES)]
             while len(tag_name_texts) < len(tag_positions):
-                t = self.ax.text(0, 0, '', ha='center', va='center', color='red')
+                t = self.ax.text(0, 0, '', ha='center', va='center', color=tag_color)
                 tag_name_texts.append(t)
 
             for j, tag_pos in enumerate(tag_positions):
@@ -383,14 +392,32 @@ class MultiTrilatPlot(QObject):
         
         # Create new legend
         legend_elements = []
+        
+        # Add anchor legend entry
         if self.display_config.showLegendAnchors:
-            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='blue', markersize=8, label='Anchors'))
-        if self.display_config.showLegendTags:
-            legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', markerfacecolor='red', markersize=8, label='Tags'))
+            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', 
+                                             markerfacecolor='blue', markersize=8, label='Anchors'))
+        
+        # Add tag truth legend entry
         if self.display_config.showLegendTagTruth:
-            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=8, label='Tag Truth'))
+            legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', 
+                                             markerfacecolor='green', markersize=8, label='Tag Truth'))
+        
+        # Add one legend entry per scenario (for measured tags)
+        if self.display_config.showLegendTags:
+            for i, scenario in enumerate(self.scenarios):
+                tag_color = self.RED_SHADES[i % len(self.RED_SHADES)]
+                scenario_name = scenario.name if scenario.name else f"Scenario {i+1}"
+                legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', 
+                                                 markerfacecolor=tag_color, 
+                                                 markeredgecolor=tag_color,
+                                                 markersize=8, 
+                                                 label=f"{scenario_name}"))
+        
+        # Add border legend entry
         if self.display_config.showLegendBorder and any(self.border_patches):
-            legend_elements.append(plt.Rectangle((0, 0), 1, 1, edgecolor='black', facecolor='none', linewidth=2, label='Border'))
+            legend_elements.append(plt.Rectangle((0, 0), 1, 1, edgecolor='black', 
+                                                facecolor='none', linewidth=2, label='Border'))
         
         if legend_elements:
             self.ax.legend(handles=legend_elements, loc='upper right', fontsize='small')
