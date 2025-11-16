@@ -70,7 +70,7 @@ class MultiTrilatPlot(QObject):
 
             # Initialize empty artists
             anchor_scatter = self.ax.scatter([], [], c='blue', s=self.STATION_DOT_SIZE, marker='o')
-            tag_scatter = self.ax.scatter([], [], c=tag_color, marker='x', s=self.STATION_DOT_SIZE)
+            tag_scatter = self.ax.scatter([], [], c=tag_color, marker='x', s=self.STATION_DOT_SIZE, linewidths=3)
             tag_truth_scatter = self.ax.scatter([], [], c='green', s=self.STATION_DOT_SIZE)
 
             self.anchor_scatters.append(anchor_scatter)
@@ -220,7 +220,7 @@ class MultiTrilatPlot(QObject):
             tag_color = self.RED_SHADES[i % len(self.RED_SHADES)]
             num_ta = len(tag_positions) * len(anchor_positions)
             while len(tag_anchor_lines) < num_ta:
-                l, = self.ax.plot([], [], color=tag_color, linestyle='--', alpha=0.5)
+                l, = self.ax.plot([], [], color=tag_color, linestyle='--', alpha=0.5, linewidth=2)
                 tag_anchor_lines.append(l)
                 t = self.ax.text(0, 0, '', ha='center', va='center')
                 tag_anchor_texts.append(t)
@@ -411,6 +411,7 @@ class MultiTrilatPlot(QObject):
                 legend_elements.append(plt.Line2D([0], [0], marker='x', color='w', 
                                                  markerfacecolor=tag_color, 
                                                  markeredgecolor=tag_color,
+                                                 markeredgewidth=2,
                                                  markersize=8, 
                                                  label=f"{scenario_name}"))
         
