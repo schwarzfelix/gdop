@@ -15,6 +15,9 @@ from presentation.accesspointmetricsplot_raw_window import AccessPointMetricsPlo
 from presentation.combinedmetricslineplot_sorted_window import CombinedMetricsLinePlotSortedWindow
 from presentation.aggregationmethodaverageplot_window import AggregationMethodAveragePlotWindow
 from presentation.trilaterationmethodaverageplot_window import TrilaterationMethodAveragePlotWindow
+from presentation.gdop_position_error_scatterplot_window import GDOPPositionErrorScatterPlotWindow
+from presentation.gdop_residualplot_window import GDOPResidualPlotWindow
+from presentation.gdop_correlation_analysis import GDOPCorrelationAnalysis
 
 class AnalysisTab(BaseTab):
     """Tab for analysis options and plots that can be opened in separate windows."""
@@ -110,6 +113,24 @@ class AnalysisTab(BaseTab):
         trilateration_method_average_item.setData(1, "trilateration_method_average")  # Store identifier
         self.analysis_list.addItem(trilateration_method_average_item)
 
+        # GDOP vs Position Error Scatter Plot
+        gdop_scatter_item = QListWidgetItem("📈 GDOP vs Position Error - Scatter Plot with Correlation Analysis")
+        gdop_scatter_item.setToolTip("Open a scatter plot showing correlation between GDOP and position error with regression line and statistics")
+        gdop_scatter_item.setData(1, "gdop_position_error_scatter")  # Store identifier
+        self.analysis_list.addItem(gdop_scatter_item)
+
+        # GDOP Residual Plot
+        gdop_residual_item = QListWidgetItem("📈 GDOP vs Position Error - Residual Plot")
+        gdop_residual_item.setToolTip("Open a residual plot to check for non-linear patterns in GDOP vs position error relationship")
+        gdop_residual_item.setData(1, "gdop_residual_plot")  # Store identifier
+        self.analysis_list.addItem(gdop_residual_item)
+
+        # GDOP Correlation Analysis (Console)
+        gdop_correlation_item = QListWidgetItem("📋 GDOP vs Position Error - Correlation Analysis (Console Output)")
+        gdop_correlation_item.setToolTip("Run correlation analysis (Pearson & Spearman) and print detailed statistics to console")
+        gdop_correlation_item.setData(1, "gdop_correlation_analysis")  # Store identifier
+        self.analysis_list.addItem(gdop_correlation_item)
+
     def _open_analysis(self, item):
         """Open the selected analysis in a new window."""
         analysis_type = item.data(1)
@@ -134,6 +155,12 @@ class AnalysisTab(BaseTab):
             self._open_aggregation_method_average()
         elif analysis_type == "trilateration_method_average":
             self._open_trilateration_method_average()
+        elif analysis_type == "gdop_position_error_scatter":
+            self._open_gdop_position_error_scatter()
+        elif analysis_type == "gdop_residual_plot":
+            self._open_gdop_residual_plot()
+        elif analysis_type == "gdop_correlation_analysis":
+            self._run_gdop_correlation_analysis()
         else:
             # Unknown analysis type
             pass
@@ -237,6 +264,45 @@ class AnalysisTab(BaseTab):
         except Exception as e:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.main_window, "Error", f"Failed to open Trilateration Method Average Plot: {str(e)}")
+
+    def _open_gdop_position_error_scatter(self):
+        """Open the GDOP vs Position Error scatter plot in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = GDOPPositionErrorScatterPlotWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open GDOP vs Position Error Scatter Plot: {str(e)}")
+
+    def _open_gdop_residual_plot(self):
+        """Open the GDOP residual plot in a new window."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            window = GDOPResidualPlotWindow(scenarios, self.main_window)
+            window.show()
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to open GDOP Residual Plot: {str(e)}")
+
+    def _run_gdop_correlation_analysis(self):
+        """Run GDOP correlation analysis and print to console."""
+        try:
+            scenarios = self.app.scenarios if self.app else []
+            if not scenarios:
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.warning(self.main_window, "Warning", "No scenarios loaded. Cannot run correlation analysis.")
+                return
+            
+            analysis = GDOPCorrelationAnalysis(scenarios)
+            analysis.run_analysis()
+            
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.information(self.main_window, "Analysis Complete", 
+                                   "Correlation analysis complete. Check the console output for detailed results.")
+        except Exception as e:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(self.main_window, "Error", f"Failed to run GDOP Correlation Analysis: {str(e)}")
 
     def update(self):
         """Update the analysis tab if needed."""
