@@ -92,13 +92,18 @@ def import_scenario_data(scenario_obj, scenario_name: str, workspace_dir: str = 
         if error:
             return False, error
 
-        # Store the aggregation method in the scenario
-        scenario_obj.aggregation_method = agg_method
+        # Normalize aggregation method first
+        normalized_agg_method = (agg_method or "lowest").lower()
+        if normalized_agg_method not in ("newest", "lowest", "mean", "median"):
+            normalized_agg_method = "lowest"
+
+        # Store the normalized aggregation method in the scenario
+        scenario_obj.aggregation_method = normalized_agg_method
 
         # Process the data (aggregate per AP based on agg_method)
-        processed_count = _process_measurement_data(scenario_obj, scenario_data, scenario_name, agg_method=agg_method)
+        processed_count = _process_measurement_data(scenario_obj, scenario_data, scenario_name, agg_method=normalized_agg_method)
 
-        return True, f"Successfully imported {processed_count} measurements (agg={agg_method}) from scenario '{scenario_name}'."
+        return True, f"Successfully imported {processed_count} measurements (agg={normalized_agg_method}) from scenario '{scenario_name}'."
 
     except Exception as e:
         return False, f"An error occurred while importing CSV data: {str(e)}"
@@ -202,10 +207,10 @@ def _process_measurement_data(scenario_obj, scenario_data: pd.DataFrame, scenari
     scenario_obj.raw_measurement_counts = raw_counts
 
     # Define aggregation function
-    agg_method = (agg_method or "newest").lower()
+    agg_method = (agg_method or "lowest").lower()
     if agg_method not in ("newest", "lowest", "mean", "median"):
-        _LOG.warning("Unknown aggregation method '%s', defaulting to 'newest'.", agg_method)
-        agg_method = "newest"
+        _LOG.warning("Unknown aggregation method '%s', defaulting to 'lowest'.", agg_method)
+        agg_method = "lowest"
 
     aggregated = None
     if agg_method == "newest":

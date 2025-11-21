@@ -22,11 +22,21 @@ class GDOPCorrelationAnalysis:
     def __init__(self, scenarios):
         self.scenarios = scenarios
 
+    def _format_pvalue(self, p_value):
+        """Format p-value nicely, handling very small values."""
+        if p_value == 0.0:
+            return "< 1e-300"
+        elif p_value < 1e-10:
+            return f"{p_value:.3e}"
+        else:
+            return f"{p_value:.6f}"
+
     def run_analysis(self):
         """Collect data and print correlation analysis to console."""
         gdop_values = []
         pos_errors = []
         scenario_names = []
+        scenario_metadata = []
 
         print("\n" + "="*80)
         print("GDOP vs POSITION ERROR - CORRELATION ANALYSIS")
@@ -54,6 +64,15 @@ class GDOPCorrelationAnalysis:
                     gdop_values.append(float(tag_truth_gdop))
                     pos_errors.append(float(pos_error))
                     scenario_names.append(scenario_name)
+                    
+                    # Collect metadata about methods used
+                    metadata = {
+                        'name': scenario_name,
+                        'aggregation_method': getattr(s, 'aggregation_method', 'unknown'),
+                        'trilateration_method': getattr(s, 'trilateration_method', 'classical'),
+                    }
+                    scenario_metadata.append(metadata)
+                    
             except Exception:
                 # Skip scenarios that raise exceptions during processing
                 continue
@@ -79,6 +98,35 @@ class GDOPCorrelationAnalysis:
 
         # Print summary statistics
         print(f"Sample Size: {len(gdop_values)} scenarios\n")
+        
+        # Show method distribution
+        print("="*80)
+        print("METHODS USED")
+        print("="*80 + "\n")
+        
+        agg_methods = {}
+        trilat_methods = {}
+        
+        for metadata in scenario_metadata:
+            agg = metadata['aggregation_method']
+            trilat = metadata['trilateration_method']
+            
+            agg_methods[agg] = agg_methods.get(agg, 0) + 1
+            trilat_methods[trilat] = trilat_methods.get(trilat, 0) + 1
+        
+        print("Aggregation Methods:")
+        for method, count in sorted(agg_methods.items()):
+            percentage = count / len(gdop_values) * 100
+            print(f"  • {method}: {count} scenarios ({percentage:.1f}%)")
+        
+        print("\nTrilateration Methods:")
+        for method, count in sorted(trilat_methods.items()):
+            percentage = count / len(gdop_values) * 100
+            print(f"  • {method}: {count} scenarios ({percentage:.1f}%)")
+        
+        print("\n" + "="*80)
+        print("DESCRIPTIVE STATISTICS")
+        print("="*80 + "\n")
         
         print("GDOP Statistics:")
         print(f"  Mean:   {np.mean(gdop_arr):.4f}")
@@ -206,7 +254,67 @@ class GDOPCorrelationAnalysis:
         print("  * p < 0.05  (significant)")
         print("  ** p < 0.01  (very significant)")
         print("  *** p < 0.001  (highly significant)")
-        print("="*80 + "\n")
+        print("="*80)
+        
+        # Method-specific correlation analysis
+        if len(agg_methods) > 1 or len(trilat_methods) > 1:
+            print("\n" + "="*80)
+            print("CORRELATION BY METHOD")
+            print("="*80 + "\n")
+            
+            # Correlation by aggregation method
+            if len(agg_methods) > 1:
+                print("By Aggregation Method:")
+                print("-"*80)
+                
+                for agg_method in sorted(agg_methods.keys()):
+                    if agg_method == 'unknown' or agg_methods[agg_method] < 2:
+                        continue
+                    
+                    # Filter data for this method
+                    indices = [i for i, meta in enumerate(scenario_metadata) 
+                              if meta['aggregation_method'] == agg_method]
+                    
+                    method_gdop = [gdop_values[i] for i in indices]
+                    method_errors = [pos_errors[i] for i in indices]
+                    
+                    pearson_r, pearson_p = stats.pearsonr(method_gdop, method_errors)
+                    spearman_r, spearman_p = stats.spearmanr(method_gdop, method_errors)
+                    
+                    print(f"\n  {agg_method} (n={len(indices)}):")
+                    print(f"    Pearson:  r = {pearson_r:+.4f}, p = {self._format_pvalue(pearson_p)}")
+                    print(f"    Spearman: ρ = {spearman_r:+.4f}, p = {self._format_pvalue(spearman_p)}")
+                
+                print()
+            
+            # Correlation by trilateration method
+            if len(trilat_methods) > 1:
+                print("\nBy Trilateration Method:")
+                print("-"*80)
+                
+                for trilat_method in sorted(trilat_methods.keys()):
+                    if trilat_method == 'unknown' or trilat_methods[trilat_method] < 2:
+                        continue
+                    
+                    # Filter data for this method
+                    indices = [i for i, meta in enumerate(scenario_metadata) 
+                              if meta['trilateration_method'] == trilat_method]
+                    
+                    method_gdop = [gdop_values[i] for i in indices]
+                    method_errors = [pos_errors[i] for i in indices]
+                    
+                    pearson_r, pearson_p = stats.pearsonr(method_gdop, method_errors)
+                    spearman_r, spearman_p = stats.spearmanr(method_gdop, method_errors)
+                    
+                    print(f"\n  {trilat_method} (n={len(indices)}):")
+                    print(f"    Pearson:  r = {pearson_r:+.4f}, p = {self._format_pvalue(pearson_p)}")
+                    print(f"    Spearman: ρ = {spearman_r:+.4f}, p = {self._format_pvalue(spearman_p)}")
+                
+                print()
+            
+            print("="*80)
+
+        print()
 
         # Return the statistics for programmatic access if needed
         return {
