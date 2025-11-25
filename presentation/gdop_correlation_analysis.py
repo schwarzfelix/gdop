@@ -25,9 +25,13 @@ class GDOPCorrelationAnalysis:
     def _format_pvalue(self, p_value):
         """Format p-value nicely, handling very small values."""
         if p_value == 0.0:
-            return "< 1e-300"
+            return "< 1e-300 (effective zero, likely underflow)"
+        elif p_value < 1e-100:
+            return f"{p_value:.3e} (extremely small)"
         elif p_value < 1e-10:
             return f"{p_value:.3e}"
+        elif p_value < 0.001:
+            return f"{p_value:.6e}"
         else:
             return f"{p_value:.6f}"
 
@@ -149,12 +153,8 @@ class GDOPCorrelationAnalysis:
         print(f"  r = {pearson_r:+.6f}")
         
         # Format p-value nicely, handling very small values
-        if pearson_p == 0.0:
-            print(f"  p-value < 1e-300 (effectively zero)", end="")
-        elif pearson_p < 1e-10:
-            print(f"  p-value = {pearson_p:.3e}", end="")
-        else:
-            print(f"  p-value = {pearson_p:.6f}", end="")
+        pvalue_str = self._format_pvalue(pearson_p)
+        print(f"  p-value = {pvalue_str}", end="")
             
         if pearson_p < 0.001:
             print("  *** (highly significant)")
@@ -184,12 +184,8 @@ class GDOPCorrelationAnalysis:
         print(f"  ρ (rho) = {spearman_r:+.6f}")
         
         # Format p-value nicely, handling very small values
-        if spearman_p == 0.0:
-            print(f"  p-value < 1e-300 (effectively zero)", end="")
-        elif spearman_p < 1e-10:
-            print(f"  p-value = {spearman_p:.3e}", end="")
-        else:
-            print(f"  p-value = {spearman_p:.6f}", end="")
+        pvalue_str = self._format_pvalue(spearman_p)
+        print(f"  p-value = {pvalue_str}", end="")
             
         if spearman_p < 0.001:
             print("  *** (highly significant)")
