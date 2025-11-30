@@ -472,7 +472,7 @@ class MultiTrilatPlot(QObject):
                                                 facecolor='none', linewidth=2, label='Border'))
         
         if legend_elements:
-            self.ax.legend(handles=legend_elements, loc='upper left', fontsize='small', bbox_to_anchor=(0.82, 1.0)) #1.02, 1.0
+            self.ax.legend(handles=legend_elements, loc='upper left', fontsize='medium', bbox_to_anchor=(0.82, 1.0)) #1.02, 1.0
         else:
             # Remove legend if no elements
             if self.ax.get_legend():
