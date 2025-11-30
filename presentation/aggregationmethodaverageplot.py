@@ -121,10 +121,9 @@ class AggregationMethodAveragePlot:
                        ha='center', va='bottom', rotation=90, 
                        fontsize=self.display_config.fontSize_annotation)
         
-        # Add total sample count info
-        total_samples = sum(method_counts.values())
+        # Add scenario count info
         num_scenarios = len(valid_scenarios)
-        self.fig.text(0.5, 0.02, f'Total measurements across all methods: {total_samples} | Scenarios (n): {num_scenarios}', 
+        self.fig.text(0.5, 0.02, f'Scenarios (n): {num_scenarios}', 
                      ha='center', fontsize=self.display_config.fontSize_info)
         
         # Apply font sizes to axes
