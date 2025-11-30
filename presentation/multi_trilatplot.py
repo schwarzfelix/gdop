@@ -46,6 +46,9 @@ class MultiTrilatPlot(QObject):
         self.ax.set_ylabel('y (m)')
         self.ax.set_aspect('equal', adjustable='box')
 
+        # Connect resize event handler
+        self.fig.canvas.mpl_connect('resize_event', self._on_resize)
+
         # Initialize artists for each scenario
         self.anchor_scatters = []
         self.tag_scatters = []
@@ -383,6 +386,54 @@ class MultiTrilatPlot(QObject):
                 ylim = (-10, 10)
         self.ax.set_xlim(xlim)
         self.ax.set_ylim(ylim)
+        # Ensure equal aspect ratio to prevent distortion
+        self.ax.set_aspect('equal', adjustable='box')
+        self._adjust_aspect()
+
+    def _on_resize(self, event):
+        """Matplotlib resize event handler: adjust axis so x/y units stay proportional."""
+        try:
+            self._adjust_aspect()
+            # redraw after adjustment
+            self.fig.canvas.draw_idle()
+        except Exception:
+            pass
+
+    def _adjust_aspect(self):
+        """Adjust the axis x-limits so that one unit in x equals one unit in y on screen.
+
+        Keeps the current y-limits and expands/contracts the x-limits based on the
+        pixel aspect ratio of the axis.
+        """
+        # Get current y-range
+        ymin, ymax = self.ax.get_ylim()
+        yrange = ymax - ymin
+
+        # Get axis bounding box in figure pixels
+        try:
+            fig_w, fig_h = self.fig.canvas.get_width_height()
+            bbox = self.ax.get_position()
+            ax_w_px = bbox.width * fig_w
+            ax_h_px = bbox.height * fig_h
+            if ax_h_px <= 0:
+                return
+            # Required x-range so that px per unit matches in x and y
+            xrange_needed = yrange * (ax_w_px / ax_h_px)
+
+            # Center x around current center
+            xmin, xmax = self.ax.get_xlim()
+            xmid = 0.5 * (xmin + xmax)
+            new_xmin = xmid - 0.5 * xrange_needed
+            new_xmax = xmid + 0.5 * xrange_needed
+            self.ax.set_xlim(new_xmin, new_xmax)
+            # Ensure equal aspect so circles look circular
+            try:
+                self.ax.set_aspect('equal', adjustable='box')
+            except Exception:
+                pass
+        except Exception:
+            # best-effort: ignore errors
+            pass
 
     def update_legend(self):
         """Update the legend based on current display config."""

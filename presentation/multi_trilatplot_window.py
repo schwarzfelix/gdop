@@ -6,7 +6,7 @@ class MultiTrilatPlotWindow(QDialog):
     def __init__(self, scenarios, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Multi-Scenario Trilateration Plot")
-        self.resize(1200, 800)
+        self.resize(800, 600)
 
         # Copy display_config from parent (MainWindow)
         self.display_config = parent.display_config if parent else None
