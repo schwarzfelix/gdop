@@ -27,5 +27,6 @@ class TrilatPlotWindow(QDialog):
         self.setLayout(layout)
 
         # Initial update
+        self.trilat_plot.update_anchors()
         self.trilat_plot.update_data()
         self.trilat_plot.redraw()
