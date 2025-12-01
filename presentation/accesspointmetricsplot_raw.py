@@ -118,6 +118,13 @@ class AccessPointMetricsPlotRaw(QObject):
         # Sort anchors by name for consistent ordering
         anchor_names = sorted(scenario_anchor_errors.keys())
         
+        # Debug: Print scenario structure
+        print(f"\n=== AccessPointMetricsPlotRaw Debug ===")
+        for anchor_name in sorted(scenario_anchor_errors.keys()):
+            print(f"\n{anchor_name}:")
+            for scenario_name, errors in scenario_anchor_errors[anchor_name].items():
+                print(f"  {scenario_name}: {len(errors)} measurements, avg={np.mean(errors):.2f}")
+        
         # Calculate statistics
         avg_distance_errors = []
         std_distance_errors = []
@@ -129,7 +136,16 @@ class AccessPointMetricsPlotRaw(QObject):
             for scenario_errors in scenario_anchor_errors[anchor_name].values():
                 if len(scenario_errors) > 0:
                     scenario_avgs.append(np.mean(scenario_errors))
-            avg_distance_errors.append(np.mean(scenario_avgs) if scenario_avgs else 0)
+            avg_dist_error = np.mean(scenario_avgs) if scenario_avgs else 0
+            avg_distance_errors.append(avg_dist_error)
+            
+            # Compare with old method (pooled average)
+            all_errors = []
+            for scenario_errors in scenario_anchor_errors[anchor_name].values():
+                all_errors.extend(scenario_errors)
+            pooled_avg = np.mean(all_errors) if all_errors else 0
+            
+            print(f"{anchor_name}: scenario_avg_method={avg_dist_error:.2f}, pooled_method={pooled_avg:.2f}, diff={abs(avg_dist_error-pooled_avg):.2f}")
             
             # Standard deviation: average of per-scenario std devs
             # This prevents multiple AP positions from inflating the std dev
