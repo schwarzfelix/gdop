@@ -123,11 +123,13 @@ class AccessPointMetricsPlotRaw(QObject):
         std_distance_errors = []
         
         for anchor_name in anchor_names:
-            # Average distance error across all measurements (pooled across scenarios)
-            all_errors = []
+            # Average distance error: average of per-scenario averages
+            # This gives equal weight to each scenario regardless of sample count
+            scenario_avgs = []
             for scenario_errors in scenario_anchor_errors[anchor_name].values():
-                all_errors.extend(scenario_errors)
-            avg_distance_errors.append(np.mean(all_errors))
+                if len(scenario_errors) > 0:
+                    scenario_avgs.append(np.mean(scenario_errors))
+            avg_distance_errors.append(np.mean(scenario_avgs) if scenario_avgs else 0)
             
             # Standard deviation: average of per-scenario std devs
             # This prevents multiple AP positions from inflating the std dev
