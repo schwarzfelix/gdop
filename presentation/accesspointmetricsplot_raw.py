@@ -45,7 +45,7 @@ class AccessPointMetricsPlotRaw(QObject):
         # Create figure with single plot and two y-axes
         self.fig, self.ax1 = plt.subplots(figsize=(12, 8))
         self.ax2 = self.ax1.twinx()  # Create second y-axis sharing same x-axis
-        self.fig.suptitle('Access Point Quality Metrics - RAW DATA (All CSV Entries)')
+        self.fig.suptitle('Access Point Quality Metrics - Average per Scenario')
 
     def update_data(self, anchors=False, tags=False, measurements=False):
         """Compute average distance error and standard deviation per Access Point using RAW CSV data.
@@ -57,9 +57,9 @@ class AccessPointMetricsPlotRaw(QObject):
         """
         from data.import_measurements import read_workspace_csvs
         
-        # Collect distance errors per anchor from raw CSV data
-        # anchor_name -> list of distance errors (measured - true distance)
-        anchor_distance_errors = defaultdict(list)
+        # Collect distance errors per anchor AND scenario from raw CSV data
+        # anchor_name -> scenario -> list of distance errors (measured - true distance)
+        scenario_anchor_errors = defaultdict(lambda: defaultdict(list))
         
         try:
             # Load all raw CSV data
@@ -102,30 +102,40 @@ class AccessPointMetricsPlotRaw(QObject):
             # Calculate distance error for each row
             valid_df['distance_error'] = valid_df['est_range'] - valid_df['true_range']
             
-            # Group by AP and collect all errors
-            for ap_name, group in valid_df.groupby('ap-ssid'):
+            # Group by AP AND SCENARIO to collect errors per scenario
+            for (scenario, ap_name), group in valid_df.groupby(['scenario', 'ap-ssid']):
                 errors = group['distance_error'].tolist()
-                anchor_distance_errors[str(ap_name)].extend(errors)
+                scenario_anchor_errors[str(ap_name)][scenario].extend(errors)
             
         except Exception as e:
             self._show_no_data(f"Error loading data: {str(e)}")
             return
         
-        if not anchor_distance_errors:
+        if not scenario_anchor_errors:
             self._show_no_data()
             return
 
         # Sort anchors by name for consistent ordering
-        anchor_names = sorted(anchor_distance_errors.keys())
+        anchor_names = sorted(scenario_anchor_errors.keys())
         
         # Calculate statistics
         avg_distance_errors = []
         std_distance_errors = []
         
         for anchor_name in anchor_names:
-            errors = anchor_distance_errors[anchor_name]
-            avg_distance_errors.append(np.mean(errors))
-            std_distance_errors.append(np.std(errors))
+            # Average distance error across all measurements (pooled across scenarios)
+            all_errors = []
+            for scenario_errors in scenario_anchor_errors[anchor_name].values():
+                all_errors.extend(scenario_errors)
+            avg_distance_errors.append(np.mean(all_errors))
+            
+            # Standard deviation: average of per-scenario std devs
+            # This prevents multiple AP positions from inflating the std dev
+            scenario_stds = []
+            for scenario_errors in scenario_anchor_errors[anchor_name].values():
+                if len(scenario_errors) > 1:  # need at least 2 points for std
+                    scenario_stds.append(np.std(scenario_errors))
+            std_distance_errors.append(np.mean(scenario_stds) if scenario_stds else 0)
 
         # Prepare x-axis positions
         x = np.arange(len(anchor_names))
@@ -143,7 +153,7 @@ class AccessPointMetricsPlotRaw(QObject):
         
         # Right axis (ax2): Standard Deviation
         bars_std = self.ax2.bar(x + width/2, std_distance_errors, width,
-                                label='Std Deviation',
+                                label='Avg Std Deviation',
                                 color=STD_DEVIATION, edgecolor='black', linewidth=1.5)
         
         # ========== Configure left y-axis (Average Distance Error) ==========
@@ -164,7 +174,7 @@ class AccessPointMetricsPlotRaw(QObject):
         self.ax1.axhline(y=0, color='gray', linestyle='-', linewidth=1, alpha=0.5)
         
         # ========== Configure right y-axis (Standard Deviation) ==========
-        self.ax2.set_ylabel('Standard Deviation (m)')
+        self.ax2.set_ylabel('Avg Standard Deviation (m)')
         self.ax2.yaxis.set_label_position('right')
         self.ax2.tick_params(axis='y')
         
@@ -207,12 +217,14 @@ class AccessPointMetricsPlotRaw(QObject):
         self.ax2.tick_params(axis='y', labelsize=self.display_config.fontSize_tickLabel)
         
         # Apply font size to suptitle (bold)
-        self.fig.suptitle('Access Point Quality Metrics - RAW DATA (All CSV Entries)',
+        self.fig.suptitle('Access Point Quality Metrics - Average per Scenario',
                          fontsize=self.display_config.fontSize_title, fontweight='bold')
         
         # Add sample count info at the bottom of the figure
-        info_text = "RAW samples per AP: " + ", ".join([f"{name}: {len(anchor_distance_errors[name])}" 
-                                                         for name in anchor_names])
+        info_text = "RAW samples per AP: " + ", ".join([
+            f"{name}: {sum(len(errors) for errors in scenario_anchor_errors[name].values())}" 
+            for name in anchor_names
+        ])
         self.fig.text(0.5, 0.02, info_text, ha='center',
                      fontsize=self.display_config.fontSize_info)
         
