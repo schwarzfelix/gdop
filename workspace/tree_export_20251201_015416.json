@@ -1,0 +1,3284 @@
+{
+  "export_metadata": {
+    "timestamp": "2025-12-01T01:54:16.610914",
+    "scenario_count": 28
+  },
+  "scenarios": [
+    {
+      "name": "1-3A-FW-V2B",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            5.52453125,
+            6.9686875000000015
+          ],
+          "gdop": 1.2509296993186003,
+          "position_error": 2.8783655961122827
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 8.687,
+          "error": -1.0212439194738003
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 11.062,
+          "error": 1.3537560805261997
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 12.437,
+          "error": 2.7287560805261997
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_GREEN": 53,
+        "FTM_ORANGE": 43,
+        "FTM_BLUE": 40,
+        "FTM_PINK": 39
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 1.0204227471928664,
+          "std_dev": 1.548969191286759,
+          "rmse": 1.854876852662783,
+          "min": -1.0212439194738003,
+          "max": 2.7287560805261997
+        },
+        "tag_truth_gdop": 1.3117295923711054,
+        "total_raw_measurements": 175
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "1-3A-PD-V1B",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            8.88119825,
+            1.7670454545454546
+          ],
+          "gdop": 1.4373414394554092,
+          "position_error": 3.835552110744008
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 8.687,
+          "error": -1.0212439194738003
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 11.375,
+          "error": 1.6667560805262003
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 6.875,
+          "error": -2.8332439194737997
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_BLUE": 57,
+        "FTM_PINK": 54,
+        "FTM_GREEN": 50,
+        "FTM_ORANGE": 48
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -0.7292439194738,
+          "std_dev": 1.8486838561528036,
+          "rmse": 1.987316958637829,
+          "min": -2.8332439194737997,
+          "max": 1.6667560805262003
+        },
+        "tag_truth_gdop": 1.3117295923711054,
+        "total_raw_measurements": 209
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "1-4A-FW-V2",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            6.733076499999996,
+            5.125889681818181
+          ],
+          "gdop": 1.063380330373342,
+          "position_error": 1.3210048012866429
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 8.687,
+          "error": -1.0212439194738003
+        },
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 9.25,
+          "error": -0.4582439194737997
+        },
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 11.062,
+          "error": 1.3537560805261997
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 12.437,
+          "error": 2.7287560805261997
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_GREEN": 53,
+        "FTM_ORANGE": 43,
+        "FTM_BLUE": 40,
+        "FTM_PINK": 39
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 0.6507560805261998,
+          "std_dev": 1.4864183462269294,
+          "rmse": 1.6226284159787852,
+          "min": -1.0212439194738003,
+          "max": 2.7287560805261997
+        },
+        "tag_truth_gdop": 1.0710227272727273,
+        "total_raw_measurements": 175
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "1-4A-PD-V1",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            7.958771812499995,
+            4.158288818181818
+          ],
+          "gdop": 1.074034960142579,
+          "position_error": 1.3423444635638342
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 8.5,
+          "error": -1.2082439194737997
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 11.375,
+          "error": 1.6667560805262003
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 6.875,
+          "error": -2.8332439194737997
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 8.687,
+          "error": -1.0212439194738003
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_BLUE": 57,
+        "FTM_PINK": 54,
+        "FTM_GREEN": 50,
+        "FTM_ORANGE": 48
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -0.8489939194737999,
+          "std_dev": 1.6143866288779773,
+          "rmse": 1.8240161355655506,
+          "min": -2.8332439194737997,
+          "max": 1.6667560805262003
+        },
+        "tag_truth_gdop": 1.0710227272727273,
+        "total_raw_measurements": 209
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "2-3A-FW-V1I",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            8.0,
+            5.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            492.43749999999915,
+            694.7499999999987
+          ],
+          "gdop": 122.48708417437403,
+          "position_error": 842.4192862857826
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 19.5,
+          "error": 4.383783542169025
+        },
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 19.75,
+          "error": 0.33351216105240056
+        },
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 11.25,
+          "error": 1.5417560805262003
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          0.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_GREEN": 52,
+        "FTM_ORANGE": 50,
+        "FTM_BLUE": 45,
+        "FTM_PINK": 42
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 2.0863505945825422,
+          "std_dev": 1.6977655813310015,
+          "rmse": 2.6898451205723948,
+          "min": 0.33351216105240056,
+          "max": 4.383783542169025
+        },
+        "tag_truth_gdop": 239.64487615304293,
+        "total_raw_measurements": 189
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 19.4164878389476
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 15.116216457830975
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "2-3A-PD-V2I",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            8.0,
+            5.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            -751.7510303333332,
+            -1118.6733736666665
+          ],
+          "gdop": 197.24456635520266,
+          "position_error": 1356.7872941359142
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 9.0,
+          "error": -0.7082439194737997
+        },
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 4.187,
+          "error": -10.929216457830975
+        },
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 19.625,
+          "error": 0.20851216105240056
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          0.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_PINK": 53,
+        "FTM_BLUE": 52,
+        "FTM_GREEN": 52,
+        "FTM_ORANGE": 49
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -3.809649405417458,
+          "std_dev": 5.048186914669102,
+          "rmse": 6.32436713969342,
+          "min": -10.929216457830975,
+          "max": 0.20851216105240056
+        },
+        "tag_truth_gdop": 239.64487615304293,
+        "total_raw_measurements": 206
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 15.116216457830975
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 19.4164878389476
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "2-4A-FW-V1",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            8.0,
+            5.5
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            12.5,
+            3.3
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            92.77445850136657,
+            115.19222520499794
+          ],
+          "gdop": 12.62539226839172,
+          "position_error": 138.43253311941172
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 19.5,
+          "error": 4.383783542169025
+        },
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 3.437,
+          "error": -1.3734053883222779
+        },
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 11.25,
+          "error": 1.5417560805262003
+        },
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 19.75,
+          "error": 0.33351216105240056
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          0.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_GREEN": 52,
+        "FTM_ORANGE": 50,
+        "FTM_BLUE": 45,
+        "FTM_PINK": 42
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 1.2214115988563372,
+          "std_dev": 2.099086557492976,
+          "rmse": 2.4285820286060975,
+          "min": -1.3734053883222779,
+          "max": 4.383783542169025
+        },
+        "tag_truth_gdop": 7.456400147927166,
+        "total_raw_measurements": 189
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 19.4164878389476
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 15.116216457830975
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 4.810405388322278
+        }
+      ]
+    },
+    {
+      "name": "2-4A-PD-V2",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            12.5,
+            3.3
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            8.0,
+            5.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            12.371900294067627,
+            -4.013541087090996
+          ],
+          "gdop": 1.937619552811163,
+          "position_error": 5.410325270624138
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 9.0,
+          "error": -0.7082439194737997
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 11.687,
+          "error": -3.429216457830975
+        },
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 19.625,
+          "error": 0.20851216105240056
+        },
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 4.187,
+          "error": -0.6234053883222774
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          0.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_PINK": 53,
+        "FTM_BLUE": 52,
+        "FTM_GREEN": 52,
+        "FTM_ORANGE": 49
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -1.138088401143663,
+          "std_dev": 1.3704256390220035,
+          "rmse": 1.781379140134577,
+          "min": -3.429216457830975,
+          "max": 0.20851216105240056
+        },
+        "tag_truth_gdop": 7.456400147927255,
+        "total_raw_measurements": 206
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 15.116216457830975
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 19.4164878389476
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 4.810405388322278
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "3-3A-FW-V1B",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            9.22795085714285,
+            -99.95350619999999
+          ],
+          "gdop": 37.43088918691619,
+          "position_error": 100.18265344492883
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 31.75,
+          "error": 15.099174194653287
+        },
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 21.437,
+          "error": 6.320783542169027
+        },
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 22.625,
+          "error": 4.5073290680065625
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          0.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_BLUE": 44,
+        "FTM_ORANGE": 39,
+        "FTM_PINK": 38,
+        "FTM_GREEN": 38
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 8.642428934942957,
+          "std_dev": 4.62524405079046,
+          "rmse": 9.802268126556823,
+          "min": 4.5073290680065625,
+          "max": 15.099174194653287
+        },
+        "tag_truth_gdop": 6.098131139189487,
+        "total_raw_measurements": 159
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 16.650825805346713
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 18.117670931993437
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 15.116216457830975
+        }
+      ]
+    },
+    {
+      "name": "3-3A-PD-V1B",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            11.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            -6.345982142857142,
+            -5.65
+          ],
+          "gdop": 7.5693789288111475,
+          "position_error": 23.049195602642847
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 16.625,
+          "error": -1.4926709319934375
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 18.25,
+          "error": 3.1337835421690254
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 20.25,
+          "error": 3.599174194653287
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          0.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_GREEN": 52,
+        "FTM_PINK": 52,
+        "FTM_ORANGE": 52,
+        "FTM_BLUE": 47
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 1.7467622682762916,
+          "std_dev": 2.2984912020877615,
+          "rmse": 2.8869084204298168,
+          "min": -1.4926709319934375,
+          "max": 3.599174194653287
+        },
+        "tag_truth_gdop": 6.098131139189487,
+        "total_raw_measurements": 203
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 15.116216457830975
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 18.117670931993437
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 16.650825805346713
+        }
+      ]
+    },
+    {
+      "name": "3-4A-FW-V1",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            72.52366514285717,
+            -0.8703750000000136
+          ],
+          "gdop": 28.315199192065517,
+          "position_error": 56.53036594452995
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 17.062,
+          "error": 0.4111741946532881
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 31.75,
+          "error": 12.3335121610524
+        },
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 21.437,
+          "error": 6.320783542169027
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 22.625,
+          "error": 4.5073290680065625
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          0.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_BLUE": 44,
+        "FTM_ORANGE": 39,
+        "FTM_PINK": 38,
+        "FTM_GREEN": 38
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 5.893199741470319,
+          "std_dev": 4.290503862833729,
+          "rmse": 7.289597148667201,
+          "min": 0.4111741946532881,
+          "max": 12.3335121610524
+        },
+        "tag_truth_gdop": 6.091184787507602,
+        "total_raw_measurements": 159
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 19.4164878389476
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 16.650825805346713
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 18.117670931993437
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 15.116216457830975
+        }
+      ]
+    },
+    {
+      "name": "3-4A-PD-V1",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            11.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            2.257440476190477,
+            -9.639583333333333
+          ],
+          "gdop": 5.5541164463310375,
+          "position_error": 16.786289319135587
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 16.625,
+          "error": -1.4926709319934375
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 15.25,
+          "error": 0.13378354216902544
+        },
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 20.25,
+          "error": 3.599174194653287
+        },
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 18.25,
+          "error": -1.1664878389475994
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          0.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_GREEN": 52,
+        "FTM_PINK": 52,
+        "FTM_ORANGE": 52,
+        "FTM_BLUE": 47
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 0.26844974147031886,
+          "std_dev": 2.0169563861461097,
+          "rmse": 2.034742816011659,
+          "min": -1.4926709319934375,
+          "max": 3.599174194653287
+        },
+        "tag_truth_gdop": 6.091184787507602,
+        "total_raw_measurements": 203
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 15.116216457830975
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 19.4164878389476
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 18.117670931993437
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 16.650825805346713
+        }
+      ]
+    },
+    {
+      "name": "4-3A-FW-V1F",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            8.0,
+            5.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            8.128226784084882,
+            -5.588155914058354
+          ],
+          "gdop": 1.27882621150357,
+          "position_error": 18.36114730053402
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 17.5,
+          "error": 1.5
+        },
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 7.312,
+          "error": -2.3962439194737994
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 8.687,
+          "error": -2.3130000000000006
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          11.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_GREEN": 52,
+        "FTM_BLUE": 49,
+        "FTM_PINK": 48,
+        "FTM_ORANGE": 38
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -1.0697479731579334,
+          "std_dev": 1.8174039858535067,
+          "rmse": 2.1088665140002862,
+          "min": -2.3962439194737994,
+          "max": 1.5
+        },
+        "tag_truth_gdop": 1.224744871391589,
+        "total_raw_measurements": 187
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 16.0
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 11.0
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "4-3A-PD-V3F",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            8.0,
+            5.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            3.6947588923076924,
+            -2.540146738461538
+          ],
+          "gdop": 1.2072446868711146,
+          "position_error": 18.296298325549657
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 11.812,
+          "error": -4.188000000000001
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 7.625,
+          "error": -3.375
+        },
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 10.5,
+          "error": 0.7917560805262003
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          11.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_BLUE": 55,
+        "FTM_GREEN": 53,
+        "FTM_ORANGE": 50,
+        "FTM_PINK": 50
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -2.257081306491267,
+          "std_dev": 2.181253356728133,
+          "rmse": 3.138834533764096,
+          "min": -4.188000000000001,
+          "max": 0.7917560805262003
+        },
+        "tag_truth_gdop": 1.224744871391589,
+        "total_raw_measurements": 208
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 16.0
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 11.0
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "4-4A-FW-V1",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            8.0,
+            5.5
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            -251.024749444443,
+            -381.7535460555535
+          ],
+          "gdop": 32.12822460229,
+          "position_error": 474.9290102268752
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 10.187,
+          "error": -2.5605487839819627
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 7.312,
+          "error": -2.3962439194737994
+        },
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 8.687,
+          "error": -2.3130000000000006
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 17.5,
+          "error": 1.5
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          11.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_GREEN": 52,
+        "FTM_BLUE": 49,
+        "FTM_PINK": 48,
+        "FTM_ORANGE": 38
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -1.4424481758639407,
+          "std_dev": 1.7011567414963435,
+          "rmse": 2.2303791155746744,
+          "min": -2.5605487839819627,
+          "max": 1.5
+        },
+        "tag_truth_gdop": 1.1259482949236745,
+        "total_raw_measurements": 187
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 16.0
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 11.0
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 12.747548783981962
+        }
+      ]
+    },
+    {
+      "name": "4-4A-PD-V3",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            8.0,
+            5.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            187.26659400000176,
+            262.5985066000025
+          ],
+          "gdop": 21.62285933206409,
+          "position_error": 304.35843136623134
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 13.187,
+          "error": -2.8130000000000006
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 7.625,
+          "error": -3.375
+        },
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 10.5,
+          "error": 0.7917560805262003
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 11.812,
+          "error": -0.9355487839819627
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          16.0,
+          11.0
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_BLUE": 55,
+        "FTM_GREEN": 53,
+        "FTM_ORANGE": 50,
+        "FTM_PINK": 50
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -1.5829481758639408,
+          "std_dev": 1.6418604925797162,
+          "rmse": 2.2806645532750065,
+          "min": -3.375,
+          "max": 0.7917560805262003
+        },
+        "tag_truth_gdop": 1.1259482949236745,
+        "total_raw_measurements": 208
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 12.747548783981962
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 16.0
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 11.0
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "5-3A-FW-V1D",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            1.75,
+            9.812475000000001
+          ],
+          "gdop": 1.3055487598890476,
+          "position_error": 2.1874850000914297
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 1.187,
+          "error": -3.114162633521313
+        },
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 1.187,
+          "error": -1.313
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 1.312,
+          "error": -2.1879999999999997
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          0.0,
+          8.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_PINK": 47,
+        "FTM_ORANGE": 47,
+        "FTM_BLUE": 46,
+        "FTM_GREEN": 38
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -2.205054211173771,
+          "std_dev": 0.7354204433236032,
+          "rmse": 2.3244584966553967,
+          "min": -3.114162633521313,
+          "max": -1.313
+        },
+        "tag_truth_gdop": 1.224744871391589,
+        "total_raw_measurements": 178
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 2.5
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 4.301162633521313
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 3.5
+        }
+      ]
+    },
+    {
+      "name": "5-3A-PD-V1D",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            11.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            1.75,
+            10.597243800000001
+          ],
+          "gdop": 1.4895357116386676,
+          "position_error": 2.731470584985027
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 2.062,
+          "error": -1.4380000000000002
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 0.125,
+          "error": -4.176162633521313
+        },
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 0.125,
+          "error": -2.375
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          0.0,
+          8.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_ORANGE": 53,
+        "FTM_BLUE": 47,
+        "FTM_GREEN": 46,
+        "FTM_PINK": 43
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -2.663054211173771,
+          "std_dev": 1.1362555678878765,
+          "rmse": 2.895329764846581,
+          "min": -4.176162633521313,
+          "max": -1.4380000000000002
+        },
+        "tag_truth_gdop": 1.224744871391589,
+        "total_raw_measurements": 189
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 3.5
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 2.5
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 4.301162633521313
+        }
+      ]
+    },
+    {
+      "name": "5-4A-FW-V1",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            -2.652273548045154,
+            17.405516415668295
+          ],
+          "gdop": 3.075381931262988,
+          "position_error": 9.292081446231382
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 1.187,
+          "error": -3.114162633521313
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 24.125,
+          "error": 6.0073290680065625
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 1.187,
+          "error": -1.313
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 1.312,
+          "error": -2.1879999999999997
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          0.0,
+          8.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_PINK": 47,
+        "FTM_ORANGE": 47,
+        "FTM_BLUE": 46,
+        "FTM_GREEN": 38
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -0.15195839137868755,
+          "std_dev": 3.6126499632712616,
+          "rmse": 3.615844453213419,
+          "min": -3.114162633521313,
+          "max": 6.0073290680065625
+        },
+        "tag_truth_gdop": 1.0258236076333018,
+        "total_raw_measurements": 178
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 2.5
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 18.117670931993437
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 4.301162633521313
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 3.5
+        }
+      ]
+    },
+    {
+      "name": "5-4A-PD-V1",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            11.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            -0.7016960957411515,
+            14.475040983492915
+          ],
+          "gdop": 1.9432432475755266,
+          "position_error": 6.016102738916479
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 21.437,
+          "error": 3.3193290680065637
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 2.062,
+          "error": -1.4380000000000002
+        },
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 0.125,
+          "error": -4.176162633521313
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 0.125,
+          "error": -2.375
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          0.0,
+          8.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_ORANGE": 53,
+        "FTM_BLUE": 47,
+        "FTM_GREEN": 46,
+        "FTM_PINK": 43
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -1.1674583913786876,
+          "std_dev": 2.7710518048626835,
+          "rmse": 3.0069398399092138,
+          "min": -4.176162633521313,
+          "max": 3.3193290680065637
+        },
+        "tag_truth_gdop": 1.0258236076333018,
+        "total_raw_measurements": 189
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 3.5
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 2.5
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 18.117670931993437
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 4.301162633521313
+        }
+      ]
+    },
+    {
+      "name": "6-3A-FW-V1D",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            3.423019531249998,
+            16.96863354375
+          ],
+          "gdop": 1.2072267123057854,
+          "position_error": 12.3482106222783
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 10.937,
+          "error": 1.2287560805261997
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 12.0,
+          "error": 6.591673086804016
+        },
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 16.312,
+          "error": 6.603756080526201
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_ORANGE": 47,
+        "FTM_GREEN": 44,
+        "FTM_PINK": 39,
+        "FTM_BLUE": 37
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 4.808061749285472,
+          "std_dev": 2.5309561174246014,
+          "rmse": 5.433525251001516,
+          "min": 1.2287560805261997,
+          "max": 6.603756080526201
+        },
+        "tag_truth_gdop": 1.3153172555515362,
+        "total_raw_measurements": 167
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 5.408326913195984
+        }
+      ]
+    },
+    {
+      "name": "6-3A-PD-V1D",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            11.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            3.52490234375,
+            15.225488281250001
+          ],
+          "gdop": 1.1741294830760036,
+          "position_error": 10.705681731758391
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 6.125,
+          "error": 0.7166730868040156
+        },
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 12.875,
+          "error": 3.1667560805262003
+        },
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 4.75,
+          "error": -4.9582439194738
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_GREEN": 55,
+        "FTM_BLUE": 52,
+        "FTM_ORANGE": 50,
+        "FTM_PINK": 39
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -0.35827158404786125,
+          "std_dev": 3.4029923874970827,
+          "rmse": 3.421800069743885,
+          "min": -4.9582439194738,
+          "max": 3.1667560805262003
+        },
+        "tag_truth_gdop": 1.3153172555515362,
+        "total_raw_measurements": 196
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 5.408326913195984
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "6-4A-FW-V1",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            13.181486021812866,
+            -2.7299583494701185
+          ],
+          "gdop": 1.0508123858529874,
+          "position_error": 9.725225541253788
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 20.812,
+          "error": 11.103756080526201
+        },
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 12.0,
+          "error": 6.591673086804016
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 10.937,
+          "error": 1.2287560805261997
+        },
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 16.312,
+          "error": 6.603756080526201
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_ORANGE": 47,
+        "FTM_GREEN": 44,
+        "FTM_PINK": 39,
+        "FTM_BLUE": 37
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 6.381985332095654,
+          "std_dev": 3.498000926933108,
+          "rmse": 7.277757021494257,
+          "min": 1.2287560805261997,
+          "max": 11.103756080526201
+        },
+        "tag_truth_gdop": 1.238913921804415,
+        "total_raw_measurements": 167
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 5.408326913195984
+        }
+      ]
+    },
+    {
+      "name": "6-4A-PD-V1",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            11.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            4.4771288425387645,
+            2.8136611553112685
+          ],
+          "gdop": 1.0176412168064415,
+          "position_error": 4.430241255344437
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_GREEN",
+          "distance": 10.312,
+          "error": 0.6037560805261997
+        },
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 6.125,
+          "error": 0.7166730868040156
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 12.875,
+          "error": 3.1667560805262003
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 4.75,
+          "error": -4.9582439194738
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_GREEN": 55,
+        "FTM_BLUE": 52,
+        "FTM_ORANGE": 50,
+        "FTM_PINK": 39
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -0.11776466790434603,
+          "std_dev": 2.9763734009967413,
+          "rmse": 2.978702257555718,
+          "min": -4.9582439194738,
+          "max": 3.1667560805262003
+        },
+        "tag_truth_gdop": 1.238913921804415,
+        "total_raw_measurements": 196
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 5.408326913195984
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "7-3A-FW-V1I",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            605.5751458333351,
+            878.3789791666693
+          ],
+          "gdop": 73.35426438780173,
+          "position_error": 1057.83447059962
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_ORANGE",
+          "station2": "N10P",
+          "distance": 12.562,
+          "error": 7.153673086804015
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 11.062,
+          "error": 1.3537560805261997
+        },
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 6.437,
+          "error": -3.2712439194737994
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_ORANGE": 40,
+        "FTM_PINK": 39,
+        "FTM_BLUE": 36,
+        "FTM_GREEN": 36
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 1.7453950826188054,
+          "std_dev": 4.264954824138639,
+          "rmse": 4.608279901044787,
+          "min": -3.2712439194737994,
+          "max": 7.153673086804015
+        },
+        "tag_truth_gdop": 85.74088872877893,
+        "total_raw_measurements": 151
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 5.408326913195984
+        }
+      ]
+    },
+    {
+      "name": "7-3A-PD-V2I",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            -565.0322803333348,
+            -839.7514986666689
+          ],
+          "gdop": 70.81242551691277,
+          "position_error": 1021.1836711886219
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "FTM_PINK",
+          "station2": "N10P",
+          "distance": 4.187,
+          "error": -1.221326913195984
+        },
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 6.25,
+          "error": -3.4582439194737997
+        },
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 17.25,
+          "error": 7.5417560805262
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_PINK": 53,
+        "FTM_BLUE": 50,
+        "FTM_GREEN": 49,
+        "FTM_ORANGE": 44
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 0.9540617492854722,
+          "std_dev": 4.746875244104599,
+          "rmse": 4.841803218279606,
+          "min": -3.4582439194737997,
+          "max": 7.5417560805262
+        },
+        "tag_truth_gdop": 85.74088872880283,
+        "total_raw_measurements": 196
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 5.408326913195984
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        }
+      ]
+    },
+    {
+      "name": "7-4A-FW-V1",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            12.5,
+            3.3
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            41.231195531570734,
+            50.85904591394868
+          ],
+          "gdop": 3.6913787605723165,
+          "position_error": 56.22948872861277
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 12.562,
+          "error": 7.153673086804015
+        },
+        {
+          "station1": "FTM_BLUE",
+          "station2": "N10P",
+          "distance": 11.062,
+          "error": 1.3537560805261997
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 10.937,
+          "error": 1.2287560805261997
+        },
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 6.437,
+          "error": 1.4280080854527233
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_ORANGE": 40,
+        "FTM_PINK": 39,
+        "FTM_BLUE": 36,
+        "FTM_GREEN": 36
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": 2.791048333327285,
+          "std_dev": 2.5197688167815193,
+          "rmse": 3.7602108569857555,
+          "min": 1.2287560805261997,
+          "max": 7.153673086804015
+        },
+        "tag_truth_gdop": 8.077592431080708,
+        "total_raw_measurements": 151
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 5.008991914547277
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 5.408326913195984
+        }
+      ]
+    },
+    {
+      "name": "7-4A-PD-V2",
+      "configuration": {
+        "trilateration_method": "classical",
+        "aggregation_method": "lowest",
+        "sigma": 0.0
+      },
+      "stations": [
+        {
+          "name": "FTM_PINK",
+          "type": "Anchor",
+          "position": [
+            3.5,
+            8.5
+          ]
+        },
+        {
+          "name": "FTM_BLUE",
+          "type": "Anchor",
+          "position": [
+            0.0,
+            11.0
+          ]
+        },
+        {
+          "name": "FTM_GREEN",
+          "type": "Anchor",
+          "position": [
+            16.0,
+            0.0
+          ]
+        },
+        {
+          "name": "FTM_ORANGE",
+          "type": "Anchor",
+          "position": [
+            12.5,
+            3.3
+          ]
+        },
+        {
+          "name": "N10P",
+          "type": "Tag",
+          "position": [
+            9.835438704698362,
+            -1.456811310981624
+          ],
+          "gdop": 1.0132194831598864,
+          "position_error": 7.194863365992899
+        }
+      ],
+      "measurements": [
+        {
+          "station1": "N10P",
+          "station2": "FTM_ORANGE",
+          "distance": 0.875,
+          "error": -4.133991914547277
+        },
+        {
+          "station1": "FTM_GREEN",
+          "station2": "N10P",
+          "distance": 6.25,
+          "error": -3.4582439194737997
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_PINK",
+          "distance": 4.187,
+          "error": -1.221326913195984
+        },
+        {
+          "station1": "N10P",
+          "station2": "FTM_BLUE",
+          "distance": 17.25,
+          "error": 7.5417560805262
+        }
+      ],
+      "tag_truth": {
+        "position": [
+          8.0,
+          5.5
+        ],
+        "name": "TAG_TRUTH"
+      },
+      "border_rectangle": {
+        "min_x": -1.0,
+        "max_x": 17.0,
+        "min_y": -1.0,
+        "max_y": 12.0
+      },
+      "raw_measurement_counts": {
+        "FTM_PINK": 53,
+        "FTM_BLUE": 50,
+        "FTM_GREEN": 49,
+        "FTM_ORANGE": 44
+      },
+      "metrics": {
+        "measurement_errors": {
+          "mean": -0.3179516666727151,
+          "std_dev": 4.664083278464555,
+          "rmse": 4.674908137150144,
+          "min": -4.133991914547277,
+          "max": 7.5417560805262
+        },
+        "tag_truth_gdop": 8.077592431080708,
+        "total_raw_measurements": 196
+      },
+      "expected_measurements": [
+        {
+          "anchor": "FTM_PINK",
+          "distance": 5.408326913195984
+        },
+        {
+          "anchor": "FTM_BLUE",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_GREEN",
+          "distance": 9.7082439194738
+        },
+        {
+          "anchor": "FTM_ORANGE",
+          "distance": 5.008991914547277
+        }
+      ]
+    }
+  ]
+}

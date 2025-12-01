@@ -24,6 +24,8 @@ try:
 except ImportError:
     pg = None
 import os
+import json
+from datetime import datetime
 from PyQt5.QtWidgets import QTableView, QAbstractItemView, QHeaderView
 from PyQt5.QtCore import QAbstractTableModel, Qt
 from presentation.trilatplot_window import TrilatPlotWindow
@@ -187,6 +189,12 @@ class TreeTab(BaseTab):
         self.rename_all_button.setToolTip("Append text to the name of all loaded scenarios")
         self.rename_all_button.clicked.connect(self._rename_all_scenarios)
         button_layout.addWidget(self.rename_all_button)
+        
+        # Create Export Tree as JSON button
+        self.export_tree_button = QPushButton("💾 Export Tree as JSON")
+        self.export_tree_button.setToolTip("Export all loaded scenarios and their calculations to JSON file in workspace")
+        self.export_tree_button.clicked.connect(self._export_tree_as_json)
+        button_layout.addWidget(self.export_tree_button)
         
         layout.addLayout(button_layout)
         
@@ -749,6 +757,170 @@ class TreeTab(BaseTab):
             "Rename Complete",
             f"Successfully renamed {renamed_count} scenario(s)."
         )
+
+    def _export_tree_as_json(self):
+        """Export all loaded scenarios with their calculations to a JSON file in the workspace."""
+        from PyQt5.QtWidgets import QMessageBox, QFileDialog
+        
+        app = self.main_window.app
+        scenarios = app.scenarios
+        
+        if not scenarios:
+            QMessageBox.information(self.main_window, "Export Tree", "No scenarios loaded to export.")
+            return
+        
+        # Create export data structure
+        export_data = {
+            "export_metadata": {
+                "timestamp": datetime.now().isoformat(),
+                "scenario_count": len(scenarios)
+            },
+            "scenarios": []
+        }
+        
+        # Export each scenario
+        for scen in scenarios:
+            scenario_data = {
+                "name": scen.name,
+                "configuration": {
+                    "trilateration_method": getattr(scen, '_trilateration_method', 'N/A'),
+                    "aggregation_method": getattr(scen, '_aggregation_method', None),
+                    "sigma": scen._sigma
+                },
+                "stations": [],
+                "measurements": [],
+                "tag_truth": {
+                    "position": scen.tag_truth.position().tolist(),
+                    "name": scen.tag_truth.name
+                },
+                "border_rectangle": scen._border_rectangle.tolist() if scen._border_rectangle is not None and hasattr(scen._border_rectangle, 'tolist') else scen._border_rectangle,
+                "raw_measurement_counts": dict(getattr(scen, '_raw_measurement_counts', {})),
+                "metrics": {}
+            }
+            
+            # Export stations with their metrics
+            for st in scen.stations:
+                station_data = {
+                    "name": st.name,
+                    "type": "Anchor" if isinstance(st, station_module.Anchor) else "Tag",
+                    "position": st.position().tolist()
+                }
+                
+                # Add Tag-specific metrics
+                if isinstance(st, station_module.Tag):
+                    try:
+                        gdop = st.dilution_of_precision()
+                        station_data["gdop"] = float(gdop) if np.isfinite(gdop) else "infinity"
+                    except Exception:
+                        station_data["gdop"] = None
+                    
+                    try:
+                        pos_error = st.position_error()
+                        station_data["position_error"] = float(pos_error) if pos_error is not None else None
+                    except Exception:
+                        station_data["position_error"] = None
+                
+                scenario_data["stations"].append(station_data)
+            
+            # Export measurements with errors
+            measurement_errors = {}
+            try:
+                measurement_errors = scen.get_measurement_errors()
+            except Exception:
+                pass
+            
+            for pair, distance in scen.measurements.relation.items():
+                station1, station2 = pair
+                measurement_data = {
+                    "station1": station1.name,
+                    "station2": station2.name,
+                    "distance": float(distance)
+                }
+                
+                if pair in measurement_errors:
+                    measurement_data["error"] = float(measurement_errors[pair])
+                
+                scenario_data["measurements"].append(measurement_data)
+            
+            # Export expected measurements
+            try:
+                expected = scen.get_expected_measurements()
+                scenario_data["expected_measurements"] = []
+                for pair, distance in expected.items():
+                    station1, station2 = pair
+                    # One of them is tag_truth, the other is the anchor
+                    if station1 == scen.tag_truth:
+                        anchor = station2
+                    else:
+                        anchor = station1
+                    scenario_data["expected_measurements"].append({
+                        "anchor": anchor.name,
+                        "distance": float(distance)
+                    })
+            except Exception as e:
+                scenario_data["expected_measurements"] = None
+            
+            # Export measurement error statistics
+            if measurement_errors:
+                try:
+                    error_values = list(measurement_errors.values())
+                    scenario_data["metrics"]["measurement_errors"] = {
+                        "mean": float(np.mean(error_values)),
+                        "std_dev": float(np.std(error_values)),
+                        "rmse": float(np.sqrt(np.mean(np.array(error_values)**2))),
+                        "min": float(np.min(error_values)),
+                        "max": float(np.max(error_values))
+                    }
+                except Exception:
+                    pass
+            
+            # Export Tag Truth GDOP
+            try:
+                tag_truth_gdop = scen.get_tag_truth_gdop()
+                scenario_data["metrics"]["tag_truth_gdop"] = float(tag_truth_gdop) if np.isfinite(tag_truth_gdop) else "infinity"
+            except Exception:
+                scenario_data["metrics"]["tag_truth_gdop"] = None
+            
+            # Export total raw measurement count
+            if hasattr(scen, 'raw_measurement_counts') and scen.raw_measurement_counts:
+                scenario_data["metrics"]["total_raw_measurements"] = sum(scen.raw_measurement_counts.values())
+            
+            export_data["scenarios"].append(scenario_data)
+        
+        # Ask user for filename
+        default_filename = f"tree_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        workspace_dir = os.path.abspath("workspace")
+        default_path = os.path.join(workspace_dir, default_filename)
+        
+        filename, _ = QFileDialog.getSaveFileName(
+            self.main_window,
+            "Export Tree as JSON",
+            default_path,
+            "JSON Files (*.json);;All Files (*)"
+        )
+        
+        if not filename:
+            return
+        
+        # Export to JSON file
+        try:
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(export_data, f, indent=2, ensure_ascii=False)
+            
+            QMessageBox.information(
+                self.main_window,
+                "Export Complete",
+                f"Successfully exported {len(scenarios)} scenario(s) to:\n{filename}"
+            )
+            
+            self.main_window.statusBar().showMessage(f"Tree exported to {os.path.basename(filename)}", 5000)
+            
+        except Exception as e:
+            QMessageBox.critical(
+                self.main_window,
+                "Export Error",
+                f"Failed to export tree:\n{str(e)}"
+            )
 
     def _import_scenario_from_workspace(self, scen_name: str):
         """Import a scenario by name from the workspace directory.
